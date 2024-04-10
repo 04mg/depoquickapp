@@ -7,26 +7,39 @@ public class CredentialsManagerTest
     public void TestCanRegisterWithValidCredentials()
     {
         // Arrange
-        var credsManager = new CredentialsManager();
+        var credManager = new CredentialsManager();
 
         // Act
-        credsManager.Register("test@test.com", "12345678@mE", "12345678@mE");
+        credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
 
         // Assert
-        Assert.IsTrue(credsManager.IsRegistered("test@test.com"));
+        Assert.IsTrue(credManager.IsRegistered("test@test.com"));
     }
-    
+
     [TestMethod]
     public void TestCanLoginWithValidCredentials()
     {
         // Arrange
-        var credsManager = new CredentialsManager();
-        
+        var credManager = new CredentialsManager();
+
         // Act
-        credsManager.Register("test@test.com", "12345678@mE", "12345678@mE");
-        var credentials = credsManager.Login("test@test.com", "12345678@mE");
-        
+        credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
+        var credentials = credManager.Login("test@test.com", "12345678@mE");
+
         // Assert
         Assert.AreSame(credentials.Email, "test@test.com");
+    }
+
+    [TestMethod]
+    public void TestCantRegisterWithSameEmail()
+    {
+        // Arrange
+        var credManager = new CredentialsManager();
+
+        // Act
+        credManager.Register("test@test.com", "12345678@mE");
+
+        // Assert
+        Assert.ThrowsException<UserAlreadyExistsException>(() => credManager.Register("test@test.com", "12345678@mE"));
     }
 }
