@@ -11,40 +11,65 @@ public class CredentialsManager
         CredentialsList = new List<Credentials>();
     }
 
-    private bool PasswordsMatch(string password, string passwordConfirmation)
-    {
-        return password == passwordConfirmation;
-    }
-
     public bool IsRegistered(string email)
     {
         return CredentialsList.Any(c => c.Email == email);
     }
 
-    public void Register(string email, string password, string passwordConfirmation)
+    private bool PasswordConfirmationMatches(string password, string passwordConfirmation)
+    {
+        return password == passwordConfirmation;
+    }
+
+    private bool EmailPasswordMatches(string email, string password)
+    {
+        return CredentialsList.Any(c => c.Email == email && c.Password == password);
+    }
+
+    private void EnsurePasswordConfirmationMatches(string password, string passwordConfirmation)
+    {
+        if (!PasswordConfirmationMatches(password, passwordConfirmation))
+        {
+            throw new ArgumentException("Passwords do not match.");
+        }
+    }
+
+    private void EnsureEmailPasswordMatches(string email, string password)
+    {
+        if (!EmailPasswordMatches(email, password))
+        {
+            throw new ArgumentException("Wrong password.");
+        }
+    }
+
+    private void EnsureUserIsRegistered(string email)
+    {
+        if (!IsRegistered(email))
+        {
+            throw new ArgumentException("User does not exist.");
+        }
+    }
+
+    private void EnsureUserIsNotRegistered(string email)
     {
         if (IsRegistered(email))
         {
             throw new UserAlreadyExistsException("User already exists.");
         }
-        else if (!PasswordsMatch(password, passwordConfirmation))
-        {
-            throw new ArgumentException("Passwords do not match.");
-        }
+    }
+
+    public void Register(string email, string password, string passwordConfirmation)
+    {
+        EnsureUserIsNotRegistered(email);
+        EnsurePasswordConfirmationMatches(password, passwordConfirmation);
 
         CredentialsList.Add(new Credentials(email, password));
     }
 
     public Credentials Login(string email, string password)
     {
-        if (CredentialsList.Any(c => c.Email == email))
-        {
-            var user = CredentialsList.Find(c => c.Email == email);
-            if (user.Password != password)
-            {
-                throw new ArgumentException("Wrong password.");
-            }
-        }
+        EnsureEmailPasswordMatches(email, password);
+
         return CredentialsList.Find(c => c.Email == email && c.Password == password);
     }
 }
