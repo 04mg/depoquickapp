@@ -23,9 +23,9 @@ public class CredentialsManagerTest
     {
         // Arrange
         var credManager = new CredentialsManager();
+        credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
 
         // Act
-        credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
         var credentials = credManager.Login("test@test.com", "12345678@mE");
 
         // Assert
@@ -37,11 +37,9 @@ public class CredentialsManagerTest
     {
         // Arrange
         var credManager = new CredentialsManager();
-
-        // Act
         credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
 
-        // Assert
+        // Act & Assert
         Assert.ThrowsException<UserAlreadyExistsException>(() =>
         {
             credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
@@ -62,5 +60,22 @@ public class CredentialsManagerTest
         
         // Assert
         Assert.IsTrue(exception.Message.Contains("Passwords do not match."));
+    }
+
+    [TestMethod]
+    public void TestCantLoginWithWrongPassword()
+    {
+        // Arrange
+        var credManager = new CredentialsManager();
+        credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            credManager.Login("test@test.com", "wrong");
+        });
+
+        // Assert
+        Assert.IsTrue(exception.Message.Contains("Wrong password."));
     }
 }
