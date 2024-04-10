@@ -8,6 +8,11 @@ public class CredentialsManager
     {
         CredentialsList = new List<Credentials>();
     }
+    
+    private bool PasswordsMatch(string password, string passwordConfirmation)
+    {
+        return password == passwordConfirmation;
+    }
 
     public bool IsRegistered(string email)
     {
@@ -16,7 +21,10 @@ public class CredentialsManager
 
     public void Register(string email, string password, string passwordConfirmation)
     {
-        CredentialsList.Add(new Credentials(email, password));
+        if (PasswordsMatch(password, passwordConfirmation))
+        {
+            CredentialsList.Add(new Credentials(email, password));
+        }
     }
 }
 
