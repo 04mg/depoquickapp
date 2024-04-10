@@ -37,6 +37,14 @@ public class CredentialsManager
 
     public Credentials Login(string email, string password)
     {
+        if (CredentialsList.Any(c => c.Email == email))
+        {
+            var user = CredentialsList.Find(c => c.Email == email);
+            if (user.Password != password)
+            {
+                throw new ArgumentException("Wrong password.");
+            }
+        }
         return CredentialsList.Find(c => c.Email == email && c.Password == password);
     }
 }
