@@ -26,6 +26,11 @@ public class CredentialsManager
             CredentialsList.Add(new Credentials(email, password));
         }
     }
+    
+    public Credentials Login(string email, string password)
+    {
+        return CredentialsList.Find(c => c.Email == email && c.Password == password);
+    }
 }
 
 public readonly struct Credentials
