@@ -68,6 +68,7 @@ public class CredentialsManager
 
     public Credentials Login(string email, string password)
     {
+        EnsureUserIsRegistered(email);
         EnsureEmailPasswordMatches(email, password);
 
         return CredentialsList.Find(c => c.Email == email && c.Password == password);
