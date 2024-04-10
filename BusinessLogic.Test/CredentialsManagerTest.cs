@@ -78,4 +78,20 @@ public class CredentialsManagerTest
         // Assert
         Assert.IsTrue(exception.Message.Contains("Wrong password."));
     }
+    
+    [TestMethod]
+    public void TestCantLoginWithNonExistingUser()
+    {
+        // Arrange
+        var credManager = new CredentialsManager();
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            credManager.Login("test@test.com", "12345678@mE");
+        });
+        
+        // Assert
+        Assert.AreSame(exception.Message, "User does not exist.");
+    }
 }
