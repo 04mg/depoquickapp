@@ -1,3 +1,5 @@
+using BusinessLogic.Exceptions;
+
 namespace BusinessLogic.Test;
 
 [TestClass]
@@ -37,9 +39,12 @@ public class CredentialsManagerTest
         var credManager = new CredentialsManager();
 
         // Act
-        credManager.Register("test@test.com", "12345678@mE");
+        credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
 
         // Assert
-        Assert.ThrowsException<UserAlreadyExistsException>(() => credManager.Register("test@test.com", "12345678@mE"));
+        Assert.ThrowsException<UserAlreadyExistsException>(() =>
+        {
+            credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
+        });
     }
 }

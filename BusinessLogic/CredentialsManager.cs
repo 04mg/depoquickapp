@@ -1,4 +1,6 @@
-﻿namespace BusinessLogic;
+﻿using BusinessLogic.Exceptions;
+
+namespace BusinessLogic;
 
 public class CredentialsManager
 {
@@ -21,6 +23,10 @@ public class CredentialsManager
 
     public void Register(string email, string password, string passwordConfirmation)
     {
+        if (IsRegistered(email))
+        {
+            throw new UserAlreadyExistsException("User already exists.");
+        }
         if (PasswordsMatch(password, passwordConfirmation))
         {
             CredentialsList.Add(new Credentials(email, password));
