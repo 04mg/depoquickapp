@@ -10,7 +10,7 @@ public class CredentialsManager
     {
         CredentialsList = new List<Credentials>();
     }
-    
+
     private bool PasswordsMatch(string password, string passwordConfirmation)
     {
         return password == passwordConfirmation;
@@ -27,12 +27,14 @@ public class CredentialsManager
         {
             throw new UserAlreadyExistsException("User already exists.");
         }
-        if (PasswordsMatch(password, passwordConfirmation))
+        else if (!PasswordsMatch(password, passwordConfirmation))
         {
-            CredentialsList.Add(new Credentials(email, password));
+            throw new ArgumentException("Passwords do not match.");
         }
+
+        CredentialsList.Add(new Credentials(email, password));
     }
-    
+
     public Credentials Login(string email, string password)
     {
         return CredentialsList.Find(c => c.Email == email && c.Password == password);
