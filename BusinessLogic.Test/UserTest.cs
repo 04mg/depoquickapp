@@ -12,4 +12,17 @@ public class UserTest
         // Assert
         Assert.IsNotNull(user);
     }
+    
+    [TestMethod]
+    public void TestCantCreateUserWithInvalidEmailFormat()
+    {
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            new User("Name Surname", "test", "12345678@mE");
+        });
+        
+        // Assert
+        Assert.AreEqual("Email format is invalid.", exception.Message);
+    }
 }
