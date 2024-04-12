@@ -25,4 +25,17 @@ public class UserTest
         // Assert
         Assert.AreEqual("Email format is invalid.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCantCreateUserWithAPasswordWithoutSymbols()
+    {
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            new User("Name Surname", "test@test", "12345678mE");
+        });
+        
+        // Assert
+        Assert.AreEqual("Password format is invalid.", exception.Message);
+    }
 }
