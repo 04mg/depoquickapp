@@ -4,16 +4,16 @@ namespace BusinessLogic;
 
 public class CredentialsManager
 {
-    private List<Credentials> CredentialsList { set; get; }
+    private Dictionary<string, Credentials> CredentialsByEmail { set; get; }
 
     public CredentialsManager()
     {
-        CredentialsList = new List<Credentials>();
+        CredentialsByEmail = new Dictionary<string, Credentials>();
     }
 
     public bool IsRegistered(string email)
     {
-        return CredentialsList.Any(c => c.Email == email);
+        return CredentialsByEmail.ContainsKey(email);
     }
 
     private bool PasswordConfirmationMatches(string password, string passwordConfirmation)
@@ -23,7 +23,7 @@ public class CredentialsManager
 
     private bool EmailPasswordMatches(string email, string password)
     {
-        return CredentialsList.Any(c => c.Email == email && c.Password == password);
+        return CredentialsByEmail[email].Password == password;
     }
 
     private void EnsurePasswordConfirmationMatches(string password, string passwordConfirmation)
@@ -63,7 +63,7 @@ public class CredentialsManager
         EnsureUserIsNotRegistered(email);
         EnsurePasswordConfirmationMatches(password, passwordConfirmation);
 
-        CredentialsList.Add(new Credentials(email, password));
+        CredentialsByEmail.Add(email, new Credentials(email, password));
     }
 
     public Credentials Login(string email, string password)
@@ -71,7 +71,7 @@ public class CredentialsManager
         EnsureUserIsRegistered(email);
         EnsureEmailPasswordMatches(email, password);
 
-        return CredentialsList.Find(c => c.Email == email && c.Password == password);
+        return CredentialsByEmail[email];
     }
 }
 
