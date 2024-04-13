@@ -32,10 +32,10 @@ public class UserTest
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
-            new User("Name Surname", "test@test", "12345678mE");
+            new User("Name Surname", "test@test.com", "12345678mE");
         });
         
         // Assert
-        Assert.AreEqual("Password format is invalid.", exception.Message);
+        Assert.AreEqual("Password format is invalid, it must contain at least one of the following symbols: #@$.,%", exception.Message);
     }
 }

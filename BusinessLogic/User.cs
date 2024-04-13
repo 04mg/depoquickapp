@@ -7,6 +7,7 @@ public class User
     private static readonly Regex EmailRegex = new(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
     public string Name { get; }
     private string _email;
+    private string _password;
     public string Email
     {
         get => _email;
@@ -17,7 +18,21 @@ public class User
         }
     }
 
-    public string Password { get; }
+    public string Password
+    {
+        get => _password;
+        set
+        {
+            var symbols = "#@$.,%";
+            //Check if contains any of this symbols
+            if(!value.Any(symbols.Contains))
+            {
+                throw new ArgumentException(
+                    "Password format is invalid, it must contain at least one of the following symbols: #@$.,%");
+            }
+            _password = value;
+        }
+    }
 
     private bool EmailIsValid(string email)
     {
