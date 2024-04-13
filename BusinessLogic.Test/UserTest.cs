@@ -65,4 +65,17 @@ public class UserTest
         // Assert
         Assert.AreEqual("Password format is invalid, it must contain at least one uppercase letter.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCantCreateUserWithAPasswordWithoutLowercaseLetter()
+    {
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            new User("Name Surname", "test@test.com", "12345678@E");
+        });
+
+        // Assert
+        Assert.AreEqual("Password format is invalid, it must contain at least one lowercase letter.", exception.Message);
+    }
 }
