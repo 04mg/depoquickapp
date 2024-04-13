@@ -48,7 +48,7 @@ public class UserTest
         {
             new User("Name Surname", "test@test.com", "1234@mE");
         });
-        
+
         // Assert
         Assert.AreEqual("Password format is invalid, length must be at least 8.", exception.Message);
     }
@@ -56,16 +56,17 @@ public class UserTest
     [TestMethod]
     public void TestCantCreateUserWithAPasswordWithoutUppercaseLetter()
     {
-        //Act
+        // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
             new User("Name Surname", "test@test.com", "12345678@m");
         });
-        
+
         // Assert
-        Assert.AreEqual("Password format is invalid, it must contain at least one uppercase letter.", exception.Message);
+        Assert.AreEqual("Password format is invalid, it must contain at least one uppercase letter.",
+            exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantCreateUserWithAPasswordWithoutLowercaseLetter()
     {
@@ -76,9 +77,10 @@ public class UserTest
         });
 
         // Assert
-        Assert.AreEqual("Password format is invalid, it must contain at least one lowercase letter.", exception.Message);
+        Assert.AreEqual("Password format is invalid, it must contain at least one lowercase letter.",
+            exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantCreateUserWithAPasswordWithoutADigit()
     {
@@ -100,33 +102,34 @@ public class UserTest
         {
             new User("NameSurname", "test@test.com", "12345678@mE");
         });
-        
+
         // Assert
-        Assert.AreEqual("NameSurname format is invalid, it has to contain a space between the name and surname.", exception.Message);
+        Assert.AreEqual("NameSurname format is invalid, it has to contain a space between the name and surname.",
+            exception.Message);
     }
 
     [TestMethod]
     public void TestCantCreateUserWithoutSurname()
     {
-        //Act
+        // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
             new User("Name ", "test@test.com", "12345678@mE");
         });
-        
+
         // Assert
         Assert.AreEqual("NameSurname format is invalid, it has to contain a name and a surname.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantCreateUserWithoutName()
     {
-        //Act
+        // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
             new User(" Surname", "test@test.com", "12345678@mE");
         });
-        
+
         // Assert
         Assert.AreEqual("NameSurname format is invalid, it has to contain a name and a surname.", exception.Message);
     }
@@ -141,8 +144,18 @@ public class UserTest
         {
             new User(nameLength101, "test@test.com", "12345678@mE");
         });
-        
+
         // Assert
-            Assert.AreEqual("NameSurname format is invalid, length must be lesser or equal to 100.", exception.Message);
+        Assert.AreEqual("NameSurname format is invalid, length must be lesser or equal to 100.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCanCreateAdminUserWithValidData()
+    {
+        // Act
+        var user = new User("Name Surname", "test@test.com", "12345678@mE", UserRank.Administrator);
+
+        // Assert
+        Assert.IsNotNull(user);
     }
 }
