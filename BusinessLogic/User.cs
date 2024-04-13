@@ -33,6 +33,10 @@ public class User
             {
                 throw new ArgumentException("Password format is invalid, length must be at least 8.");
             }
+            if(!value.Any(char.IsUpper))
+            {
+                throw new ArgumentException("Password format is invalid, it must contain at least one uppercase letter.");
+            }
             
             _password = value;
         }
