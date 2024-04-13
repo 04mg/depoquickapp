@@ -5,9 +5,9 @@ namespace BusinessLogic;
 public class User
 {
     private static readonly Regex EmailRegex = new(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
-    private string _nameSurname;
-    private string _email;
-    private string _password;
+    private string _nameSurname = "";
+    private string _email = "";
+    private string _password = "";
     public string Email
     {
         get => _email;
@@ -39,10 +39,20 @@ public class User
         {
             EnsureNameSurnameContainsSpace(value);
             EnsureNameSurnameHasNameAndSurname(value);
-            EnsureNameSurnameLenghtGreaterOrEqualTo100(value);
+            EnsureNameSurnameLengthGreaterOrEqualTo100(value);
             
             _nameSurname = value;
         }
+    }
+    
+    public UserRank Rank { get; set; }
+    
+    public User(string nameSurname, string email, string password, UserRank rank = UserRank.Client)
+    {
+        NameSurname = nameSurname;
+        Email = email;
+        Password = password;
+        Rank = rank;
     }
 
     private static void EnsureNameSurnameContainsSpace(string nameSurname)
@@ -53,7 +63,7 @@ public class User
         }
     }
 
-    private static void EnsureNameSurnameLenghtGreaterOrEqualTo100(string nameSurname)
+    private static void EnsureNameSurnameLengthGreaterOrEqualTo100(string nameSurname)
     {
         if(nameSurname.Length > 100){
             throw new ArgumentException("NameSurname format is invalid, length must be lesser or equal to 100.");
@@ -123,10 +133,10 @@ public class User
             throw new ArgumentException("Email format is invalid.");
         }
     }
-    public User(string nameSurname, string email, string password)
-    {
-        NameSurname = nameSurname;
-        Email = email;
-        Password = password;
-    }
+}
+
+public enum UserRank
+{
+    Client,
+    Administrator
 }
