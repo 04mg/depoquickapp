@@ -24,12 +24,16 @@ public class User
         set
         {
             var symbols = "#@$.,%";
-            //Check if contains any of this symbols
             if(!value.Any(symbols.Contains))
             {
                 throw new ArgumentException(
                     "Password format is invalid, it must contain at least one of the following symbols: #@$.,%");
             }
+            if(value.Length < 8)
+            {
+                throw new ArgumentException("Password format is invalid, length must be at least 8.");
+            }
+            
             _password = value;
         }
     }
