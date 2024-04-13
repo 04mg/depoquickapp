@@ -5,7 +5,7 @@ namespace BusinessLogic;
 public class User
 {
     private static readonly Regex EmailRegex = new(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
-    public string Name { get; }
+    private string _name;
     private string _email;
     private string _password;
     public string Email
@@ -29,6 +29,19 @@ public class User
             EnsurePasswordHasLowercaseLetter(value);
             EnsurePasswordHasDigit(value);
             _password = value;
+        }
+    }
+    
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            if (!value.Contains(' '))
+            {
+                throw new ArgumentException("NameSurname format is invalid, it has to contain a space between the name and surname.");
+            }
+            _name = value;
         }
     }
 

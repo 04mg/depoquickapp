@@ -102,6 +102,6 @@ public class UserTest
         });
         
         // Assert
-        Assert.AreEqual("Name and surname must be separated by a space.", exception.Message);
+        Assert.AreEqual("NameSurname format is invalid, it has to contain a space between the name and surname.", exception.Message);
     }
 }
