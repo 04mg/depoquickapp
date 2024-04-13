@@ -130,4 +130,19 @@ public class UserTest
         // Assert
         Assert.AreEqual("NameSurname format is invalid, it has to contain a name and a surname.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCantCreateUserWithNameSurnameLengthGreaterThan100()
+    {
+        var nameLength101 =
+            "Name Surname Name Surname Name Surname Name Surname Name Surname Name Surname Name Surname Name Surna";
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            new User(nameLength101, "test@test.com", "12345678@mE");
+        });
+        
+        // Assert
+            Assert.AreEqual("NameSurname format is invalid, length must be lesser or equal to 100.", exception.Message);
+    }
 }
