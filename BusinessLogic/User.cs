@@ -42,6 +42,10 @@ public class User
             {
                 throw new ArgumentException("Password format is invalid, it must contain at least one lowercase letter.");
             }
+            if (!value.Any(char.IsDigit))
+            {
+                throw new ArgumentException("Password format is invalid, it must contain at least one digit.");
+            }
             
             _password = value;
         }
