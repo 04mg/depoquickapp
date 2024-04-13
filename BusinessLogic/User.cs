@@ -45,7 +45,7 @@ public class User
         }
     }
     
-    public UserRank Rank { get; set; }
+    public UserRank Rank { get; }
     
     public User(string nameSurname, string email, string password, UserRank rank = UserRank.Client)
     {
@@ -113,7 +113,7 @@ public class User
 
     private static void EnsurePasswordHasSymbol(string password)
     {
-        var symbols = "#@$.,%";
+        const string symbols = "#@$.,%";
         if(!password.Any(symbols.Contains))
         {
             throw new ArgumentException(
@@ -121,12 +121,12 @@ public class User
         }
     }
 
-    private bool EmailIsValid(string email)
+    private static bool EmailIsValid(string email)
     {
         return EmailRegex.IsMatch(email);
     }
     
-    private void EnsureEmailIsValid(string email)
+    private static void EnsureEmailIsValid(string email)
     {
         if (!EmailIsValid(email))
         {
