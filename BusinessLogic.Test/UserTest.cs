@@ -12,7 +12,7 @@ public class UserTest
         // Assert
         Assert.IsNotNull(user);
     }
-    
+
     [TestMethod]
     public void TestCantCreateUserWithInvalidEmailFormat()
     {
@@ -21,7 +21,7 @@ public class UserTest
         {
             new User("Name Surname", "test", "12345678@mE");
         });
-        
+
         // Assert
         Assert.AreEqual("Email format is invalid.", exception.Message);
     }
@@ -34,8 +34,22 @@ public class UserTest
         {
             new User("Name Surname", "test@test.com", "12345678mE");
         });
+
+        // Assert
+        Assert.AreEqual("Password format is invalid, it must contain at least one of the following symbols: #@$.,%",
+            exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantCreateUserWithPasswordLengthLessThan8()
+    {
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            new User("Name Surname", "test@test.com", "1234@mE");
+        });
         
         // Assert
-        Assert.AreEqual("Password format is invalid, it must contain at least one of the following symbols: #@$.,%", exception.Message);
+        Assert.AreEqual("Password format is invalid, length must be at least 8.", exception.Message);
     }
 }
