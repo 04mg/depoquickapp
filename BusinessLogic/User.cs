@@ -5,7 +5,7 @@ namespace BusinessLogic;
 public class User
 {
     private static readonly Regex EmailRegex = new(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
-    private string _name;
+    private string _nameSurname;
     private string _email;
     private string _password;
     public string Email
@@ -32,25 +32,40 @@ public class User
         }
     }
     
-    public string Name
+    public string NameSurname
     {
-        get => _name;
+        get => _nameSurname;
         set
         {
-            if (!value.Contains(' '))
-            {
-                throw new ArgumentException("NameSurname format is invalid, it has to contain a space between the name and surname.");
-            }
-            var name = value.Split(' ');
-            if (name.Length < 2 || name[0].Equals("") || name[1].Equals(""))
-            {
-                throw new ArgumentException("NameSurname format is invalid, it has to contain a name and a surname.");
-            }
-            if(value.Length > 100){
-                throw new ArgumentException("NameSurname format is invalid, length must be lesser or equal to 100.");
-            }
+            EnsureNameSurnameContainsSpace(value);
+            EnsureNameSurnameHasNameAndSurname(value);
+            EnsureNameSurnameLenghtGreaterOrEqualTo100(value);
             
-            _name = value;
+            _nameSurname = value;
+        }
+    }
+
+    private static void EnsureNameSurnameContainsSpace(string nameSurname)
+    {
+        if (!nameSurname.Contains(' '))
+        {
+            throw new ArgumentException("NameSurname format is invalid, it has to contain a space between the name and surname.");
+        }
+    }
+
+    private static void EnsureNameSurnameLenghtGreaterOrEqualTo100(string nameSurname)
+    {
+        if(nameSurname.Length > 100){
+            throw new ArgumentException("NameSurname format is invalid, length must be lesser or equal to 100.");
+        }
+    }
+
+    private static void EnsureNameSurnameHasNameAndSurname(string nameSurname)
+    {
+        var nameSurnameParts = nameSurname.Split(' ');
+        if (nameSurnameParts.Length < 2 || string.IsNullOrWhiteSpace(nameSurnameParts[0]) || string.IsNullOrWhiteSpace(nameSurnameParts[1]))
+        {
+            throw new ArgumentException("NameSurname format is invalid, it has to contain a name and a surname.");
         }
     }
 
@@ -108,9 +123,9 @@ public class User
             throw new ArgumentException("Email format is invalid.");
         }
     }
-    public User(string name, string email, string password)
+    public User(string nameSurname, string email, string password)
     {
-        Name = name;
+        NameSurname = nameSurname;
         Email = email;
         Password = password;
     }
