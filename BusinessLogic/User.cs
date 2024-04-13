@@ -46,6 +46,9 @@ public class User
             {
                 throw new ArgumentException("NameSurname format is invalid, it has to contain a name and a surname.");
             }
+            if(value.Length > 100){
+                throw new ArgumentException("NameSurname format is invalid, length must be lesser or equal to 100.");
+            }
             
             _name = value;
         }
