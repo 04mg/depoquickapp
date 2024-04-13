@@ -23,31 +23,54 @@ public class User
         get => _password;
         set
         {
-            var symbols = "#@$.,%";
-            if(!value.Any(symbols.Contains))
-            {
-                throw new ArgumentException(
-                    "Password format is invalid, it must contain at least one of the following symbols: #@$.,%");
-            }
-            if(value.Length < 8)
-            {
-                throw new ArgumentException("Password format is invalid, length must be at least 8.");
-            }
-            if(!value.Any(char.IsUpper))
-            {
-                throw new ArgumentException("Password format is invalid, it must contain at least one uppercase letter.");
-            }
-
-            if (!value.Any(char.IsLower))
-            {
-                throw new ArgumentException("Password format is invalid, it must contain at least one lowercase letter.");
-            }
-            if (!value.Any(char.IsDigit))
-            {
-                throw new ArgumentException("Password format is invalid, it must contain at least one digit.");
-            }
-            
+            EnsurePasswordHasSymbol(value);
+            EnsurePasswordLengthGreaterThan8(value);
+            EnsurePasswordHasUppercaseLetter(value);
+            EnsurePasswordHasLowercaseLetter(value);
+            EnsurePasswordHasDigit(value);
             _password = value;
+        }
+    }
+
+    private static void EnsurePasswordHasDigit(string password)
+    {
+        if (!password.Any(char.IsDigit))
+        {
+            throw new ArgumentException("Password format is invalid, it must contain at least one digit.");
+        }
+    }
+
+    private static void EnsurePasswordHasLowercaseLetter(string password)
+    {
+        if (!password.Any(char.IsLower))
+        {
+            throw new ArgumentException("Password format is invalid, it must contain at least one lowercase letter.");
+        }
+    }
+
+    private static void EnsurePasswordHasUppercaseLetter(string password)
+    {
+        if(!password.Any(char.IsUpper))
+        {
+            throw new ArgumentException("Password format is invalid, it must contain at least one uppercase letter.");
+        }
+    }
+
+    private static void EnsurePasswordLengthGreaterThan8(string password)
+    {
+        if(password.Length < 8)
+        {
+            throw new ArgumentException("Password format is invalid, length must be at least 8.");
+        }
+    }
+
+    private static void EnsurePasswordHasSymbol(string password)
+    {
+        var symbols = "#@$.,%";
+        if(!password.Any(symbols.Contains))
+        {
+            throw new ArgumentException(
+                "Password format is invalid, it must contain at least one of the following symbols: #@$.,%");
         }
     }
 
