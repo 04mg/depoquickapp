@@ -41,6 +41,12 @@ public class User
             {
                 throw new ArgumentException("NameSurname format is invalid, it has to contain a space between the name and surname.");
             }
+            var name = value.Split(' ');
+            if (name.Length < 2 || name[0].Equals("") || name[1].Equals(""))
+            {
+                throw new ArgumentException("NameSurname format is invalid, it has to contain a name and a surname.");
+            }
+            
             _name = value;
         }
     }

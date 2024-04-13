@@ -104,4 +104,30 @@ public class UserTest
         // Assert
         Assert.AreEqual("NameSurname format is invalid, it has to contain a space between the name and surname.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCantCreateUserWithoutSurname()
+    {
+        //Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            new User("Name ", "test@test.com", "12345678@mE");
+        });
+        
+        // Assert
+        Assert.AreEqual("NameSurname format is invalid, it has to contain a name and a surname.", exception.Message);
+    }
+    
+    [TestMethod]
+    public void TestCantCreateUserWithoutName()
+    {
+        //Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            new User(" Surname", "test@test.com", "12345678@mE");
+        });
+        
+        // Assert
+        Assert.AreEqual("NameSurname format is invalid, it has to contain a name and a surname.", exception.Message);
+    }
 }
