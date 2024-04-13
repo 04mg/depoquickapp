@@ -37,6 +37,11 @@ public class User
             {
                 throw new ArgumentException("Password format is invalid, it must contain at least one uppercase letter.");
             }
+
+            if (!value.Any(char.IsLower))
+            {
+                throw new ArgumentException("Password format is invalid, it must contain at least one lowercase letter.");
+            }
             
             _password = value;
         }
