@@ -91,4 +91,17 @@ public class UserTest
         // Assert
         Assert.AreEqual("Password format is invalid, it must contain at least one digit.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCantCreateUserWithANameSurnameWithoutSpace()
+    {
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            new User("NameSurname", "test@test.com", "12345678@mE");
+        });
+        
+        // Assert
+        Assert.AreEqual("Name and surname must be separated by a space.", exception.Message);
+    }
 }
