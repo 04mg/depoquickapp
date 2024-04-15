@@ -4,7 +4,6 @@ namespace BusinessLogic;
 
 public class User
 {
-    private static readonly Regex EmailRegex = new(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
     private string _nameSurname = "";
     private string _email = "";
     private string _password = "";
@@ -13,7 +12,7 @@ public class User
         get => _email;
         set
         {
-            EnsureEmailIsValid(value);
+            EnsureEmailIsValidFormat(value);
             _email = value;
         }
     }
@@ -24,7 +23,7 @@ public class User
         set
         {
             EnsurePasswordHasSymbol(value);
-            EnsurePasswordLengthGreaterThan8(value);
+            EnsurePasswordHasValidLength(value);
             EnsurePasswordHasUppercaseLetter(value);
             EnsurePasswordHasLowercaseLetter(value);
             EnsurePasswordHasDigit(value);
@@ -39,8 +38,7 @@ public class User
         {
             EnsureNameSurnameContainsSpace(value);
             EnsureNameSurnameHasNameAndSurname(value);
-            EnsureNameSurnameLengthGreaterOrEqualTo100(value);
-            
+            EnsureNameSurnameHasValidLength(value);
             _nameSurname = value;
         }
     }
@@ -63,7 +61,7 @@ public class User
         }
     }
 
-    private static void EnsureNameSurnameLengthGreaterOrEqualTo100(string nameSurname)
+    private static void EnsureNameSurnameHasValidLength(string nameSurname)
     {
         if(nameSurname.Length > 100){
             throw new ArgumentException("NameSurname format is invalid, length must be lesser or equal to 100.");
@@ -103,7 +101,7 @@ public class User
         }
     }
 
-    private static void EnsurePasswordLengthGreaterThan8(string password)
+    private static void EnsurePasswordHasValidLength(string password)
     {
         if(password.Length < 8)
         {
@@ -121,14 +119,15 @@ public class User
         }
     }
 
-    private static bool EmailIsValid(string email)
+    private static bool EmailIsValidFormat(string email)
     {
-        return EmailRegex.IsMatch(email);
+        Regex emailRegex = new(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
+        return emailRegex.IsMatch(email);
     }
     
-    private static void EnsureEmailIsValid(string email)
+    private static void EnsureEmailIsValidFormat(string email)
     {
-        if (!EmailIsValid(email))
+        if (!EmailIsValidFormat(email))
         {
             throw new ArgumentException("Email format is invalid.");
         }
