@@ -24,6 +24,19 @@ public class UserTest
     }
 
     [TestMethod]
+    public void TestCantCreateUserWithEmailLengthGreaterThan254()
+    {
+        // Arrange
+        var emailLength255 = new string('a', 245) + "@gmail.com";
+        
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new User("Name Surname", emailLength255, "12345678@mE"));
+        
+        // Assert
+        Assert.AreEqual("Email format is invalid, length must be lesser or equal to 254.", exception.Message);
+    }
+
+    [TestMethod]
     public void TestCantCreateUserWithAPasswordWithoutSymbols()
     {
         // Act
@@ -110,7 +123,9 @@ public class UserTest
     [TestMethod]
     public void TestCantCreateUserWithNameSurnameLengthGreaterThan100()
     {
+        // Arrange
         const string nameLength101 = "Name Surname Name Surname Name Surname Name Surname Name Surname Name Surname Name Surname Name Seven";
+        
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() => new User(nameLength101, "test@test.com", "12345678@mE"));
 
