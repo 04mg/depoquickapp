@@ -13,6 +13,7 @@ public class User
         set
         {
             EnsureEmailIsValidFormat(value);
+            EnsureEmailHasValidLength(value);
             _email = value;
         }
     }
@@ -118,18 +119,20 @@ public class User
                 "Password format is invalid, it must contain at least one of the following symbols: #@$.,%");
         }
     }
-
-    private static bool EmailIsValidFormat(string email)
-    {
-        Regex emailRegex = new(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
-        return emailRegex.IsMatch(email);
-    }
     
     private static void EnsureEmailIsValidFormat(string email)
     {
-        if (!EmailIsValidFormat(email))
+        Regex emailRegex = new(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
+        if (!emailRegex.IsMatch(email))
         {
             throw new ArgumentException("Email format is invalid.");
+        }
+    }
+    
+    private static void EnsureEmailHasValidLength(string email)
+    {
+        if(email.Length > 254){
+            throw new ArgumentException("Email format is invalid, length must be lesser or equal to 254.");
         }
     }
 }
