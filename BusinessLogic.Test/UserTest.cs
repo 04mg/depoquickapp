@@ -134,6 +134,16 @@ public class UserTest
     }
 
     [TestMethod]
+    public void TestCantCreateUserWithNameSurnameWithNumbers()
+    {
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new User("Name 123", "test@test.com", "12345678@mE"));
+        
+        // Assert
+        Assert.AreEqual("NameSurname format is invalid, it should not contain numbers.", exception.Message);
+    }
+
+    [TestMethod]
     public void TestCanCreateAdminUserWithValidData()
     {
         // Arrange
