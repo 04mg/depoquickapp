@@ -40,6 +40,10 @@ public class User
             EnsureNameSurnameContainsSpace(value);
             EnsureNameSurnameHasNameAndSurname(value);
             EnsureNameSurnameHasValidLength(value);
+            if (value.Any(char.IsNumber))
+            {
+                throw new ArgumentException("NameSurname format is invalid, it should not contain numbers.");
+            }
             _nameSurname = value;
         }
     }
