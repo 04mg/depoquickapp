@@ -11,7 +11,7 @@ public class CredentialsManager
         CredentialsByEmail = new Dictionary<string, Credentials>();
     }
 
-    private static void EnsurePasswordConfirmationMatches(string password, string passwordConfirmation)
+    private static void EnsurePasswordConfirmationMatch(string password, string passwordConfirmation)
     {
         if (password != passwordConfirmation)
         {
@@ -19,7 +19,7 @@ public class CredentialsManager
         }
     }
 
-    private void EnsureEmailPasswordMatches(string email, string password)
+    private void EnsurePasswordMatchWithEmail(string email, string password)
     {
         if (CredentialsByEmail[email].Password != password)
         {
@@ -46,7 +46,7 @@ public class CredentialsManager
     public Credentials Register(string email, string password, string passwordConfirmation)
     {
         EnsureUserIsNotRegistered(email);
-        EnsurePasswordConfirmationMatches(password, passwordConfirmation);
+        EnsurePasswordConfirmationMatch(password, passwordConfirmation);
 
         var credentials = new Credentials(email, password);
         CredentialsByEmail.Add(email, credentials);
@@ -56,7 +56,7 @@ public class CredentialsManager
     public Credentials Login(string email, string password)
     {
         EnsureUserIsRegistered(email);
-        EnsureEmailPasswordMatches(email, password);
+        EnsurePasswordMatchWithEmail(email, password);
 
         return CredentialsByEmail[email];
     }
