@@ -11,24 +11,9 @@ public class CredentialsManager
         CredentialsByEmail = new Dictionary<string, Credentials>();
     }
 
-    public bool IsRegistered(string email)
+    private static void EnsurePasswordConfirmationMatches(string password, string passwordConfirmation)
     {
-        return CredentialsByEmail.ContainsKey(email);
-    }
-
-    private bool PasswordConfirmationMatches(string password, string passwordConfirmation)
-    {
-        return password == passwordConfirmation;
-    }
-
-    private bool EmailPasswordMatches(string email, string password)
-    {
-        return CredentialsByEmail[email].Password == password;
-    }
-
-    private void EnsurePasswordConfirmationMatches(string password, string passwordConfirmation)
-    {
-        if (!PasswordConfirmationMatches(password, passwordConfirmation))
+        if (password != passwordConfirmation)
         {
             throw new ArgumentException("Passwords do not match.");
         }
@@ -36,7 +21,7 @@ public class CredentialsManager
 
     private void EnsureEmailPasswordMatches(string email, string password)
     {
-        if (!EmailPasswordMatches(email, password))
+        if (CredentialsByEmail[email].Password != password)
         {
             throw new ArgumentException("Wrong password.");
         }
@@ -44,7 +29,7 @@ public class CredentialsManager
 
     private void EnsureUserIsRegistered(string email)
     {
-        if (!IsRegistered(email))
+        if (!CredentialsByEmail.ContainsKey(email))
         {
             throw new ArgumentException("User does not exist.");
         }
@@ -52,18 +37,20 @@ public class CredentialsManager
 
     private void EnsureUserIsNotRegistered(string email)
     {
-        if (IsRegistered(email))
+        if (CredentialsByEmail.ContainsKey(email))
         {
             throw new UserAlreadyExistsException("User already exists.");
         }
     }
 
-    public void Register(string email, string password, string passwordConfirmation)
+    public Credentials Register(string email, string password, string passwordConfirmation)
     {
         EnsureUserIsNotRegistered(email);
         EnsurePasswordConfirmationMatches(password, passwordConfirmation);
 
-        CredentialsByEmail.Add(email, new Credentials(email, password));
+        var credentials = new Credentials(email, password);
+        CredentialsByEmail.Add(email, credentials);
+        return credentials;
     }
 
     public Credentials Login(string email, string password)
@@ -72,17 +59,5 @@ public class CredentialsManager
         EnsureEmailPasswordMatches(email, password);
 
         return CredentialsByEmail[email];
-    }
-}
-
-public readonly struct Credentials
-{
-    public string Email { init; get; }
-    public string Password { init; get; }
-
-    public Credentials(string email, string password)
-    {
-        Email = email;
-        Password = password;
     }
 }

@@ -12,10 +12,10 @@ public class CredentialsManagerTest
         var credManager = new CredentialsManager();
 
         // Act
-        credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
+        var credentials = credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
 
         // Assert
-        Assert.IsTrue(credManager.IsRegistered("test@test.com"));
+        Assert.AreSame(credentials.Email, "test@test.com");
     }
 
     [TestMethod]
@@ -57,7 +57,7 @@ public class CredentialsManagerTest
         {
             credManager.Register("test@test.com", "12345678@mE", "wrong");
         });
-        
+
         // Assert
         Assert.IsTrue(exception.Message.Contains("Passwords do not match."));
     }
@@ -70,15 +70,13 @@ public class CredentialsManagerTest
         credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
-        {
-            credManager.Login("test@test.com", "wrong");
-        });
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() => { credManager.Login("test@test.com", "wrong"); });
 
         // Assert
         Assert.IsTrue(exception.Message.Contains("Wrong password."));
     }
-    
+
     [TestMethod]
     public void TestCantLoginWithNonExistingUser()
     {
@@ -90,7 +88,7 @@ public class CredentialsManagerTest
         {
             credManager.Login("test@test.com", "12345678@mE");
         });
-        
+
         // Assert
         Assert.AreSame(exception.Message, "User does not exist.");
     }
