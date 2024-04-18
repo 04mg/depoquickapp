@@ -4,8 +4,7 @@ public class Promotion
 {
     private string _label;
     private int _discount;
-    private DateOnly _from;
-    private DateOnly _to;
+    private Tuple<DateOnly, DateOnly> _validity;
 
     public string Label
     {
@@ -25,13 +24,25 @@ public class Promotion
             _label = value;
         }
     }
+    
+    public Tuple<DateOnly, DateOnly> Validity
+    {
+        get => _validity;
+        set
+        {
+            if (value.Item1 > value.Item2)
+            {
+                throw new ArgumentException("DateFrom must be lesser than DateTo");
+            }
+
+            _validity = value;
+        }
+    }
+
     public Promotion(string label, int discount, DateOnly from, DateOnly to)
     {
         Label = label;
         _discount = discount;
-        _from = from;
-        _to = to;
+        Validity = new Tuple<DateOnly, DateOnly>(from, to);
     }
-    
-    
 }
