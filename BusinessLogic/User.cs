@@ -42,6 +42,7 @@ public class User
             EnsureNameSurnameHasNameAndSurname(value);
             EnsureNameSurnameHasValidLength(value);
             EnsureNameSurnameHasNoNumbers(value);
+            EnsureNameSurnameHasNoSymbols(value);
             _nameSurname = value;
         }
     }
@@ -51,6 +52,14 @@ public class User
         if (value.Any(char.IsNumber))
         {
             throw new ArgumentException("NameSurname format is invalid, it should not contain numbers.");
+        }
+    }
+    
+    private static void EnsureNameSurnameHasNoSymbols(string value)
+    {
+        if (!value.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
+        {
+            throw new ArgumentException("NameSurname format is invalid, it should not contain symbols.");
         }
     }
 
