@@ -25,10 +25,24 @@ public class Promotion
             _label = value;
         }
     }
+    
+    public int Discount
+    {
+        get => _discount;
+        set
+        {
+            if (value < 5 || value > 70)
+            {
+                throw new ArgumentException("Invalid discount, it must be between 5% and 70%");
+            }
+
+            _discount = value;
+        }
+    }
     public Promotion(string label, int discount, DateOnly from, DateOnly to)
     {
         Label = label;
-        _discount = discount;
+        Discount = discount;
         _from = from;
         _to = to;
     }
