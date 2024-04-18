@@ -11,7 +11,6 @@ public class Promotion
         get => _label;
         set
         {
-            //Use IsLetterOrDigit
             if (!value.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
             {
                 throw new ArgumentException("Label format is invalid, it can't contain symbols");
@@ -39,10 +38,23 @@ public class Promotion
         }
     }
 
+    public int Discount
+    {
+        get => _discount;
+        set
+        {
+            if (value < 5 || value > 70)
+            {
+                throw new ArgumentException("Invalid discount, it must be between 5% and 70%");
+            }
+
+            _discount = value;
+        }
+    }
     public Promotion(string label, int discount, DateOnly from, DateOnly to)
     {
         Label = label;
-        _discount = discount;
+        Discount = discount;
         Validity = new Tuple<DateOnly, DateOnly>(from, to);
     }
 }
