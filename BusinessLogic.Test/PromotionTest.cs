@@ -45,4 +45,18 @@ public class PromotionTest
         //Assert
         Assert.AreEqual("Label format is invalid, length must be lesser or equal than 20", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCantCreatePromotionWithDateFromGreaterThanDateTo()
+    {
+        // Arrange
+        var from = DateOnly.FromDateTime(DateTime.Now.AddDays(2));
+        var to = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+        
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion("label", 50, from, to));
+        
+        // Assert
+        Assert.AreEqual("DateFrom must be lesser than DateTo", exception.Message);
+    }
 }
