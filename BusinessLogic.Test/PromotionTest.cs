@@ -32,7 +32,7 @@ public class PromotionTest
     }
 
     [TestMethod]
-    public void TestCantCreatePromotionWithLengthGreaterThan20()
+    public void TestCantCreatePromotionWithLabelLengthGreaterThan20()
     {
         //Arrange
         var from = DateOnly.FromDateTime(DateTime.Now);
@@ -60,7 +60,8 @@ public class PromotionTest
         Assert.AreEqual("DateFrom must be lesser than DateTo", exception.Message);
     }
 
-    public void TestCantCreatePromotionWithDiscountLesserThan5()
+    [TestMethod]
+    public void TestCantCreatePromotionWithDiscountwLesserThan5()
     {
         //Arrange
         var from = DateOnly.FromDateTime(DateTime.Now);
