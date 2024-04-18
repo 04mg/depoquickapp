@@ -95,7 +95,7 @@ public class AuthManagerTest
     }
 
     [TestMethod]
-    public void TestOnlyCanBeOneAdministrator()
+    public void TestCantRegisterMoreThanOneAdmin()
     {
         // Arrange
         var credManager = new AuthManager();
