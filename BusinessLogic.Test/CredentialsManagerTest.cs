@@ -5,6 +5,10 @@ namespace BusinessLogic.Test;
 [TestClass]
 public class CredentialsManagerTest
 {
+    private const string Email = "test@test.com";
+    private const string Password = "12345678@mE";
+    
+    
     [TestMethod]
     public void TestCanRegisterWithValidCredentials()
     {
@@ -12,10 +16,10 @@ public class CredentialsManagerTest
         var credManager = new CredentialsManager();
 
         // Act
-        var credentials = credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
+        var credentials = credManager.Register(Email, Password, Password);
 
         // Assert
-        Assert.AreSame(credentials.Email, "test@test.com");
+        Assert.AreSame(credentials.Email, Email);
     }
 
     [TestMethod]
@@ -23,13 +27,13 @@ public class CredentialsManagerTest
     {
         // Arrange
         var credManager = new CredentialsManager();
-        credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
+        credManager.Register(Email, Password, Password);
 
         // Act
-        var credentials = credManager.Login("test@test.com", "12345678@mE");
+        var credentials = credManager.Login(Email, Password);
 
         // Assert
-        Assert.AreSame(credentials.Email, "test@test.com");
+        Assert.AreSame(credentials.Email, Email);
     }
 
     [TestMethod]
@@ -37,12 +41,12 @@ public class CredentialsManagerTest
     {
         // Arrange
         var credManager = new CredentialsManager();
-        credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
+        credManager.Register(Email, Password, Password);
 
         // Act & Assert
         Assert.ThrowsException<UserAlreadyExistsException>(() =>
         {
-            credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
+            credManager.Register(Email, Password, Password);
         });
     }
 
@@ -55,7 +59,7 @@ public class CredentialsManagerTest
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
-            credManager.Register("test@test.com", "12345678@mE", "wrong");
+            credManager.Register(Email, Password, "wrong");
         });
 
         // Assert
@@ -67,11 +71,11 @@ public class CredentialsManagerTest
     {
         // Arrange
         var credManager = new CredentialsManager();
-        credManager.Register("test@test.com", "12345678@mE", "12345678@mE");
+        credManager.Register(Email, Password, Password);
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => { credManager.Login("test@test.com", "wrong"); });
+            Assert.ThrowsException<ArgumentException>(() => { credManager.Login(Email, "wrong"); });
 
         // Assert
         Assert.IsTrue(exception.Message.Contains("Wrong password."));
@@ -86,7 +90,7 @@ public class CredentialsManagerTest
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
-            credManager.Login("test@test.com", "12345678@mE");
+            credManager.Login(Email, Password);
         });
 
         // Assert
