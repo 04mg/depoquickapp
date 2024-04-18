@@ -3,8 +3,9 @@ using BusinessLogic.Exceptions;
 namespace BusinessLogic.Test;
 
 [TestClass]
-public class CredentialsManagerTest
+public class AuthManagerTest
 {
+    private const string NameSurname = "Name Surname";
     private const string Email = "test@test.com";
     private const string Password = "12345678@mE";
     
@@ -13,10 +14,10 @@ public class CredentialsManagerTest
     public void TestCanRegisterWithValidCredentials()
     {
         // Arrange
-        var credManager = new CredentialsManager();
+        var credManager = new AuthManager();
 
         // Act
-        var credentials = credManager.Register(Email, Password, Password);
+        var credentials = credManager.Register(NameSurname, Email, Password, Password);
 
         // Assert
         Assert.AreSame(credentials.Email, Email);
@@ -26,8 +27,8 @@ public class CredentialsManagerTest
     public void TestCanLoginWithValidCredentials()
     {
         // Arrange
-        var credManager = new CredentialsManager();
-        credManager.Register(Email, Password, Password);
+        var credManager = new AuthManager();
+        credManager.Register(NameSurname, Email, Password, Password);
 
         // Act
         var credentials = credManager.Login(Email, Password);
@@ -40,13 +41,13 @@ public class CredentialsManagerTest
     public void TestCantRegisterWithSameEmail()
     {
         // Arrange
-        var credManager = new CredentialsManager();
-        credManager.Register(Email, Password, Password);
+        var credManager = new AuthManager();
+        credManager.Register(NameSurname, Email, Password, Password);
 
         // Act & Assert
         Assert.ThrowsException<UserAlreadyExistsException>(() =>
         {
-            credManager.Register(Email, Password, Password);
+            credManager.Register(NameSurname, Email, Password, Password);
         });
     }
 
@@ -54,12 +55,12 @@ public class CredentialsManagerTest
     public void TestCantRegisterWithNonMatchingPasswords()
     {
         // Arrange
-        var credManager = new CredentialsManager();
+        var credManager = new AuthManager();
 
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
-            credManager.Register(Email, Password, "wrong");
+            credManager.Register(NameSurname, Email, Password, "wrong");
         });
 
         // Assert
@@ -70,8 +71,8 @@ public class CredentialsManagerTest
     public void TestCantLoginWithWrongPassword()
     {
         // Arrange
-        var credManager = new CredentialsManager();
-        credManager.Register(Email, Password, Password);
+        var credManager = new AuthManager();
+        credManager.Register(NameSurname, Email, Password, Password);
 
         // Act
         var exception =
@@ -85,7 +86,7 @@ public class CredentialsManagerTest
     public void TestCantLoginWithNonExistingUser()
     {
         // Arrange
-        var credManager = new CredentialsManager();
+        var credManager = new AuthManager();
 
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>

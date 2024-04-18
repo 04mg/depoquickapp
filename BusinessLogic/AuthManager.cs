@@ -2,13 +2,13 @@
 
 namespace BusinessLogic;
 
-public class CredentialsManager
+public class AuthManager
 {
-    private Dictionary<string, Credentials> CredentialsByEmail { set; get; }
+    private Dictionary<string, User> UsersByEmail { set; get; }
 
-    public CredentialsManager()
+    public AuthManager()
     {
-        CredentialsByEmail = new Dictionary<string, Credentials>();
+        UsersByEmail = new Dictionary<string, User>();
     }
 
     private static void EnsurePasswordConfirmationMatch(string password, string passwordConfirmation)
@@ -21,7 +21,7 @@ public class CredentialsManager
 
     private void EnsurePasswordMatchWithEmail(string email, string password)
     {
-        if (CredentialsByEmail[email].Password != password)
+        if (UsersByEmail[email].Password != password)
         {
             throw new ArgumentException("Wrong password.");
         }
@@ -29,7 +29,7 @@ public class CredentialsManager
 
     private void EnsureUserIsRegistered(string email)
     {
-        if (!CredentialsByEmail.ContainsKey(email))
+        if (!UsersByEmail.ContainsKey(email))
         {
             throw new ArgumentException("User does not exist.");
         }
@@ -37,19 +37,21 @@ public class CredentialsManager
 
     private void EnsureUserIsNotRegistered(string email)
     {
-        if (CredentialsByEmail.ContainsKey(email))
+        if (UsersByEmail.ContainsKey(email))
         {
             throw new UserAlreadyExistsException("User already exists.");
         }
     }
 
-    public Credentials Register(string email, string password, string passwordConfirmation)
+    public Credentials Register(string nameSurname, string email, string password, string passwordConfirmation)
     {
         EnsureUserIsNotRegistered(email);
         EnsurePasswordConfirmationMatch(password, passwordConfirmation);
-
+        
+        var user = new User(nameSurname, email, password);
+        UsersByEmail.Add(email, user);
+        
         var credentials = new Credentials(email, password);
-        CredentialsByEmail.Add(email, credentials);
         return credentials;
     }
 
@@ -58,6 +60,7 @@ public class CredentialsManager
         EnsureUserIsRegistered(email);
         EnsurePasswordMatchWithEmail(email, password);
 
-        return CredentialsByEmail[email];
+        var credentials = new Credentials(email, password);
+        return credentials;
     }
 }
