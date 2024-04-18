@@ -8,16 +8,16 @@ public class AuthManagerTest
     private const string NameSurname = "Name Surname";
     private const string Email = "test@test.com";
     private const string Password = "12345678@mE";
-    
-    
+
     [TestMethod]
     public void TestCanRegisterWithValidCredentials()
     {
         // Arrange
         var credManager = new AuthManager();
-
+        var userModel = new UserModel(NameSurname, Email, Password);
+        
         // Act
-        var credentials = credManager.Register(NameSurname, Email, Password, Password);
+        var credentials = credManager.Register(userModel, Password);
 
         // Assert
         Assert.AreSame(credentials.Email, Email);
@@ -28,7 +28,8 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
-        credManager.Register(NameSurname, Email, Password, Password);
+        var userModel = new UserModel(NameSurname, Email, Password);
+        credManager.Register(userModel, Password);
 
         // Act
         var credentials = credManager.Login(Email, Password);
@@ -42,13 +43,12 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
-        credManager.Register(NameSurname, Email, Password, Password);
+        UserModel userModel = new UserModel(NameSurname, Email, Password);
+        UserModel otherUserModel = new UserModel("Other Name", Email, "OtherP@ssw0rd");
+        credManager.Register(userModel, Password);
 
         // Act & Assert
-        Assert.ThrowsException<UserAlreadyExistsException>(() =>
-        {
-            credManager.Register(NameSurname, Email, Password, Password);
-        });
+        Assert.ThrowsException<UserAlreadyExistsException>(() => { credManager.Register(otherUserModel, Password); });
     }
 
     [TestMethod]
@@ -56,12 +56,10 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
+        var userModel = new UserModel(NameSurname, Email, Password);
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
-        {
-            credManager.Register(NameSurname, Email, Password, "wrong");
-        });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.Register(userModel, "wrong"); });
 
         // Assert
         Assert.IsTrue(exception.Message.Contains("Passwords do not match."));
@@ -72,7 +70,8 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
-        credManager.Register(NameSurname, Email, Password, Password);
+        var userModel = new UserModel(NameSurname, Email, Password);
+        credManager.Register(userModel, Password);
 
         // Act
         var exception =
@@ -89,10 +88,7 @@ public class AuthManagerTest
         var credManager = new AuthManager();
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
-        {
-            credManager.Login(Email, Password);
-        });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.Login(Email, Password); });
 
         // Assert
         Assert.AreSame(exception.Message, "User does not exist.");

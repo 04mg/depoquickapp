@@ -43,15 +43,15 @@ public class AuthManager
         }
     }
 
-    public Credentials Register(string nameSurname, string email, string password, string passwordConfirmation)
+    public Credentials Register(UserModel userModel, string passwordConfirmation)
     {
-        EnsureUserIsNotRegistered(email);
-        EnsurePasswordConfirmationMatch(password, passwordConfirmation);
+        EnsureUserIsNotRegistered(userModel.Email);
+        EnsurePasswordConfirmationMatch(userModel.Password, passwordConfirmation);
         
-        var user = new User(nameSurname, email, password);
-        UsersByEmail.Add(email, user);
+        var user = new User(userModel.NameSurname, userModel.Email, userModel.Password);
+        UsersByEmail.Add(userModel.Email, user);
         
-        var credentials = new Credentials(email, password);
+        var credentials = new Credentials(userModel.Email, userModel.Password);
         return credentials;
     }
 
