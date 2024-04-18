@@ -144,7 +144,7 @@ public class UserTest
         var exception = Assert.ThrowsException<ArgumentException>(() => new User("Name 123", Email, Password));
         
         // Assert
-        Assert.AreEqual("NameSurname format is invalid, it should not contain numbers.", exception.Message);
+        Assert.AreEqual("NameSurname format is invalid, it should only contain letters and whitespaces.", exception.Message);
     }
 
     [TestMethod]
@@ -154,7 +154,7 @@ public class UserTest
         var exception = Assert.ThrowsException<ArgumentException>(() => new User("Name $", Email, Password));
 
         // Assert
-        Assert.AreEqual("NameSurname format is invalid, it should not contain symbols.", exception.Message);
+        Assert.AreEqual("NameSurname format is invalid, it should only contain letters and whitespaces.", exception.Message);
     }
 
     [TestMethod]

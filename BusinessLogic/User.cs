@@ -41,28 +41,19 @@ public class User
             EnsureNameSurnameContainsSpace(value);
             EnsureNameSurnameHasNameAndSurname(value);
             EnsureNameSurnameHasValidLength(value);
-            EnsureNameSurnameHasNoNumbers(value);
-            EnsureNameSurnameHasNoSymbols(value);
+            EnsureNameSurnameHasOnlyLettersAndWhitespaces(value);
             _nameSurname = value;
         }
     }
 
-    private static void EnsureNameSurnameHasNoNumbers(string value)
+    private static void EnsureNameSurnameHasOnlyLettersAndWhitespaces(string value)
     {
-        if (value.Any(char.IsNumber))
+        if (!value.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
         {
-            throw new ArgumentException("NameSurname format is invalid, it should not contain numbers.");
+            throw new ArgumentException("NameSurname format is invalid, it should only contain letters and whitespaces.");
         }
     }
     
-    private static void EnsureNameSurnameHasNoSymbols(string value)
-    {
-        if (!value.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
-        {
-            throw new ArgumentException("NameSurname format is invalid, it should not contain symbols.");
-        }
-    }
-
     public UserRank Rank { get; }
 
     public User(string nameSurname, string email, string password, UserRank rank = UserRank.Client)
