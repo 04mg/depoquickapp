@@ -17,6 +17,10 @@ public class Promotion
             {
                 throw new ArgumentException("Label format is invalid, it can't contain symbols");
             }
+            if (value.Length > 20)
+            {
+                throw new ArgumentException("Label format is invalid, length must be lesser or equal than 20");
+            }
 
             _label = value;
         }
