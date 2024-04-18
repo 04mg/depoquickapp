@@ -5,6 +5,7 @@ namespace BusinessLogic;
 public class AuthManager
 {
     private Dictionary<string, User> UsersByEmail { set; get; }
+    private bool IsAdminRegistered { set; get; }
 
     public AuthManager()
     {
@@ -47,9 +48,17 @@ public class AuthManager
     {
         EnsureUserIsNotRegistered(userModel.Email);
         EnsurePasswordConfirmationMatch(userModel.Password, passwordConfirmation);
+        if(userModel.Rank.Equals(UserRank.Administrator) && IsAdminRegistered)
+        {
+            throw new ArgumentException("Auth error, There can be only one Administrator.");
+        }
         
         var user = new User(userModel.NameSurname, userModel.Email, userModel.Password);
         UsersByEmail.Add(userModel.Email, user);
+        if (userModel.Rank.Equals(UserRank.Administrator))
+        {
+            IsAdminRegistered = true;
+        }
         
         var credentials = new Credentials(userModel.Email, userModel.Password);
         return credentials;
