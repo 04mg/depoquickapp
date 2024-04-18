@@ -65,10 +65,7 @@ public class UserTest
     public void TestCantCreateUserWithAPasswordWithoutUppercaseLetter()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
-        {
-            return new User(NameSurname, Email, "12345678@m");
-        });
+        var exception = Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, Email, "12345678@m"));
 
         // Assert
         Assert.AreEqual("Password format is invalid, it must contain at least one uppercase letter.",
@@ -148,6 +145,16 @@ public class UserTest
         
         // Assert
         Assert.AreEqual("NameSurname format is invalid, it should not contain numbers.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantCreateUserWithNameSurnameWithSymbols()
+    {
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new User("Name $", Email, Password));
+
+        // Assert
+        Assert.AreEqual("NameSurname format is invalid, it should not contain symbols.", exception.Message);
     }
 
     [TestMethod]
