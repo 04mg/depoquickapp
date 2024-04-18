@@ -2,8 +2,16 @@ namespace BusinessLogic.Test;
 
 public class Promotion
 {
-    public Promotion(string label, int i, DateOnly from, DateOnly to)
+    private string _label;
+    private int _discount;
+    private DateOnly _from;
+    private DateOnly _to;
+
+    public Promotion(string label, int discount, DateOnly from, DateOnly to)
     {
-        throw new NotImplementedException();
+        _label = label;
+        _discount = discount;
+        _from = from;
+        _to = to;
     }
 }
