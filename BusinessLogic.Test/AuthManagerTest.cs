@@ -93,4 +93,20 @@ public class AuthManagerTest
         // Assert
         Assert.AreSame(exception.Message, "User does not exist.");
     }
+
+    [TestMethod]
+    public void TestOnlyCanBeOneAdministrator()
+    {
+        // Arrange
+        var credManager = new AuthManager();
+        var userModel = new UserModel(NameSurname, Email, Password, UserRank.Administrator);
+        var otherUserModel = new UserModel("Other Name", "test2@test.com", Password, UserRank.Administrator);
+        
+        // Act
+        credManager.Register(userModel, Password);
+        var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.Register(otherUserModel, Password); });
+        
+        // Assert
+        Assert.AreSame(exception.Message, "Auth error, There can be only one Administrator.");
+    }
 }
