@@ -45,4 +45,33 @@ public class PromotionTest
         //Assert
         Assert.AreEqual("Label format is invalid, length must be lesser or equal than 20", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCantCreatePromotionWithDiscountLesserThan5()
+    {
+        //Arrange
+        var from = DateOnly.FromDateTime(DateTime.Now);
+        var to = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+        
+        //Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion("label", 4, from, to));
+        
+        //Assert
+        Assert.AreEqual("Invalid discount, it must be between 5% and 70%", exception.Message);
+    }
+    
+    
+    [TestMethod]
+    public void TestCantCreatePromotionWithDiscountGreaterThan70()
+    {
+        //Arrange
+        var from = DateOnly.FromDateTime(DateTime.Now);
+        var to = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+        
+        //Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion("label", 71, from, to));
+        
+        //Assert
+        Assert.AreEqual("Invalid discount, it must be between 5% and 70%", exception.Message);
+    }
 }
