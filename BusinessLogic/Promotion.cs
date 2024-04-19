@@ -4,7 +4,7 @@ public class Promotion
 {
     private string _label = "";
     private int _discount;
-    private Tuple<DateOnly, DateOnly> _validity;
+    private Tuple<DateOnly, DateOnly> _validity = new(new DateOnly(), new DateOnly());
 
     public string Label
     {
@@ -16,7 +16,7 @@ public class Promotion
             _label = value;
         }
     }
-    
+
     public Tuple<DateOnly, DateOnly> Validity
     {
         get => _validity;
@@ -40,7 +40,7 @@ public class Promotion
             _discount = value;
         }
     }
-    
+
     private static void EnsureLabelHasNoSymbols(string label)
     {
         if (!label.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
@@ -48,7 +48,7 @@ public class Promotion
             throw new ArgumentException("Label format is invalid, it can't contain symbols");
         }
     }
-    
+
     private static void EnsureLabelLengthIsLesserOrEqualThan20(string label)
     {
         if (label.Length > 20)
@@ -56,7 +56,7 @@ public class Promotion
             throw new ArgumentException("Label format is invalid, length must be lesser or equal than 20");
         }
     }
-    
+
     private static void EnsureDateFromIsLesserThanDateTo(Tuple<DateOnly, DateOnly> validity)
     {
         if (validity.Item1 >= validity.Item2)
@@ -65,10 +65,11 @@ public class Promotion
         }
     }
 
-    public Promotion(string label, int discount, DateOnly from, DateOnly to)
+    public Promotion(PromotionModel model)
     {
-        Label = label;
-        Discount = discount;
-        Validity = new Tuple<DateOnly, DateOnly>(from, to);
+        Label = model.Label;
+        Discount = model.Discount;
+        Validity = new Tuple<DateOnly, DateOnly>(DateOnly.FromDateTime(DateTime.Parse(model.DateFrom)),
+            DateOnly.FromDateTime(DateTime.Parse(model.DateTo)));
     }
 }
