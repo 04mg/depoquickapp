@@ -107,6 +107,6 @@ public class AuthManagerTest
         var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.Register(otherUserModel, Password); });
         
         // Assert
-        Assert.AreSame(exception.Message, "Auth error, There can be only one Administrator.");
+        Assert.AreSame(exception.Message, "There can only be one administrator.");
     }
 }

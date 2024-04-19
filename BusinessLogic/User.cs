@@ -11,7 +11,7 @@ public class User
     public string Email
     {
         get => _email;
-        set
+        private set
         {
             EnsureEmailIsValidFormat(value);
             EnsureEmailHasValidLength(value);
@@ -22,7 +22,7 @@ public class User
     public string Password
     {
         get => _password;
-        set
+        private set
         {
             EnsurePasswordHasSymbol(value);
             EnsurePasswordHasValidLength(value);
@@ -36,7 +36,7 @@ public class User
     public string NameSurname
     {
         get => _nameSurname;
-        set
+        private set
         {
             EnsureNameSurnameContainsSpace(value);
             EnsureNameSurnameHasNameAndSurname(value);

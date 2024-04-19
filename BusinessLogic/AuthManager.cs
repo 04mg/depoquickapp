@@ -4,13 +4,8 @@ namespace BusinessLogic;
 
 public class AuthManager
 {
-    private Dictionary<string, User> UsersByEmail { set; get; }
+    private Dictionary<string, User> UsersByEmail { set; get; } = new();
     private bool IsAdminRegistered { set; get; }
-
-    public AuthManager()
-    {
-        UsersByEmail = new Dictionary<string, User>();
-    }
 
     private static void EnsurePasswordConfirmationMatch(string password, string passwordConfirmation)
     {
@@ -44,22 +39,32 @@ public class AuthManager
         }
     }
 
+    private void EnsureSingleAdmin(UserRank rank)
+    {
+        if (rank.Equals(UserRank.Administrator) && IsAdminRegistered)
+        {
+            throw new ArgumentException("There can only be one administrator.");
+        }
+    }
+
+    private void SetAdminRegisteredIfAdmin(UserRank rank)
+    {
+        if (rank.Equals(UserRank.Administrator))
+        {
+            IsAdminRegistered = true;
+        }
+    }
+
     public Credentials Register(UserModel userModel, string passwordConfirmation)
     {
         EnsureUserIsNotRegistered(userModel.Email);
         EnsurePasswordConfirmationMatch(userModel.Password, passwordConfirmation);
-        if(userModel.Rank.Equals(UserRank.Administrator) && IsAdminRegistered)
-        {
-            throw new ArgumentException("Auth error, There can be only one Administrator.");
-        }
-        
+        EnsureSingleAdmin(userModel.Rank);
+
         var user = new User(userModel.NameSurname, userModel.Email, userModel.Password);
         UsersByEmail.Add(userModel.Email, user);
-        if (userModel.Rank.Equals(UserRank.Administrator))
-        {
-            IsAdminRegistered = true;
-        }
-        
+        SetAdminRegisteredIfAdmin(userModel.Rank);
+
         var credentials = new Credentials(userModel.Email, userModel.Rank);
         return credentials;
     }
@@ -68,9 +73,8 @@ public class AuthManager
     {
         EnsureUserIsRegistered(email);
         EnsurePasswordMatchWithEmail(email, password);
-        
-        var userRank = UsersByEmail[email].Rank;
 
+        var userRank = UsersByEmail[email].Rank;
         var credentials = new Credentials(email, userRank);
         return credentials;
     }
