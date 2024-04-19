@@ -60,7 +60,7 @@ public class AuthManager
             IsAdminRegistered = true;
         }
         
-        var credentials = new Credentials(userModel.Email, userModel.Password);
+        var credentials = new Credentials(userModel.Email, userModel.Rank);
         return credentials;
     }
 
@@ -68,8 +68,10 @@ public class AuthManager
     {
         EnsureUserIsRegistered(email);
         EnsurePasswordMatchWithEmail(email, password);
+        
+        var userRank = UsersByEmail[email].Rank;
 
-        var credentials = new Credentials(email, password);
+        var credentials = new Credentials(email, userRank);
         return credentials;
     }
 }

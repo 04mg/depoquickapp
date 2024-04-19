@@ -3,11 +3,11 @@ namespace BusinessLogic;
 public readonly struct Credentials
 {
     public string Email { init; get; }
-    public string Password { init; get; }
+    public UserRank Rank { init; get; }
 
-    internal Credentials(string email, string password)
+    internal Credentials(string email, UserRank rank)
     {
         Email = email;
-        Password = password;
+        Rank = rank;
     }
 }
