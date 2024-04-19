@@ -5,6 +5,9 @@ public class Promotion
     private string _label = "";
     private int _discount;
     private Tuple<DateOnly, DateOnly> _validity = new(new DateOnly(), new DateOnly());
+    private const int MinDiscount = 5;
+    private const int MaxDiscount = 70;
+    private const int MaxLabelLength = 20;
 
     public string Label
     {
@@ -32,7 +35,7 @@ public class Promotion
         get => _discount;
         set
         {
-            if (value < 5 || value > 70)
+            if (value < MinDiscount || value > MaxDiscount)
             {
                 throw new ArgumentException("Invalid discount, it must be between 5% and 70%");
             }
@@ -51,7 +54,7 @@ public class Promotion
 
     private static void EnsureLabelLengthIsLesserOrEqualThan20(string label)
     {
-        if (label.Length > 20)
+        if (label.Length > MaxLabelLength)
         {
             throw new ArgumentException("Label format is invalid, length must be lesser or equal than 20");
         }
