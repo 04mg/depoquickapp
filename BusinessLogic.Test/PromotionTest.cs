@@ -122,4 +122,23 @@ public class PromotionTest
         //Assert
         Assert.AreEqual("Invalid discount, it must be between 5% and 70%", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCantCreatePromotionWithEmptyLabel()
+    {
+        // Arrange
+        var model = new PromotionModel
+        {
+            Label = "",
+            Discount = _discount,
+            DateFrom = _dateFrom,
+            DateTo = _dateTo
+        };
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
+
+        // Assert
+        Assert.AreEqual("Label must not be empty.", exception.Message);
+    }
 }
