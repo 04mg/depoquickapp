@@ -55,27 +55,36 @@ public class AuthManager
         }
     }
 
-    public Credentials Register(UserModel userModel, string passwordConfirmation)
+    private void ValidateRegistration(UserModel userModel, string passwordConfirmation)
     {
         EnsureUserIsNotRegistered(userModel.Email);
         EnsurePasswordConfirmationMatch(userModel.Password, passwordConfirmation);
         EnsureSingleAdmin(userModel.Rank);
+        SetAdminRegisteredIfAdmin(userModel.Rank);
+    }
+
+    private void ValidateLogin(string email, string password)
+    {
+        EnsureUserIsRegistered(email);
+        EnsurePasswordMatchWithEmail(email, password);
+    }
+
+    public Credentials Register(UserModel userModel, string passwordConfirmation)
+    {
+        ValidateRegistration(userModel, passwordConfirmation);
 
         var user = new User(userModel.NameSurname, userModel.Email, userModel.Password);
         UsersByEmail.Add(userModel.Email, user);
-        SetAdminRegisteredIfAdmin(userModel.Rank);
 
-        var credentials = new Credentials(userModel.Email, userModel.Rank);
-        return credentials;
+        return new Credentials(userModel.Email, userModel.Rank.ToString());
     }
 
     public Credentials Login(string email, string password)
     {
-        EnsureUserIsRegistered(email);
-        EnsurePasswordMatchWithEmail(email, password);
+        ValidateLogin(email, password);
 
         var userRank = UsersByEmail[email].Rank;
-        var credentials = new Credentials(email, userRank);
+        var credentials = new Credentials(email, userRank.ToString());
         return credentials;
     }
 }
