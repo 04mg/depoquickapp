@@ -43,8 +43,8 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
-        UserModel userModel = new UserModel(NameSurname, Email, Password);
-        UserModel otherUserModel = new UserModel("Other Name", Email, "OtherP@ssw0rd");
+        var userModel = new UserModel(NameSurname, Email, Password);
+        var otherUserModel = new UserModel("Other Name", Email, "OtherP@ssw0rd");
         credManager.Register(userModel, Password);
 
         // Act & Assert
