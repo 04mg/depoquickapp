@@ -7,6 +7,12 @@ public class User
     private string _nameSurname = "";
     private string _email = "";
     private string _password = "";
+    private const int MaxEmailLength = 254;
+    private const int MaxNameSurnameLength = 100;
+    private const int MinPasswordLength = 8;
+    private const string ValidSymbols = "#@$.,%";
+    private static Regex _emailRegex = new(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
+    
 
     public string Email
     {
@@ -75,7 +81,7 @@ public class User
 
     private static void EnsureNameSurnameHasValidLength(string nameSurname)
     {
-        if (nameSurname.Length > 100)
+        if (nameSurname.Length > MaxNameSurnameLength)
         {
             throw new ArgumentException("NameSurname format is invalid, length must be lesser or equal to 100.");
         }
@@ -117,7 +123,7 @@ public class User
 
     private static void EnsurePasswordHasValidLength(string password)
     {
-        if (password.Length < 8)
+        if (password.Length < MinPasswordLength)
         {
             throw new ArgumentException("Password format is invalid, length must be at least 8.");
         }
@@ -125,8 +131,7 @@ public class User
 
     private static void EnsurePasswordHasSymbol(string password)
     {
-        const string symbols = "#@$.,%";
-        if (!password.Any(symbols.Contains))
+        if (!password.Any(ValidSymbols.Contains))
         {
             throw new ArgumentException(
                 "Password format is invalid, it must contain at least one of the following symbols: #@$.,%");
@@ -135,8 +140,7 @@ public class User
 
     private static void EnsureEmailIsValidFormat(string email)
     {
-        Regex emailRegex = new(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
-        if (!emailRegex.IsMatch(email))
+        if (!_emailRegex.IsMatch(email))
         {
             throw new ArgumentException("Email format is invalid.");
         }
@@ -144,7 +148,7 @@ public class User
 
     private static void EnsureEmailHasValidLength(string email)
     {
-        if (email.Length > 254)
+        if (email.Length > MaxEmailLength)
         {
             throw new ArgumentException("Email format is invalid, length must be lesser or equal to 254.");
         }
