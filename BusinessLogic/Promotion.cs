@@ -16,6 +16,7 @@ public class Promotion
         {
             EnsureLabelHasNoSymbols(value);
             EnsureLabelLengthIsLesserOrEqualThan20(value);
+            EnsureLabelIsNotEmpty(value);
             _label = value;
         }
     }
@@ -65,6 +66,14 @@ public class Promotion
         if (validity.Item1 >= validity.Item2)
         {
             throw new ArgumentException("DateFrom must be lesser than DateTo");
+        }
+    }
+    
+    private static void EnsureLabelIsNotEmpty(string label)
+    {
+        if (string.IsNullOrWhiteSpace(label))
+        {
+            throw new ArgumentException("Label must not be empty.");
         }
     }
 
