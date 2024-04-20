@@ -27,6 +27,7 @@ public class Promotion
         set
         {
             EnsureDateFromIsLesserThanDateTo(value);
+            EnsureDateToIsGreaterThanToday(value);
             _validity = value;
         }
     }
@@ -66,6 +67,14 @@ public class Promotion
         if (validity.Item1 >= validity.Item2)
         {
             throw new ArgumentException("DateFrom must be lesser than DateTo");
+        }
+    }
+    
+    private static void EnsureDateToIsGreaterThanToday(Tuple<DateOnly, DateOnly> validity)
+    {
+        if (validity.Item2 <= DateOnly.FromDateTime(DateTime.Now))
+        {
+            throw new ArgumentException("DateTo must be greater than today.");
         }
     }
     

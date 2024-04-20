@@ -92,8 +92,8 @@ public class PromotionTest
         {
             Label = Label,
             Discount = Discount,
-            DateFrom = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd"),
-            DateTo = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd")
+            DateFrom = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd"),
+            DateTo = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")
         };
 
         // Act
