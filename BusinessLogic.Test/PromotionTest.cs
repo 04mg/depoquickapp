@@ -43,7 +43,7 @@ public class PromotionTest
         var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
 
         // Assert
-        Assert.AreEqual("Label format is invalid, it can't contain symbols", exception.Message);
+        Assert.AreEqual("Label must not contain symbols.", exception.Message);
     }
 
     [TestMethod]
@@ -62,7 +62,7 @@ public class PromotionTest
         var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
 
         //Assert
-        Assert.AreEqual("Label format is invalid, length must be lesser or equal than 20", exception.Message);
+        Assert.AreEqual("Label length must be lesser or equal than 20.", exception.Message);
     }
 
     [TestMethod]
@@ -81,9 +81,10 @@ public class PromotionTest
         var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
 
         // Assert
-        Assert.AreEqual("DateFrom must be lesser than DateTo", exception.Message);
+        Assert.AreEqual("The starting date of the promotion must not be later than the ending date.",
+            exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantCreatePromotionWithDateToLesserThanToday()
     {
@@ -100,7 +101,7 @@ public class PromotionTest
         var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
 
         // Assert
-        Assert.AreEqual("DateTo must be greater than today.", exception.Message);
+        Assert.AreEqual("The ending date of the promotion cannot be in the past.", exception.Message);
     }
 
     [TestMethod]
@@ -119,7 +120,7 @@ public class PromotionTest
         var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
 
         //Assert
-        Assert.AreEqual("Invalid discount, it must be between 5% and 70%", exception.Message);
+        Assert.AreEqual("Discount must be between 5% and 70%.", exception.Message);
     }
 
 
@@ -139,7 +140,7 @@ public class PromotionTest
         var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
 
         //Assert
-        Assert.AreEqual("Invalid discount, it must be between 5% and 70%", exception.Message);
+        Assert.AreEqual("Discount must be between 5% and 70%.", exception.Message);
     }
 
     [TestMethod]

@@ -39,7 +39,7 @@ public class Promotion
         {
             if (value < MinDiscount || value > MaxDiscount)
             {
-                throw new ArgumentException("Invalid discount, it must be between 5% and 70%");
+                throw new ArgumentException("Discount must be between 5% and 70%.");
             }
 
             _discount = value;
@@ -50,7 +50,7 @@ public class Promotion
     {
         if (!label.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
         {
-            throw new ArgumentException("Label format is invalid, it can't contain symbols");
+            throw new ArgumentException("Label must not contain symbols.");
         }
     }
 
@@ -58,7 +58,7 @@ public class Promotion
     {
         if (label.Length > MaxLabelLength)
         {
-            throw new ArgumentException("Label format is invalid, length must be lesser or equal than 20");
+            throw new ArgumentException("Label length must be lesser or equal than 20.");
         }
     }
 
@@ -66,7 +66,7 @@ public class Promotion
     {
         if (validity.Item1 >= validity.Item2)
         {
-            throw new ArgumentException("DateFrom must be lesser than DateTo");
+            throw new ArgumentException("The starting date of the promotion must not be later than the ending date.");
         }
     }
     
@@ -74,7 +74,7 @@ public class Promotion
     {
         if (validity.Item2 <= DateOnly.FromDateTime(DateTime.Now))
         {
-            throw new ArgumentException("DateTo must be greater than today.");
+            throw new ArgumentException("The ending date of the promotion cannot be in the past.");
         }
     }
     
