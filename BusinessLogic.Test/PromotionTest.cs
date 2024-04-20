@@ -3,8 +3,8 @@ namespace BusinessLogic.Test;
 [TestClass]
 public class PromotionTest
 {
-    private readonly string _label = "label";
-    private readonly int _discount = 50;
+    private const string Label = "label";
+    private const int Discount = 50;
     private readonly string _dateFrom = DateTime.Now.ToString("yyyy-MM-dd");
     private readonly string _dateTo = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
 
@@ -14,8 +14,8 @@ public class PromotionTest
         // Arrange
         var model = new PromotionModel
         {
-            Label = _label,
-            Discount = _discount,
+            Label = Label,
+            Discount = Discount,
             DateFrom = _dateFrom,
             DateTo = _dateTo
         };
@@ -34,7 +34,7 @@ public class PromotionTest
         var model = new PromotionModel
         {
             Label = "l@bel",
-            Discount = _discount,
+            Discount = Discount,
             DateFrom = _dateFrom,
             DateTo = _dateTo
         };
@@ -53,7 +53,7 @@ public class PromotionTest
         var model = new PromotionModel
         {
             Label = "label with more than 20 characters",
-            Discount = _discount,
+            Discount = Discount,
             DateFrom = _dateFrom,
             DateTo = _dateTo
         };
@@ -71,8 +71,8 @@ public class PromotionTest
         // Arrange
         var model = new PromotionModel
         {
-            Label = _label,
-            Discount = _discount,
+            Label = Label,
+            Discount = Discount,
             DateFrom = _dateTo,
             DateTo = _dateFrom
         };
@@ -83,6 +83,25 @@ public class PromotionTest
         // Assert
         Assert.AreEqual("DateFrom must be lesser than DateTo", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCantCreatePromotionWithDateToLesserThanToday()
+    {
+        // Arrange
+        var model = new PromotionModel
+        {
+            Label = Label,
+            Discount = Discount,
+            DateFrom = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd"),
+            DateTo = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd")
+        };
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
+
+        // Assert
+        Assert.AreEqual("DateTo must be greater than today.", exception.Message);
+    }
 
     [TestMethod]
     public void TestCantCreatePromotionWithDiscountsLesserThan5()
@@ -90,7 +109,7 @@ public class PromotionTest
         //Arrange
         var model = new PromotionModel
         {
-            Label = _label,
+            Label = Label,
             Discount = 4,
             DateFrom = _dateFrom,
             DateTo = _dateTo
@@ -110,7 +129,7 @@ public class PromotionTest
         //Arrange
         var model = new PromotionModel
         {
-            Label = _label,
+            Label = Label,
             Discount = 71,
             DateFrom = _dateFrom,
             DateTo = _dateTo
@@ -130,7 +149,7 @@ public class PromotionTest
         var model = new PromotionModel
         {
             Label = "",
-            Discount = _discount,
+            Discount = Discount,
             DateFrom = _dateFrom,
             DateTo = _dateTo
         };
