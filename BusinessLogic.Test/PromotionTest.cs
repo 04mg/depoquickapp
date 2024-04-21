@@ -204,4 +204,34 @@ public class PromotionTest
         Assert.IsFalse(promotionManager.Promotions.Contains(promotion));
         
     }
+    
+    [TestMethod]
+    public void TestCanModifyPromotion()
+    {
+        // Arrange
+        var promotionManager = new PromotionManager();
+        var model = new PromotionModel
+        {
+            Label = Label,
+            Discount = Discount,
+            DateFrom = _dateFrom,
+            DateTo = _dateTo
+        };
+        var promotion = new Promotion(model);
+        promotionManager.Add(model);
+        var newModel = new PromotionModel
+        {
+            Label = "new label",
+            Discount = 20,
+            DateFrom = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd"),
+            DateTo = DateTime.Now.AddDays(3).ToString("yyyy-MM-dd")
+        };
+
+        // Act
+        promotionManager.Modify(model, newModel);
+
+        // Assert
+        Assert.IsFalse(promotionManager.Promotions.Contains(promotion));
+
+    }
 }

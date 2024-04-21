@@ -28,4 +28,9 @@ public class PromotionManager
             }
         }
     }
+
+    public void Modify(PromotionModel model, PromotionModel newModel)
+    {
+        throw new NotImplementedException();
+    }
 }
