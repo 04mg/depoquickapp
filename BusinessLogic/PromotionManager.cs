@@ -6,11 +6,11 @@ public class PromotionManager
     
     public PromotionManager()
     {
-        throw new NotImplementedException();
+        Promotions = new List<Promotion>();
     }
     
     public void Add(PromotionModel promotionModel)
     {
-        throw new NotImplementedException();
+        Promotions.Add(new Promotion(promotionModel));
     }
 }
