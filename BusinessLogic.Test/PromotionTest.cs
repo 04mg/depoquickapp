@@ -161,4 +161,24 @@ public class PromotionTest
         // Assert
         Assert.AreEqual("Label must not be empty.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCanAddPromotion()
+    {
+        // Arrange
+        var promotionManager = new PromotionManager();
+        var model = new PromotionModel
+        {
+            Label = Label,
+            Discount = Discount,
+            DateFrom = _dateFrom,
+            DateTo = _dateTo
+        };
+
+        // Act
+        promotionManager.Add(model);
+        
+        // Assert
+        Assert.AreEqual(1, promotionManager.Promotions.Count);
+    }
 }
