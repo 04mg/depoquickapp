@@ -20,10 +20,20 @@ public class PromotionManagerTest
             DateFrom = _dateFrom,
             DateTo = _dateTo
         };
+        var authManager = new AuthManager();
+        var adminModel = new UserModel()
+        {
+            Email = "test@test.com",
+            Password = "12345678@mE",
+            NameSurname = "Name Surname",
+            Rank = UserRank.Administrator
+        };
+        authManager.Register(adminModel, adminModel.Password);
+        var creds = authManager.Login(adminModel.Email, adminModel.Password);
 
         // Act
-        promotionManager.Add(model);
-        
+        promotionManager.Add(model, creds);
+
         // Assert
         Assert.AreEqual(1, promotionManager.Promotions.Count);
     }
@@ -41,7 +51,17 @@ public class PromotionManagerTest
             DateTo = _dateTo
         };
         var promotion = new Promotion(model);
-        promotionManager.Add(model);
+        var authManager = new AuthManager();
+        var adminModel = new UserModel()
+        {
+            Email = "test@test.com",
+            Password = "12345678@mE",
+            NameSurname = "Name Surname",
+            Rank = UserRank.Administrator
+        };
+        authManager.Register(adminModel, adminModel.Password);
+        var creds = authManager.Login(adminModel.Email, adminModel.Password);
+        promotionManager.Add(model,creds);
         
         // Act
         promotionManager.Delete(model);
@@ -64,7 +84,17 @@ public class PromotionManagerTest
             DateTo = _dateTo
         };
         var promotion = new Promotion(model);
-        promotionManager.Add(model);
+        var authManager = new AuthManager();
+        var adminModel = new UserModel()
+        {
+            Email = "test@test.com",
+            Password = "12345678@mE",
+            NameSurname = "Name Surname",
+            Rank = UserRank.Administrator
+        };
+        authManager.Register(adminModel, adminModel.Password);
+        var creds = authManager.Login(adminModel.Email, adminModel.Password);
+        promotionManager.Add(model,creds);
         var newModel = new PromotionModel
         {
             Label = "new label",
@@ -79,5 +109,35 @@ public class PromotionManagerTest
         // Assert
         Assert.IsFalse(promotionManager.Promotions.Contains(promotion));
 
+    }
+
+    [TestMethod]
+    public void TestOnlyAdministratorsCanAddPromotion()
+    {
+        // Arrange
+        var promotionManager = new PromotionManager();
+        var authManager = new AuthManager();
+        var model = new PromotionModel
+        {
+            Label = Label,
+            Discount = Discount,
+            DateFrom = _dateFrom,
+            DateTo = _dateTo
+        };
+        var clientModel = new UserModel()
+        {
+            Email = "test@test.com",
+            Password = "12345678@mE",
+            NameSurname = "Name Surname",
+            Rank = UserRank.Client
+        };
+        authManager.Register(clientModel, clientModel.Password);
+        var creds = authManager.Login(clientModel.Email, clientModel.Password);
+
+        // Act
+        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => promotionManager.Add(model, creds));
+
+        // Assert
+        Assert.AreEqual("Only administrators can add promotions.", exception.Message);
     }
 }

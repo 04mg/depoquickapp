@@ -9,8 +9,12 @@ public class PromotionManager
         Promotions = new List<Promotion>();
     }
 
-    public void Add(PromotionModel promotionModel)
+    public void Add(PromotionModel promotionModel, Credentials credentials)
     {
+        if (credentials.Rank != "Administrator")
+        {
+            throw new UnauthorizedAccessException("Only administrators can add promotions.");
+        }
         Promotions.Add(new Promotion(promotionModel));
     }
 

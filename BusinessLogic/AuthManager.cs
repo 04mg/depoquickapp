@@ -73,7 +73,7 @@ public class AuthManager
     {
         ValidateRegistration(userModel, passwordConfirmation);
 
-        var user = new User(userModel.NameSurname, userModel.Email, userModel.Password);
+        var user = new User(userModel.NameSurname, userModel.Email, userModel.Password, userModel.Rank);
         UsersByEmail.Add(userModel.Email, user);
 
         return new Credentials(userModel.Email, userModel.Rank.ToString());
