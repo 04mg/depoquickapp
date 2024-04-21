@@ -13,4 +13,9 @@ public class PromotionManager
     {
         Promotions.Add(new Promotion(promotionModel));
     }
+
+    public void Delete(PromotionModel model)
+    {
+        throw new NotImplementedException();
+    }
 }

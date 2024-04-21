@@ -181,4 +181,27 @@ public class PromotionTest
         // Assert
         Assert.AreEqual(1, promotionManager.Promotions.Count);
     }
+    
+    [TestMethod]
+    public void TestCanDeletePromotion()
+    {   
+        // Arrange
+        var promotionManager = new PromotionManager();
+        var model = new PromotionModel
+        {
+            Label = Label,
+            Discount = Discount,
+            DateFrom = _dateFrom,
+            DateTo = _dateTo
+        };
+        var promotion = new Promotion(model);
+        promotionManager.Add(model);
+        
+        // Act
+        promotionManager.Delete(model);
+        
+        // Assert
+        Assert.IsFalse(promotionManager.Promotions.Contains(promotion));
+        
+    }
 }
