@@ -111,7 +111,7 @@ public class PromotionManagerTest
     }
 
     [TestMethod]
-    public void TestOnlyAdministratorsCanAddPromotion()
+    public void TestCantAddPromotionIfNotAdministrator()
     {
         // Arrange
         var addDto = new AddPromotionDto()
