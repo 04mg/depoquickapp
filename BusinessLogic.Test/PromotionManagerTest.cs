@@ -104,7 +104,7 @@ public class PromotionManagerTest
         };
 
         // Act
-        _promotionManager.Modify(modifyDto);
+        _promotionManager.Modify(modifyDto, _adminCredentials);
 
         // Assert
         Assert.IsFalse(_promotionManager.Promotions.Contains(promotion));
@@ -151,5 +151,36 @@ public class PromotionManagerTest
 
         // Assert
         Assert.AreEqual("Only administrators can delete promotions.", exception.Message);
+    }
+    
+    [TestMethod]
+    public void TestCantModifyPromotionIfNotAdministrator()
+    {
+        // Arrange
+        var addDto = new AddPromotionDto()
+        {
+            Label = Label,
+            Discount = Discount,
+            DateFrom = _today,
+            DateTo = _tomorrow
+        };
+        _promotionManager.Add(addDto, _adminCredentials);
+
+        var modifyDto = new ModifyPromotionDto()
+        {
+            Id = 1,
+            Label = "new label",
+            Discount = 20,
+            DateFrom = DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(3))
+        };
+
+        // Act
+        var exception =
+            Assert.ThrowsException<UnauthorizedAccessException>(() =>
+                _promotionManager.Modify(modifyDto, _clientCredentials));
+
+        // Assert
+        Assert.AreEqual("Only administrators can modify promotions.", exception.Message);
     }
 }
