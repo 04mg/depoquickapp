@@ -130,4 +130,26 @@ public class PromotionManagerTest
         // Assert
         Assert.AreEqual("Only administrators can add promotions.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCantDeletePromotionIfNotAdministrator()
+    {
+        // Arrange
+        var addDto = new AddPromotionDto()
+        {
+            Label = Label,
+            Discount = Discount,
+            DateFrom = _today,
+            DateTo = _tomorrow
+        };
+        _promotionManager.Add(addDto, _adminCredentials);
+
+        // Act
+        var exception =
+            Assert.ThrowsException<UnauthorizedAccessException>(() =>
+                _promotionManager.Delete(1, _clientCredentials));
+
+        // Assert
+        Assert.AreEqual("Only administrators can delete promotions.", exception.Message);
+    }
 }
