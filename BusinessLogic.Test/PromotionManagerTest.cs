@@ -5,9 +5,9 @@ public class PromotionManagerTest
 {
     private const string Label = "label";
     private const int Discount = 50;
-    private readonly string _dateFrom = DateTime.Now.ToString("yyyy-MM-dd");
-    private readonly string _dateTo = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
-    
+    private readonly DateOnly _today = DateOnly.FromDateTime(DateTime.Now);
+    private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+
     [TestMethod]
     public void TestCanAddPromotion()
     {
@@ -17,8 +17,8 @@ public class PromotionManagerTest
         {
             Label = Label,
             Discount = Discount,
-            DateFrom = _dateFrom,
-            DateTo = _dateTo
+            DateFrom = _today,
+            DateTo = _tomorrow
         };
         var authManager = new AuthManager();
         var adminModel = new UserModel()
@@ -29,28 +29,28 @@ public class PromotionManagerTest
             Rank = UserRank.Administrator
         };
         authManager.Register(adminModel, adminModel.Password);
-        var creds = authManager.Login(adminModel.Email, adminModel.Password);
+        var credentials = authManager.Login(adminModel.Email, adminModel.Password);
 
         // Act
-        promotionManager.Add(model, creds);
+        promotionManager.Add(model, credentials);
 
         // Assert
         Assert.AreEqual(1, promotionManager.Promotions.Count);
     }
-    
+
     [TestMethod]
     public void TestCanDeletePromotion()
-    {   
+    {
         // Arrange
         var promotionManager = new PromotionManager();
         var model = new PromotionModel
         {
             Label = Label,
             Discount = Discount,
-            DateFrom = _dateFrom,
-            DateTo = _dateTo
+            DateFrom = _today,
+            DateTo = _tomorrow
         };
-        var promotion = new Promotion(model);
+        var promotion = new Promotion(model.Label, model.Discount, model.DateFrom, model.DateTo);
         var authManager = new AuthManager();
         var adminModel = new UserModel()
         {
@@ -60,17 +60,16 @@ public class PromotionManagerTest
             Rank = UserRank.Administrator
         };
         authManager.Register(adminModel, adminModel.Password);
-        var creds = authManager.Login(adminModel.Email, adminModel.Password);
-        promotionManager.Add(model,creds);
-        
+        var credentials = authManager.Login(adminModel.Email, adminModel.Password);
+        promotionManager.Add(model, credentials);
+
         // Act
         promotionManager.Delete(model);
-        
+
         // Assert
         Assert.IsFalse(promotionManager.Promotions.Contains(promotion));
-        
     }
-    
+
     [TestMethod]
     public void TestCanModifyPromotion()
     {
@@ -80,10 +79,10 @@ public class PromotionManagerTest
         {
             Label = Label,
             Discount = Discount,
-            DateFrom = _dateFrom,
-            DateTo = _dateTo
+            DateFrom = _today,
+            DateTo = _tomorrow
         };
-        var promotion = new Promotion(model);
+        var promotion = new Promotion(model.Label, model.Discount, model.DateFrom, model.DateTo);
         var authManager = new AuthManager();
         var adminModel = new UserModel()
         {
@@ -93,14 +92,14 @@ public class PromotionManagerTest
             Rank = UserRank.Administrator
         };
         authManager.Register(adminModel, adminModel.Password);
-        var creds = authManager.Login(adminModel.Email, adminModel.Password);
-        promotionManager.Add(model,creds);
+        var credentials = authManager.Login(adminModel.Email, adminModel.Password);
+        promotionManager.Add(model, credentials);
         var newModel = new PromotionModel
         {
             Label = "new label",
             Discount = 20,
-            DateFrom = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd"),
-            DateTo = DateTime.Now.AddDays(3).ToString("yyyy-MM-dd")
+            DateFrom = DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(3))
         };
 
         // Act
@@ -108,7 +107,6 @@ public class PromotionManagerTest
 
         // Assert
         Assert.IsFalse(promotionManager.Promotions.Contains(promotion));
-
     }
 
     [TestMethod]
@@ -121,8 +119,8 @@ public class PromotionManagerTest
         {
             Label = Label,
             Discount = Discount,
-            DateFrom = _dateFrom,
-            DateTo = _dateTo
+            DateFrom = _today,
+            DateTo = _tomorrow
         };
         var clientModel = new UserModel()
         {
@@ -132,10 +130,10 @@ public class PromotionManagerTest
             Rank = UserRank.Client
         };
         authManager.Register(clientModel, clientModel.Password);
-        var creds = authManager.Login(clientModel.Email, clientModel.Password);
+        var credentials = authManager.Login(clientModel.Email, clientModel.Password);
 
         // Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => promotionManager.Add(model, creds));
+        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => promotionManager.Add(model, credentials));
 
         // Assert
         Assert.AreEqual("Only administrators can add promotions.", exception.Message);

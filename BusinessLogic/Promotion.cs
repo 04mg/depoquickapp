@@ -86,11 +86,10 @@ public class Promotion
         }
     }
 
-    public Promotion(PromotionModel model)
+    public Promotion(string label, int discount, DateOnly from, DateOnly to)
     {
-        Label = model.Label;
-        Discount = model.Discount;
-        Validity = new Tuple<DateOnly, DateOnly>(DateOnly.FromDateTime(DateTime.Parse(model.DateFrom)),
-            DateOnly.FromDateTime(DateTime.Parse(model.DateTo)));
+        Label = label;
+        Discount = discount;
+        Validity = new Tuple<DateOnly, DateOnly>(from, to);
     }
 }

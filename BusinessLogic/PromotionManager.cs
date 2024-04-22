@@ -9,23 +9,23 @@ public class PromotionManager
         Promotions = new List<Promotion>();
     }
 
-    public void Add(PromotionModel promotionModel, Credentials credentials)
+    public void Add(PromotionModel model, Credentials credentials)
     {
         if (credentials.Rank != "Administrator")
         {
             throw new UnauthorizedAccessException("Only administrators can add promotions.");
         }
-        Promotions.Add(new Promotion(promotionModel));
+
+        Promotions.Add(new Promotion(model.Label, model.Discount, model.DateFrom,
+            model.DateTo));
     }
 
     public void Delete(PromotionModel model)
     {
         foreach (var promotion in Promotions)
         {
-            var dateFrom = DateOnly.FromDateTime(DateTime.Parse(model.DateFrom));
-            var dateTo = DateOnly.FromDateTime(DateTime.Parse(model.DateTo));
             if (promotion.Label == model.Label && promotion.Discount == model.Discount &&
-                promotion.Validity.Item1 == dateFrom && promotion.Validity.Item2 == dateTo)
+                promotion.Validity.Item1 == model.DateFrom && promotion.Validity.Item2 == model.DateTo)
             {
                 Promotions.Remove(promotion);
                 return;
@@ -37,16 +37,12 @@ public class PromotionManager
     {
         foreach (var promotion in Promotions)
         {
-            var dateFrom = DateOnly.FromDateTime(DateTime.Parse(model.DateFrom));
-            var dateTo = DateOnly.FromDateTime(DateTime.Parse(model.DateTo));
             if (promotion.Label == model.Label && promotion.Discount == model.Discount &&
-                promotion.Validity.Item1 == dateFrom && promotion.Validity.Item2 == dateTo)
+                promotion.Validity.Item1 == model.DateFrom && promotion.Validity.Item2 == model.DateTo)
             {
                 promotion.Label = newModel.Label;
                 promotion.Discount = newModel.Discount;
-                promotion.Validity = new Tuple<DateOnly, DateOnly>(
-                    DateOnly.FromDateTime(DateTime.Parse(newModel.DateFrom)),
-                    DateOnly.FromDateTime(DateTime.Parse(newModel.DateTo)));
+                promotion.Validity = new Tuple<DateOnly, DateOnly>(newModel.DateFrom, newModel.DateTo);
                 return;
             }
         }
