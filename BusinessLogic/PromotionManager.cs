@@ -36,6 +36,7 @@ public class PromotionManager
     public void Delete(int id, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
+        EnsurePromotionExists(id);
 
         foreach (var promotion in Promotions)
         {
