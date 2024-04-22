@@ -130,7 +130,7 @@ public class PromotionManagerTest
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantDeletePromotionIfNotAdministrator()
     {
@@ -152,7 +152,7 @@ public class PromotionManagerTest
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantModifyPromotionIfNotAdministrator()
     {
@@ -182,5 +182,27 @@ public class PromotionManagerTest
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantModifyNonExistentPromotion()
+    {
+        // Arrange
+        var modifyDto = new ModifyPromotionDto()
+        {
+            Id = 1,
+            Label = "new label",
+            Discount = 20,
+            DateFrom = DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(3))
+        };
+
+        // Act
+        var exception =
+            Assert.ThrowsException<InvalidOperationException>(() =>
+                _promotionManager.Modify(modifyDto, _adminCredentials));
+
+        // Assert
+        Assert.AreEqual("Promotion not found.", exception.Message);
     }
 }
