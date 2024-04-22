@@ -199,7 +199,7 @@ public class PromotionManagerTest
 
         // Act
         var exception =
-            Assert.ThrowsException<InvalidOperationException>(() =>
+            Assert.ThrowsException<ArgumentException>(() =>
                 _promotionManager.Modify(modifyDto, _adminCredentials));
 
         // Assert

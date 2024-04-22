@@ -16,6 +16,14 @@ public class PromotionManager
             throw new UnauthorizedAccessException("Only administrators can manage promotions.");
         }
     }
+    
+    private void EnsurePromotionExists(int id)
+    {
+        if (Promotions.All(p => p.Id != id))
+        {
+            throw new ArgumentException("Promotion not found.");
+        }
+    }
 
     public void Add(AddPromotionDto dto, Credentials credentials)
     {
@@ -42,6 +50,7 @@ public class PromotionManager
     public void Modify(ModifyPromotionDto dto, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
+        EnsurePromotionExists(dto.Id);
 
         foreach (var promotion in Promotions)
         {
