@@ -50,7 +50,7 @@ public class PromotionManagerTest
             DateFrom = _today,
             DateTo = _tomorrow
         };
-        var promotion = new Promotion(model.Label, model.Discount, model.DateFrom, model.DateTo);
+        var promotion = new Promotion(1, model.Label, model.Discount, model.DateFrom, model.DateTo);
         var authManager = new AuthManager();
         var adminModel = new UserModel()
         {
@@ -64,7 +64,7 @@ public class PromotionManagerTest
         promotionManager.Add(model, credentials);
 
         // Act
-        promotionManager.Delete(model);
+        promotionManager.Delete(1);
 
         // Assert
         Assert.IsFalse(promotionManager.Promotions.Contains(promotion));
@@ -82,7 +82,7 @@ public class PromotionManagerTest
             DateFrom = _today,
             DateTo = _tomorrow
         };
-        var promotion = new Promotion(model.Label, model.Discount, model.DateFrom, model.DateTo);
+        var promotion = new Promotion(1, model.Label, model.Discount, model.DateFrom, model.DateTo);
         var authManager = new AuthManager();
         var adminModel = new UserModel()
         {
@@ -103,7 +103,7 @@ public class PromotionManagerTest
         };
 
         // Act
-        promotionManager.Modify(model, newModel);
+        promotionManager.Modify(1, newModel);
 
         // Assert
         Assert.IsFalse(promotionManager.Promotions.Contains(promotion));

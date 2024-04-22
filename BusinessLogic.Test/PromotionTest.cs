@@ -12,7 +12,7 @@ public class PromotionTest
     public void TestCanCreatePromotionWithValidData()
     {
         // Act
-        var promotion = new Promotion(Label, Discount, _today, _tomorrow);
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
 
         // Assert
         Assert.IsNotNull(promotion);
@@ -23,7 +23,7 @@ public class PromotionTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Promotion("l@bel", Discount, _today, _tomorrow));
+            Assert.ThrowsException<ArgumentException>(() => new Promotion(1, "l@bel", Discount, _today, _tomorrow));
 
         // Assert
         Assert.AreEqual("Label must not contain symbols.", exception.Message);
@@ -34,7 +34,7 @@ public class PromotionTest
     {
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            new Promotion("label with more than 20 characters", Discount, _today, _tomorrow));
+            new Promotion(1, "label with more than 20 characters", Discount, _today, _tomorrow));
 
         // Assert
         Assert.AreEqual("Label length must be lesser or equal than 20.", exception.Message);
@@ -45,7 +45,7 @@ public class PromotionTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Promotion(Label, Discount, _tomorrow, _today));
+            Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, Discount, _tomorrow, _today));
 
         // Assert
         Assert.AreEqual("The starting date of the promotion must not be later than the ending date.",
@@ -56,7 +56,7 @@ public class PromotionTest
     public void TestCantCreatePromotionWithDateToLesserThanToday()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(Label, Discount,
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, Discount,
             DateOnly.FromDateTime(DateTime.Now.AddDays(-2)), DateOnly.FromDateTime(DateTime.Now.AddDays(-1))));
 
         // Assert
@@ -67,7 +67,7 @@ public class PromotionTest
     public void TestCantCreatePromotionWithDiscountsLesserThan5()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(Label, 4, _today, _tomorrow));
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, 4, _today, _tomorrow));
 
         // Assert
         Assert.AreEqual("Discount must be between 5% and 70%.", exception.Message);
@@ -78,7 +78,7 @@ public class PromotionTest
     public void TestCantCreatePromotionWithDiscountGreaterThan70()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(Label, 71, _today, _tomorrow));
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, 71, _today, _tomorrow));
 
         // Assert
         Assert.AreEqual("Discount must be between 5% and 70%.", exception.Message);
@@ -89,7 +89,7 @@ public class PromotionTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Promotion("", Discount, _today, _tomorrow));
+            Assert.ThrowsException<ArgumentException>(() => new Promotion(1, "", Discount, _today, _tomorrow));
 
         // Assert
         Assert.AreEqual("Label must not be empty.", exception.Message);

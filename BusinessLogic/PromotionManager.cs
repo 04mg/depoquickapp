@@ -16,16 +16,15 @@ public class PromotionManager
             throw new UnauthorizedAccessException("Only administrators can add promotions.");
         }
 
-        Promotions.Add(new Promotion(model.Label, model.Discount, model.DateFrom,
+        Promotions.Add(new Promotion( NextPromotionId, model.Label, model.Discount, model.DateFrom,
             model.DateTo));
     }
 
-    public void Delete(PromotionModel model)
+    public void Delete(int id)
     {
         foreach (var promotion in Promotions)
         {
-            if (promotion.Label == model.Label && promotion.Discount == model.Discount &&
-                promotion.Validity.Item1 == model.DateFrom && promotion.Validity.Item2 == model.DateTo)
+            if (promotion.Id == id)
             {
                 Promotions.Remove(promotion);
                 return;
@@ -33,12 +32,11 @@ public class PromotionManager
         }
     }
 
-    public void Modify(PromotionModel model, PromotionModel newModel)
+    public void Modify(int id, PromotionModel newModel)
     {
         foreach (var promotion in Promotions)
         {
-            if (promotion.Label == model.Label && promotion.Discount == model.Discount &&
-                promotion.Validity.Item1 == model.DateFrom && promotion.Validity.Item2 == model.DateTo)
+            if (promotion.Id == id)
             {
                 promotion.Label = newModel.Label;
                 promotion.Discount = newModel.Discount;
@@ -47,4 +45,7 @@ public class PromotionManager
             }
         }
     }
+    
+    private int NextPromotionId => Promotions.Count > 0 ? Promotions.Max(p => p.Id) + 1 : 1;
+
 }
