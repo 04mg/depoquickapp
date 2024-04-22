@@ -205,4 +205,16 @@ public class PromotionManagerTest
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCantDeleteNonExistentPromotion()
+    {
+        // Act
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() =>
+                _promotionManager.Delete(1, _adminCredentials));
+
+        // Assert
+        Assert.AreEqual("Promotion not found.", exception.Message);
+    }
 }
