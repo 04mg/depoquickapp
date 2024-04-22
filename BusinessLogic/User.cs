@@ -11,8 +11,8 @@ public class User
     private const int MaxNameSurnameLength = 100;
     private const int MinPasswordLength = 8;
     private const string ValidSymbols = "#@$.,%";
-    private static Regex _emailRegex = new(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
-    
+    private static readonly Regex EmailRegex = new(@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$");
+
 
     public string Email
     {
@@ -56,18 +56,28 @@ public class User
     {
         if (!value.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
         {
-            throw new ArgumentException("NameSurname format is invalid, it should only contain letters and whitespaces.");
+            throw new ArgumentException(
+                "NameSurname format is invalid, it should only contain letters and whitespaces.");
         }
     }
-    
+
     public UserRank Rank { get; }
 
-    public User(string nameSurname, string email, string password, UserRank rank = UserRank.Client)
+    public User(string nameSurname, string email, string password, string rank = "Client")
     {
         NameSurname = nameSurname;
         Email = email;
         Password = password;
-        Rank = rank;
+        EnsureRankIsValid(rank);
+        Rank = Enum.Parse<UserRank>(rank);
+    }
+
+    private static void EnsureRankIsValid(string rank)
+    {
+        if (!Enum.TryParse<UserRank>(rank, out _))
+        {
+            throw new ArgumentException("Rank is invalid.");
+        }
     }
 
     private static void EnsureNameSurnameContainsSpace(string nameSurname)
@@ -140,7 +150,7 @@ public class User
 
     private static void EnsureEmailIsValidFormat(string email)
     {
-        if (!_emailRegex.IsMatch(email))
+        if (!EmailRegex.IsMatch(email))
         {
             throw new ArgumentException("Email format is invalid.");
         }

@@ -17,24 +17,26 @@ public class PromotionManagerTest
         _promotionManager = new PromotionManager();
         var authManager = new AuthManager();
 
-        var adminModel = new UserModel()
+        var adminModel = new RegisterDto()
         {
             Email = "admin@admin.com",
             Password = "12345678@mE",
+            PasswordConfirmation = "12345678@mE",
             NameSurname = "Name Surname",
-            Rank = UserRank.Administrator
+            Rank = "Administrator"
         };
 
-        var clientModel = new UserModel()
+        var clientModel = new RegisterDto()
         {
             Email = "client@client.com",
             Password = "12345678@mE",
+            PasswordConfirmation = "12345678@mE",
             NameSurname = "Name Surname",
-            Rank = UserRank.Client
+            Rank = "Client"
         };
 
-        authManager.Register(adminModel, adminModel.Password);
-        authManager.Register(clientModel, clientModel.Password);
+        authManager.Register(adminModel);
+        authManager.Register(clientModel);
         _adminCredentials = authManager.Login(adminModel.Email, adminModel.Password);
         _clientCredentials = authManager.Login(clientModel.Email, clientModel.Password);
     }
