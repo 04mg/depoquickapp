@@ -37,8 +37,13 @@ public class PromotionManager
         }
     }
 
-    public void Modify(ModifyPromotionDto dto)
+    public void Modify(ModifyPromotionDto dto, Credentials credentials)
     {
+        if (credentials.Rank != "Administrator")
+        {
+            throw new UnauthorizedAccessException("Only administrators can modify promotions.");
+        }
+        
         foreach (var promotion in Promotions)
         {
             if (promotion.Id == dto.Id)
