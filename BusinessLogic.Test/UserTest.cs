@@ -32,10 +32,11 @@ public class UserTest
     {
         // Arrange
         var emailLength255 = new string('a', 245) + "@gmail.com";
-        
+
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, emailLength255, Password));
-        
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, emailLength255, Password));
+
         // Assert
         Assert.AreEqual("Email format is invalid, length must be lesser or equal to 254.", exception.Message);
     }
@@ -128,8 +129,9 @@ public class UserTest
     public void TestCantCreateUserWithNameSurnameLengthGreaterThan100()
     {
         // Arrange
-        const string nameLength101 = "Name Surname Name Surname Name Surname Name Surname Name Surname Name Surname Name Surname Name Seven";
-        
+        const string nameLength101 =
+            "Name Surname Name Surname Name Surname Name Surname Name Surname Name Surname Name Surname Name Seven";
+
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() => new User(nameLength101, Email, Password));
 
@@ -142,9 +144,10 @@ public class UserTest
     {
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() => new User("Name 123", Email, Password));
-        
+
         // Assert
-        Assert.AreEqual("NameSurname format is invalid, it should only contain letters and whitespaces.", exception.Message);
+        Assert.AreEqual("NameSurname format is invalid, it should only contain letters and whitespaces.",
+            exception.Message);
     }
 
     [TestMethod]
@@ -154,7 +157,8 @@ public class UserTest
         var exception = Assert.ThrowsException<ArgumentException>(() => new User("Name $", Email, Password));
 
         // Assert
-        Assert.AreEqual("NameSurname format is invalid, it should only contain letters and whitespaces.", exception.Message);
+        Assert.AreEqual("NameSurname format is invalid, it should only contain letters and whitespaces.",
+            exception.Message);
     }
 
     [TestMethod]
@@ -165,5 +169,16 @@ public class UserTest
 
         // Assert
         Assert.AreEqual(UserRank.Administrator, user.Rank);
+    }
+
+    [TestMethod]
+    public void TestCantCreateUserWithInvalidRank()
+    {
+        // Act
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, Email, Password, "InvalidRank"));
+
+        // Assert
+        Assert.AreEqual("Rank format is invalid.", exception.Message);
     }
 }
