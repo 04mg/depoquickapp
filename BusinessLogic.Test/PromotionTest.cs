@@ -5,23 +5,14 @@ public class PromotionTest
 {
     private const string Label = "label";
     private const int Discount = 50;
-    private readonly string _dateFrom = DateTime.Now.ToString("yyyy-MM-dd");
-    private readonly string _dateTo = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
+    private readonly DateOnly _today = DateOnly.FromDateTime(DateTime.Now);
+    private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
 
     [TestMethod]
     public void TestCanCreatePromotionWithValidData()
     {
-        // Arrange
-        var model = new PromotionModel
-        {
-            Label = Label,
-            Discount = Discount,
-            DateFrom = _dateFrom,
-            DateTo = _dateTo
-        };
-
         // Act
-        var promotion = new Promotion(model);
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
 
         // Assert
         Assert.IsNotNull(promotion);
@@ -30,17 +21,9 @@ public class PromotionTest
     [TestMethod]
     public void TestCantCreatePromotionWithLabelWithSymbols()
     {
-        // Arrange
-        var model = new PromotionModel
-        {
-            Label = "l@bel",
-            Discount = Discount,
-            DateFrom = _dateFrom,
-            DateTo = _dateTo
-        };
-
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() => new Promotion(1, "l@bel", Discount, _today, _tomorrow));
 
         // Assert
         Assert.AreEqual("Label must not contain symbols.", exception.Message);
@@ -49,36 +32,20 @@ public class PromotionTest
     [TestMethod]
     public void TestCantCreatePromotionWithLabelLengthGreaterThan20()
     {
-        //Arrange
-        var model = new PromotionModel
-        {
-            Label = "label with more than 20 characters",
-            Discount = Discount,
-            DateFrom = _dateFrom,
-            DateTo = _dateTo
-        };
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+            new Promotion(1, "label with more than 20 characters", Discount, _today, _tomorrow));
 
-        //Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
-
-        //Assert
+        // Assert
         Assert.AreEqual("Label length must be lesser or equal than 20.", exception.Message);
     }
 
     [TestMethod]
     public void TestCantCreatePromotionWithDateFromGreaterThanDateTo()
     {
-        // Arrange
-        var model = new PromotionModel
-        {
-            Label = Label,
-            Discount = Discount,
-            DateFrom = _dateTo,
-            DateTo = _dateFrom
-        };
-
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, Discount, _tomorrow, _today));
 
         // Assert
         Assert.AreEqual("The starting date of the promotion must not be later than the ending date.",
@@ -88,17 +55,9 @@ public class PromotionTest
     [TestMethod]
     public void TestCantCreatePromotionWithDateToLesserThanToday()
     {
-        // Arrange
-        var model = new PromotionModel
-        {
-            Label = Label,
-            Discount = Discount,
-            DateFrom = DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd"),
-            DateTo = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")
-        };
-
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, Discount,
+            DateOnly.FromDateTime(DateTime.Now.AddDays(-2)), DateOnly.FromDateTime(DateTime.Now.AddDays(-1))));
 
         // Assert
         Assert.AreEqual("The ending date of the promotion cannot be in the past.", exception.Message);
@@ -107,19 +66,10 @@ public class PromotionTest
     [TestMethod]
     public void TestCantCreatePromotionWithDiscountsLesserThan5()
     {
-        //Arrange
-        var model = new PromotionModel
-        {
-            Label = Label,
-            Discount = 4,
-            DateFrom = _dateFrom,
-            DateTo = _dateTo
-        };
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, 4, _today, _tomorrow));
 
-        //Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
-
-        //Assert
+        // Assert
         Assert.AreEqual("Discount must be between 5% and 70%.", exception.Message);
     }
 
@@ -127,36 +77,19 @@ public class PromotionTest
     [TestMethod]
     public void TestCantCreatePromotionWithDiscountGreaterThan70()
     {
-        //Arrange
-        var model = new PromotionModel
-        {
-            Label = Label,
-            Discount = 71,
-            DateFrom = _dateFrom,
-            DateTo = _dateTo
-        };
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, 71, _today, _tomorrow));
 
-        //Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
-
-        //Assert
+        // Assert
         Assert.AreEqual("Discount must be between 5% and 70%.", exception.Message);
     }
 
     [TestMethod]
     public void TestCantCreatePromotionWithEmptyLabel()
     {
-        // Arrange
-        var model = new PromotionModel
-        {
-            Label = "",
-            Discount = Discount,
-            DateFrom = _dateFrom,
-            DateTo = _dateTo
-        };
-
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(model));
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() => new Promotion(1, "", Discount, _today, _tomorrow));
 
         // Assert
         Assert.AreEqual("Label must not be empty.", exception.Message);

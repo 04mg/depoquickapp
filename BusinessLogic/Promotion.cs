@@ -8,6 +8,7 @@ public class Promotion
     private const int MinDiscount = 5;
     private const int MaxDiscount = 70;
     private const int MaxLabelLength = 20;
+    public int Id { get; set; }
 
     public string Label
     {
@@ -86,11 +87,11 @@ public class Promotion
         }
     }
 
-    public Promotion(PromotionModel model)
+    public Promotion(int id, string label, int discount, DateOnly from, DateOnly to)
     {
-        Label = model.Label;
-        Discount = model.Discount;
-        Validity = new Tuple<DateOnly, DateOnly>(DateOnly.FromDateTime(DateTime.Parse(model.DateFrom)),
-            DateOnly.FromDateTime(DateTime.Parse(model.DateTo)));
+        Id = id;
+        Label = label;
+        Discount = discount;
+        Validity = new Tuple<DateOnly, DateOnly>(from, to);
     }
 }
