@@ -9,12 +9,17 @@ public class PromotionManager
         Promotions = new List<Promotion>();
     }
 
-    public void Add(AddPromotionDto dto, Credentials credentials)
+    private static void EnsureUserIsAdmin(Credentials credentials)
     {
         if (credentials.Rank != "Administrator")
         {
-            throw new UnauthorizedAccessException("Only administrators can add promotions.");
+            throw new UnauthorizedAccessException("Only administrators can manage promotions.");
         }
+    }
+
+    public void Add(AddPromotionDto dto, Credentials credentials)
+    {
+        EnsureUserIsAdmin(credentials);
 
         Promotions.Add(new Promotion(NextPromotionId, dto.Label, dto.Discount, dto.DateFrom,
             dto.DateTo));
@@ -22,10 +27,7 @@ public class PromotionManager
 
     public void Delete(int id, Credentials credentials)
     {
-        if (credentials.Rank != "Administrator")
-        {
-            throw new UnauthorizedAccessException("Only administrators can delete promotions.");
-        }
+        EnsureUserIsAdmin(credentials);
 
         foreach (var promotion in Promotions)
         {
@@ -39,11 +41,8 @@ public class PromotionManager
 
     public void Modify(ModifyPromotionDto dto, Credentials credentials)
     {
-        if (credentials.Rank != "Administrator")
-        {
-            throw new UnauthorizedAccessException("Only administrators can modify promotions.");
-        }
-        
+        EnsureUserIsAdmin(credentials);
+
         foreach (var promotion in Promotions)
         {
             if (promotion.Id == dto.Id)

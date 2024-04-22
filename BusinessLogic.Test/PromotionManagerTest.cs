@@ -128,7 +128,7 @@ public class PromotionManagerTest
                 _promotionManager.Add(addDto, _clientCredentials));
 
         // Assert
-        Assert.AreEqual("Only administrators can add promotions.", exception.Message);
+        Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
     }
     
     [TestMethod]
@@ -150,7 +150,7 @@ public class PromotionManagerTest
                 _promotionManager.Delete(1, _clientCredentials));
 
         // Assert
-        Assert.AreEqual("Only administrators can delete promotions.", exception.Message);
+        Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
     }
     
     [TestMethod]
@@ -181,6 +181,6 @@ public class PromotionManagerTest
                 _promotionManager.Modify(modifyDto, _clientCredentials));
 
         // Assert
-        Assert.AreEqual("Only administrators can modify promotions.", exception.Message);
+        Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
     }
 }
