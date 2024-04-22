@@ -73,7 +73,7 @@ public class PromotionManagerTest
         _promotionManager.Add(addDto, _adminCredentials);
 
         // Act
-        _promotionManager.Delete(1);
+        _promotionManager.Delete(1, _adminCredentials);
 
         // Assert
         Assert.IsFalse(_promotionManager.Promotions.Contains(promotion));

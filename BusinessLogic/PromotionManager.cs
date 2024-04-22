@@ -16,12 +16,17 @@ public class PromotionManager
             throw new UnauthorizedAccessException("Only administrators can add promotions.");
         }
 
-        Promotions.Add(new Promotion( NextPromotionId, dto.Label, dto.Discount, dto.DateFrom,
+        Promotions.Add(new Promotion(NextPromotionId, dto.Label, dto.Discount, dto.DateFrom,
             dto.DateTo));
     }
 
-    public void Delete(int id)
+    public void Delete(int id, Credentials credentials)
     {
+        if (credentials.Rank != "Administrator")
+        {
+            throw new UnauthorizedAccessException("Only administrators can delete promotions.");
+        }
+
         foreach (var promotion in Promotions)
         {
             if (promotion.Id == id)
@@ -45,6 +50,6 @@ public class PromotionManager
             }
         }
     }
-    
+
     private int NextPromotionId => Promotions.Count > 0 ? Promotions.Max(p => p.Id) + 1 : 1;
 }
