@@ -74,7 +74,7 @@ public class AuthManager
         ValidateRegistration(registerDto);
 
         var user = new User(registerDto.NameSurname, registerDto.Email, registerDto.Password,
-            Enum.Parse<UserRank>(registerDto.Rank));
+            registerDto.Rank);
         UsersByEmail.Add(registerDto.Email, user);
 
         return new Credentials(registerDto.Email, registerDto.Rank);

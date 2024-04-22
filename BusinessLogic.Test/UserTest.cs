@@ -161,7 +161,7 @@ public class UserTest
     public void TestCanCreateAdminUserWithValidData()
     {
         // Arrange
-        var user = new User(NameSurname, Email, Password, UserRank.Administrator);
+        var user = new User(NameSurname, Email, Password, "Administrator");
 
         // Assert
         Assert.AreEqual(UserRank.Administrator, user.Rank);
