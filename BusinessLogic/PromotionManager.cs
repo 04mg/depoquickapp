@@ -9,15 +9,15 @@ public class PromotionManager
         Promotions = new List<Promotion>();
     }
 
-    public void Add(PromotionModel model, Credentials credentials)
+    public void Add(AddPromotionDto dto, Credentials credentials)
     {
         if (credentials.Rank != "Administrator")
         {
             throw new UnauthorizedAccessException("Only administrators can add promotions.");
         }
 
-        Promotions.Add(new Promotion( NextPromotionId, model.Label, model.Discount, model.DateFrom,
-            model.DateTo));
+        Promotions.Add(new Promotion( NextPromotionId, dto.Label, dto.Discount, dto.DateFrom,
+            dto.DateTo));
     }
 
     public void Delete(int id)
@@ -32,20 +32,19 @@ public class PromotionManager
         }
     }
 
-    public void Modify(int id, PromotionModel newModel)
+    public void Modify(ModifyPromotionDto dto)
     {
         foreach (var promotion in Promotions)
         {
-            if (promotion.Id == id)
+            if (promotion.Id == dto.Id)
             {
-                promotion.Label = newModel.Label;
-                promotion.Discount = newModel.Discount;
-                promotion.Validity = new Tuple<DateOnly, DateOnly>(newModel.DateFrom, newModel.DateTo);
+                promotion.Label = dto.Label;
+                promotion.Discount = dto.Discount;
+                promotion.Validity = new Tuple<DateOnly, DateOnly>(dto.DateFrom, dto.DateTo);
                 return;
             }
         }
     }
     
     private int NextPromotionId => Promotions.Count > 0 ? Promotions.Max(p => p.Id) + 1 : 1;
-
 }

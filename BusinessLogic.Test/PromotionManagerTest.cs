@@ -13,7 +13,7 @@ public class PromotionManagerTest
     {
         // Arrange
         var promotionManager = new PromotionManager();
-        var model = new PromotionModel
+        var addDto = new AddPromotionDto()
         {
             Label = Label,
             Discount = Discount,
@@ -32,7 +32,7 @@ public class PromotionManagerTest
         var credentials = authManager.Login(adminModel.Email, adminModel.Password);
 
         // Act
-        promotionManager.Add(model, credentials);
+        promotionManager.Add(addDto, credentials);
 
         // Assert
         Assert.AreEqual(1, promotionManager.Promotions.Count);
@@ -43,14 +43,14 @@ public class PromotionManagerTest
     {
         // Arrange
         var promotionManager = new PromotionManager();
-        var model = new PromotionModel
+        var addDto = new AddPromotionDto()
         {
             Label = Label,
             Discount = Discount,
             DateFrom = _today,
             DateTo = _tomorrow
         };
-        var promotion = new Promotion(1, model.Label, model.Discount, model.DateFrom, model.DateTo);
+        var promotion = new Promotion(1, addDto.Label, addDto.Discount, addDto.DateFrom, addDto.DateTo);
         var authManager = new AuthManager();
         var adminModel = new UserModel()
         {
@@ -61,7 +61,7 @@ public class PromotionManagerTest
         };
         authManager.Register(adminModel, adminModel.Password);
         var credentials = authManager.Login(adminModel.Email, adminModel.Password);
-        promotionManager.Add(model, credentials);
+        promotionManager.Add(addDto, credentials);
 
         // Act
         promotionManager.Delete(1);
@@ -75,14 +75,14 @@ public class PromotionManagerTest
     {
         // Arrange
         var promotionManager = new PromotionManager();
-        var model = new PromotionModel
+        var addDto = new AddPromotionDto()
         {
             Label = Label,
             Discount = Discount,
             DateFrom = _today,
             DateTo = _tomorrow
         };
-        var promotion = new Promotion(1, model.Label, model.Discount, model.DateFrom, model.DateTo);
+        var promotion = new Promotion(1, addDto.Label, addDto.Discount, addDto.DateFrom, addDto.DateTo);
         var authManager = new AuthManager();
         var adminModel = new UserModel()
         {
@@ -93,9 +93,10 @@ public class PromotionManagerTest
         };
         authManager.Register(adminModel, adminModel.Password);
         var credentials = authManager.Login(adminModel.Email, adminModel.Password);
-        promotionManager.Add(model, credentials);
-        var newModel = new PromotionModel
+        promotionManager.Add(addDto, credentials);
+        var modifyDto = new ModifyPromotionDto()
         {
+            Id = 1,
             Label = "new label",
             Discount = 20,
             DateFrom = DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
@@ -103,7 +104,7 @@ public class PromotionManagerTest
         };
 
         // Act
-        promotionManager.Modify(1, newModel);
+        promotionManager.Modify(modifyDto);
 
         // Assert
         Assert.IsFalse(promotionManager.Promotions.Contains(promotion));
@@ -115,7 +116,7 @@ public class PromotionManagerTest
         // Arrange
         var promotionManager = new PromotionManager();
         var authManager = new AuthManager();
-        var model = new PromotionModel
+        var model = new AddPromotionDto()
         {
             Label = Label,
             Discount = Discount,

@@ -1,6 +1,6 @@
 namespace BusinessLogic;
 
-public readonly struct PromotionModel
+public readonly struct ModifyPromotionDto
 {
     public int Id { get; init; }
     public string Label { get; init; }
