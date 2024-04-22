@@ -179,6 +179,6 @@ public class UserTest
             Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, Email, Password, "InvalidRank"));
 
         // Assert
-        Assert.AreEqual("Rank format is invalid.", exception.Message);
+        Assert.AreEqual("Rank is invalid.", exception.Message);
     }
 }
