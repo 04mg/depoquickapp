@@ -205,7 +205,7 @@ public class PromotionManagerTest
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantDeleteNonExistentPromotion()
     {

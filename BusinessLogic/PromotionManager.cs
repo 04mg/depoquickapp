@@ -24,6 +24,11 @@ public class PromotionManager
             throw new ArgumentException("Promotion not found.");
         }
     }
+    
+    private Promotion GetPromotionById(int id)
+    {
+        return Promotions.First(p => p.Id == id);
+    }
 
     public void Add(AddPromotionDto dto, Credentials credentials)
     {
@@ -38,31 +43,19 @@ public class PromotionManager
         EnsureUserIsAdmin(credentials);
         EnsurePromotionExists(id);
 
-        foreach (var promotion in Promotions)
-        {
-            if (promotion.Id == id)
-            {
-                Promotions.Remove(promotion);
-                return;
-            }
-        }
+        var promotion = GetPromotionById(id);
+        Promotions.Remove(promotion);
     }
 
     public void Modify(ModifyPromotionDto dto, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
         EnsurePromotionExists(dto.Id);
-
-        foreach (var promotion in Promotions)
-        {
-            if (promotion.Id == dto.Id)
-            {
-                promotion.Label = dto.Label;
-                promotion.Discount = dto.Discount;
-                promotion.Validity = new Tuple<DateOnly, DateOnly>(dto.DateFrom, dto.DateTo);
-                return;
-            }
-        }
+        
+        var promotion = GetPromotionById(dto.Id);
+        promotion.Label = dto.Label;
+        promotion.Discount = dto.Discount;
+        promotion.Validity = new Tuple<DateOnly, DateOnly>(dto.DateFrom, dto.DateTo);
     }
 
     private int NextPromotionId => Promotions.Count > 0 ? Promotions.Max(p => p.Id) + 1 : 1;
