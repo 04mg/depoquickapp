@@ -72,4 +72,14 @@ public class DepositTest
         // Assert
         Assert.AreEqual("Invalid area.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCantCreateDepositWithInvalidSize()
+    {
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Deposit(Area, "Extra Large", ClimateControl, _promotionList));
+        
+        // Assert
+        Assert.AreEqual("Invalid size.", exception.Message);
+    }
 }

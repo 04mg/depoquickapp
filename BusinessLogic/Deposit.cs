@@ -21,7 +21,7 @@ public class Deposit
     }
     public Deposit(string area, string small, bool climateControl, List<AddPromotionDto> promotionList)
     {
-        Area = area;
+        Area = area;    
         _small = small;
         _climateControl = climateControl;
         _promotionList = promotionList;
