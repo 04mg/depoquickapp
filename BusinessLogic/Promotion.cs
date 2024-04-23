@@ -38,12 +38,17 @@ public class Promotion
         get => _discount;
         set
         {
-            if (value < MinDiscount || value > MaxDiscount)
-            {
-                throw new ArgumentException("Discount must be between 5% and 70%.");
-            }
+            EnsureDiscountIsWithinRange(value);
 
             _discount = value;
+        }
+    }
+
+    private static void EnsureDiscountIsWithinRange(int value)
+    {
+        if (value < MinDiscount || value > MaxDiscount)
+        {
+            throw new ArgumentException("Discount must be between 5% and 70%.");
         }
     }
 
