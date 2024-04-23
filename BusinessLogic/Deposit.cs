@@ -3,7 +3,7 @@ namespace BusinessLogic;
 public class Deposit
 {
     private string _area;
-    private string _small;
+    private string _size;
     private bool _climateControl;
     private List<AddPromotionDto> _promotionList;
 
@@ -19,10 +19,25 @@ public class Deposit
             _area = value;
         }
     }
-    public Deposit(string area, string small, bool climateControl, List<AddPromotionDto> promotionList)
+
+    public string Size
+    {
+        get => _size;
+        set
+        {
+            if(value != "Small" && value != "Medium" && value != "Large")
+            {
+                throw new ArgumentException("Invalid size.");
+            }
+            _size = value;
+        }
+        
+    }
+    
+    public Deposit(string area, string size, bool climateControl, List<AddPromotionDto> promotionList)
     {
         Area = area;    
-        _small = small;
+        Size = size;
         _climateControl = climateControl;
         _promotionList = promotionList;
     }
