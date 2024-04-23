@@ -66,7 +66,7 @@ public class DepositTest
         var exception = Assert.ThrowsException<ArgumentException>(() => new Deposit("Z", Size, ClimateControl, _promotionList, _promotionManager));
         
         // Assert
-        Assert.AreEqual("Invalid area.", exception.Message);
+        Assert.AreEqual("Area is invalid.", exception.Message);
     }
     
     [TestMethod]
@@ -76,7 +76,7 @@ public class DepositTest
         var exception = Assert.ThrowsException<ArgumentException>(() => new Deposit(Area, "Extra Large", ClimateControl, _promotionList, _promotionManager));
         
         // Assert
-        Assert.AreEqual("Invalid size.", exception.Message);
+        Assert.AreEqual("Size is invalid.", exception.Message);
     }
     
     [TestMethod]

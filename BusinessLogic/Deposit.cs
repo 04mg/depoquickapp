@@ -4,18 +4,15 @@ public class Deposit
 {
     private string _area;
     private string _size;
-    private bool _climateControl;
-    private List<int> _promotionList;
-
+    public bool ClimateControl { get; set; }
+    public List<int> PromotionList { get; set; }
+    
     public string Area
     {
         get => _area;
         set
         {
-            if(value != "A" && value != "B" && value != "C" && value != "D" && value != "E")
-            {
-                throw new ArgumentException("Invalid area.");
-            }
+            EnsureAreaIsValid(value);
             _area = value;
         }
     }
@@ -25,10 +22,7 @@ public class Deposit
         get => _size;
         set
         {
-            if(value != "Small" && value != "Medium" && value != "Large")
-            {
-                throw new ArgumentException("Invalid size.");
-            }
+            EnsureSizeIsValid(value);
             _size = value;
         }
         
@@ -38,13 +32,40 @@ public class Deposit
     {
         Area = area;    
         Size = size;
-        _climateControl = climateControl;
+        ClimateControl = climateControl;
+        EnsurePromotionExists(promotionList, promotionManager);
+        PromotionList = promotionList;
+    }
+
+    private static void EnsurePromotionExists(List<int> promotionList, PromotionManager promotionManager)
+    {
         foreach (var id in promotionList)
         {
-            if(promotionManager.Promotions.All(p => p.Id != id))
-            {
-                throw new ArgumentException("Promotion with id " + id + " does not exist.");
-            }
+            EnsurePromotionExistsForId(promotionManager, id);
+        }
+    }
+
+    private static void EnsurePromotionExistsForId(PromotionManager promotionManager, int id)
+    {
+        if(promotionManager.Promotions.All(p => p.Id != id))
+        {
+            throw new ArgumentException("Promotion with id " + id + " does not exist.");
+        }
+    }
+
+    private static void EnsureAreaIsValid(string area)
+    {
+        if (!Enum.TryParse<Area>(area, out _))
+        {
+            throw new ArgumentException("Area is invalid.");
+        }
+    }
+    
+    private static void EnsureSizeIsValid(string size)
+    {
+        if (!Enum.TryParse<Size>(size, out _))
+        {
+            throw new ArgumentException("Size is invalid.");
         }
     }
 }
@@ -56,4 +77,11 @@ public enum Area
     C,
     D,
     E
+}
+
+public enum Size
+{
+    Small,
+    Medium,
+    Large
 }
