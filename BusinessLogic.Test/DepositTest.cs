@@ -62,4 +62,14 @@ public class DepositTest
         //Assert
         Assert.IsNotNull(deposit);
     }
+    
+    [TestMethod]
+    public void TestCantCreateDepositWithInvalidArea()
+    {
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Deposit("Z", Size, ClimateControl, _promotionList));
+        
+        // Assert
+        Assert.AreEqual("Invalid area.", exception.Message);
+    }
 }
