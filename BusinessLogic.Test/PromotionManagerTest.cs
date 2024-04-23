@@ -37,8 +37,10 @@ public class PromotionManagerTest
 
         authManager.Register(adminModel);
         authManager.Register(clientModel);
-        _adminCredentials = authManager.Login(adminModel.Email, adminModel.Password);
-        _clientCredentials = authManager.Login(clientModel.Email, clientModel.Password);
+        _adminCredentials = authManager.Login(new LoginDto()
+            { Email = adminModel.Email, Password = adminModel.Password });
+        _clientCredentials = authManager.Login(new LoginDto()
+            { Email = clientModel.Email, Password = clientModel.Password });
     }
 
     [TestMethod]

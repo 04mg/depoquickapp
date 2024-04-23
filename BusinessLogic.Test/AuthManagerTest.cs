@@ -32,7 +32,7 @@ public class AuthManagerTest
         credManager.Register(userModel);
 
         // Act
-        var credentials = credManager.Login(Email, Password);
+        var credentials = credManager.Login(new LoginDto() { Email = Email, Password = Password });
 
         // Assert
         Assert.AreSame(credentials.Email, Email);
@@ -75,7 +75,10 @@ public class AuthManagerTest
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => { credManager.Login(Email, "wrong"); });
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                credManager.Login(new LoginDto() { Email = Email, Password = "wrong" });
+            });
 
         // Assert
         Assert.IsTrue(exception.Message.Contains("Wrong password."));
@@ -88,7 +91,10 @@ public class AuthManagerTest
         var credManager = new AuthManager();
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.Login(Email, Password); });
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            credManager.Login(new LoginDto() { Email = Email, Password = Password });
+        });
 
         // Assert
         Assert.AreSame(exception.Message, "User does not exist.");

@@ -80,12 +80,12 @@ public class AuthManager
         return new Credentials(registerDto.Email, registerDto.Rank);
     }
 
-    public Credentials Login(string email, string password)
+    public Credentials Login(LoginDto loginDto)
     {
-        ValidateLogin(email, password);
+        ValidateLogin(loginDto.Email, loginDto.Password);
 
-        var userRank = UsersByEmail[email].Rank;
-        var credentials = new Credentials(email, userRank.ToString());
+        var userRank = UsersByEmail[loginDto.Email].Rank;
+        var credentials = new Credentials(loginDto.Email, userRank.ToString());
         return credentials;
     }
 }
