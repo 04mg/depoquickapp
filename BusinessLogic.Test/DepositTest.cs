@@ -8,7 +8,7 @@ public class DepositTest
     private const bool ClimateControl = true;
     private AuthManager _authManager;
     private PromotionManager _promotionManager;
-    private List<AddPromotionDto> _promotionList;
+    private List<int> _promotionList;
     
     [TestInitialize]
     public void SetUp()
@@ -46,18 +46,14 @@ public class DepositTest
         _promotionManager = new PromotionManager();
         _promotionManager.Add(promotionModel1, credentials);
         _promotionManager.Add(promotionModel2, credentials);
-        _promotionList = new List<AddPromotionDto>()
-        {
-            promotionModel1,
-            promotionModel2
-        };
+        _promotionList = new List<int>(){ 1,2 };
     }
     
     [TestMethod]
     public void TestCanCreateDepositWithValidData()
     {
         //Act
-        var deposit = new Deposit(Area, Size, ClimateControl, _promotionList);
+        var deposit = new Deposit(Area, Size, ClimateControl, _promotionList, _promotionManager);
         
         //Assert
         Assert.IsNotNull(deposit);
@@ -67,7 +63,7 @@ public class DepositTest
     public void TestCantCreateDepositWithInvalidArea()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Deposit("Z", Size, ClimateControl, _promotionList));
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Deposit("Z", Size, ClimateControl, _promotionList, _promotionManager));
         
         // Assert
         Assert.AreEqual("Invalid area.", exception.Message);
@@ -77,9 +73,22 @@ public class DepositTest
     public void TestCantCreateDepositWithInvalidSize()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Deposit(Area, "Extra Large", ClimateControl, _promotionList));
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Deposit(Area, "Extra Large", ClimateControl, _promotionList, _promotionManager));
         
         // Assert
         Assert.AreEqual("Invalid size.", exception.Message);
+    }
+    
+    [TestMethod]
+    public void TestCantCreateDepositWithNonExistentPromotion()
+    {
+        // Arrange
+        var wrongPromotionList = new List<int>(){ 1,3 };
+        
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Deposit(Area, Size, ClimateControl, wrongPromotionList, _promotionManager));
+        
+        // Assert
+        Assert.AreEqual("Promotion with id 3 does not exist.", exception.Message);
     }
 }

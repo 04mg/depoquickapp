@@ -5,7 +5,7 @@ public class Deposit
     private string _area;
     private string _size;
     private bool _climateControl;
-    private List<AddPromotionDto> _promotionList;
+    private List<int> _promotionList;
 
     public string Area
     {
@@ -34,12 +34,18 @@ public class Deposit
         
     }
     
-    public Deposit(string area, string size, bool climateControl, List<AddPromotionDto> promotionList)
+    public Deposit(string area, string size, bool climateControl, List<int> promotionList, PromotionManager promotionManager)
     {
         Area = area;    
         Size = size;
         _climateControl = climateControl;
-        _promotionList = promotionList;
+        foreach (var id in promotionList)
+        {
+            if(promotionManager.Promotions.All(p => p.Id != id))
+            {
+                throw new ArgumentException("Promotion with id " + id + " does not exist.");
+            }
+        }
     }
 }
 
