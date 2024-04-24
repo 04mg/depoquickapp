@@ -9,6 +9,19 @@ public class DepositManager
 
     public List<Deposit> Deposits { get; set; }
 
+    private void EnsureDepositExists(int id)
+    {
+        if (Deposits.All(d => d.Id != id))
+        {
+            throw new ArgumentException("Deposit not found");
+        }
+    }
+    
+    private Deposit GetDepositById(int id)
+    {
+        return Deposits.First(d => d.Id == id);
+    }
+
     public void Add(AddDepositDto addDepositDto, Credentials credentials, PromotionManager promotionManager)
     {
         var deposit = new Deposit(NextDepositId, addDepositDto.Area, addDepositDto.Size, addDepositDto.ClimateControl,
@@ -18,14 +31,11 @@ public class DepositManager
 
     public void Delete(int id, Credentials credentials)
     {
-        var deposit = Deposits.FirstOrDefault(d => d.Id == id);
-        if (deposit == null)
-        {
-            return;
-        }
+        EnsureDepositExists(id);
 
+        var deposit = GetDepositById(id);
         Deposits.Remove(deposit);
     }
-    
+
     private int NextDepositId => Deposits.Count > 0 ? Deposits.Max(d => d.Id) + 1 : 1;
 }
