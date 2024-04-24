@@ -21,4 +21,9 @@ public class BookingManager
     {
         return Bookings.Any(b => b.Id == i);
     }
+
+    public List<Booking> GetBookingsByEmail(string email, Credentials credentials)
+    {
+        throw new NotImplementedException();
+    }
 }

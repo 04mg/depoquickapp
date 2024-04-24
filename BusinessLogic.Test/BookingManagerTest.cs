@@ -92,4 +92,23 @@ public class BookingManagerTest
         //Assert
         Assert.IsTrue(bookingExists);        
     }
+
+    [TestMethod]
+    public void TestCanGetBookingsByEmail()
+    {
+        var addBookingDto = new AddBookingDto()
+        {
+            DepositId = 1,
+            Email = "admin@test.com",
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+        bookingManager.Add(addBookingDto, _depositManager, _authManager);
+
+        //Act
+        var bookings = bookingManager.GetBookingsByEmail("admin@test.com", _credentials);
+
+        //Assert
+        Assert.AreEqual(1, bookings.Count);
+    }
 }
