@@ -58,6 +58,10 @@ public class BookingManager
             if (!isApproved)
             {
                 Bookings.First(b => b.Id == i).Stage = BookingStage.Rejected;
+                if (!String.IsNullOrEmpty(message))
+                {
+                    Bookings.First(b => b.Id == i).Message = message;
+                }
             }
             
         }
