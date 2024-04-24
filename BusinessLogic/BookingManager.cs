@@ -36,6 +36,13 @@ public class BookingManager
 
     public List<Booking> GetAllBookings(Credentials credentials)
     {
-        throw new NotImplementedException();
+        if (credentials.Rank == "Administrator")
+        {
+            return Bookings;
+        }
+        else
+        {
+            return new List<Booking>();
+        }
     }
 }
