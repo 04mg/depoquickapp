@@ -162,4 +162,24 @@ public class BookingManagerTest
         //Assert
         Assert.AreEqual(BookingStage.Approved, bookingManager.Bookings[0].Stage);
     }
+    
+    [TestMethod]
+    public void TestCanRejectBooking()
+    {
+        //Arrange
+        var addBookingDto = new AddBookingDto()
+        {
+            DepositId = 1,
+            Email = "test@test.com",
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+        bookingManager.Add(addBookingDto, _depositManager, _authManager);
+        
+        //Act
+        bookingManager.Manage(1, _credentials, false);
+        
+        //Assert
+        Assert.AreEqual(BookingStage.Rejected, bookingManager.Bookings[0].Stage);
+    }
 }
