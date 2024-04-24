@@ -115,4 +115,31 @@ public class BookingManagerTest
         Assert.AreEqual(bookings[0].Duration.Item1, DateOnly.FromDateTime(DateTime.Now));
         Assert.AreEqual(bookings[0].Duration.Item2, DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
     }
+
+    [TestMethod]
+    public void TestCanGetAllBookings()
+    {
+        var addBookingDto = new AddBookingDto()
+        {
+            DepositId = 1,
+            Email = "admin@test.com",
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+        var addBookingDto2 = new AddBookingDto()
+        {
+            DepositId = 1,
+            Email = "test@test.com",
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+        bookingManager.Add(addBookingDto, _depositManager, _authManager);
+        bookingManager.Add(addBookingDto2, _depositManager, _authManager);
+        
+        //Act
+        var bookings = bookingManager.GetAllBookings(_credentials);
+        
+        //Assert
+        Assert.AreEqual(2, bookings.Count);
+    }
 }

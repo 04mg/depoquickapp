@@ -33,4 +33,9 @@ public class BookingManager
             return new List<Booking>();
         }
     }
+
+    public List<Booking> GetAllBookings(Credentials credentials)
+    {
+        throw new NotImplementedException();
+    }
 }
