@@ -48,6 +48,9 @@ public class BookingManager
 
     public void Manage(int i, Credentials credentials, bool isApproved)
     {
-        throw new NotImplementedException();
+        if (credentials.Rank == "Administrator" && isApproved)
+        {
+            Bookings.First(b => b.Id == i).Stage = BookingStage.Approved;
+        }
     }
 }

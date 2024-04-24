@@ -7,7 +7,7 @@ public class Booking
     public int DepositId { get; }
     public string Email { get; }
     
-    public BookingStage Stage { get; set; }
+    public BookingStage Stage { get; set; } = BookingStage.Pending;
 
     public Tuple<DateOnly, DateOnly> Duration
     {
