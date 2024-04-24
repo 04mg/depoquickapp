@@ -11,8 +11,25 @@ public class BookingManager
 
     public void Add(AddBookingDto addBookingDto, DepositManager depositManager, AuthManager authManager)
     {
-        var booking = new Booking(NextBookingId, addBookingDto.DepositId, addBookingDto.Email, addBookingDto.DateFrom, addBookingDto.DateTo, depositManager, authManager);
-        Bookings.Add(booking);
+        foreach (var booking in Bookings)
+        {
+            if (booking.DepositId == addBookingDto.DepositId && booking.Email == addBookingDto.Email)
+            {
+                if(addBookingDto.DateFrom >= booking.Duration.Item1 && addBookingDto.DateFrom <= booking.Duration.Item2)
+                {
+                    throw new ArgumentException("User already has a booking for this period.");
+                }
+                if(addBookingDto.DateTo >= booking.Duration.Item1 && addBookingDto.DateTo <= booking.Duration.Item2)
+                {
+                    throw new ArgumentException("User already has a booking for this period.");
+                }
+            }
+        }
+            
+        {
+            var booking = new Booking(NextBookingId, addBookingDto.DepositId, addBookingDto.Email, addBookingDto.DateFrom, addBookingDto.DateTo, depositManager, authManager);
+            Bookings.Add(booking);
+        }
     }
     
     private int NextBookingId => Bookings.Count > 0 ? Bookings.Max(d => d.Id) + 1 : 1;
