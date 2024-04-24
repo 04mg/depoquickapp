@@ -6,15 +6,18 @@ public class DepositManagerTest
     private const string Area = "A";
     private const string Size = "Small";
     private const bool ClimateControl = true;
-    private AuthManager _authManager;
-    private PromotionManager _promotionManager;
-    private List<int> _promotionList;
+    private AuthManager _authManager = new();
+    private PromotionManager _promotionManager = new();
+    private DepositManager _depositManager = new();
+    private List<int> _promotionList = new();
     private Credentials _credentials;
 
     [TestInitialize]
     public void SetUp()
     {
         _authManager = new AuthManager();
+        _promotionManager = new PromotionManager();
+        _depositManager = new DepositManager();
         var userModel = new RegisterDto()
         {
             NameSurname = "Name Surname",
@@ -44,7 +47,6 @@ public class DepositManagerTest
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
         };
-        _promotionManager = new PromotionManager();
         _promotionManager.Add(promotionModel1, _credentials);
         _promotionManager.Add(promotionModel2, _credentials);
         _promotionList = new List<int>() { 1, 2 };
@@ -54,7 +56,6 @@ public class DepositManagerTest
     public void TestCanAddDepositWithValidData()
     {
         // Arrange
-        var depositManager = new DepositManager();
         var depositAddDto = new AddDepositDto()
         {
             Area = Area,
@@ -63,17 +64,16 @@ public class DepositManagerTest
             PromotionList = _promotionList
         };
         // Act
-        depositManager.Add(depositAddDto, _credentials, _promotionManager);
+        _depositManager.Add(depositAddDto, _credentials, _promotionManager);
 
         // Assert
-        Assert.AreEqual(1, depositManager.Deposits.Count);
+        Assert.AreEqual(1, _depositManager.Deposits.Count);
     }
 
     [TestMethod]
     public void TestCanDeleteDeposit()
     {
         // Arrange
-        var depositManager = new DepositManager();
         var depositAddDto = new AddDepositDto()
         {
             Area = Area,
@@ -81,12 +81,12 @@ public class DepositManagerTest
             ClimateControl = ClimateControl,
             PromotionList = _promotionList
         };
-        depositManager.Add(depositAddDto, _credentials, _promotionManager);
+        _depositManager.Add(depositAddDto, _credentials, _promotionManager);
 
         // Act
-        depositManager.Delete(depositAddDto, _credentials);
+        _depositManager.Delete(1, _credentials);
 
         // Assert
-        Assert.AreEqual(0, depositManager.Deposits.Count);
+        Assert.AreEqual(0, _depositManager.Deposits.Count);
     }
 }

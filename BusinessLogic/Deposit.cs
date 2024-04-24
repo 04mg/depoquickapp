@@ -6,6 +6,7 @@ public class Deposit
     private string _size = "";
     public bool ClimateControl { get; set; }
     public List<int> PromotionList { get; set; }
+    public int Id { get; }
     
     public string Area
     {
@@ -28,8 +29,9 @@ public class Deposit
         
     }
     
-    public Deposit(string area, string size, bool climateControl, List<int> promotionList, PromotionManager promotionManager)
+    public Deposit(int id, string area, string size, bool climateControl, List<int> promotionList, PromotionManager promotionManager)
     {
+        Id = id;
         Area = area;    
         Size = size;
         ClimateControl = climateControl;
