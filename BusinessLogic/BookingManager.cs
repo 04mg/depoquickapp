@@ -19,6 +19,6 @@ public class BookingManager
 
     public bool Exists(int i)
     {
-        throw new NotImplementedException();
+        return Bookings.Any(b => b.Id == i);
     }
 }
