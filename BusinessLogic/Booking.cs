@@ -13,6 +13,7 @@ public class Booking
         set
         {
             EnsureDateFromIsLesserThanDateTo(value.Item1, value.Item2);
+            EnsureDateFromIsGreaterThanToday(value.Item1);
             _duration = value;
         }
     }
@@ -25,6 +26,14 @@ public class Booking
         }
     }
 
+    private static void EnsureDateFromIsGreaterThanToday(DateOnly dateFrom)
+    {
+        if (dateFrom < DateOnly.FromDateTime(DateTime.Now))
+        {
+            throw new ArgumentException("The starting date of the booking must not be earlier than today.");
+        }
+    }
+    
     public Booking(int id, int depositId, string email, DateOnly startDate, DateOnly endDate)
     {
         Id = id;
