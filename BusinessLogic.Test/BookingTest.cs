@@ -28,4 +28,15 @@ public class BookingTest
         Assert.AreEqual("The starting date of the booking must not be later than the ending date.",
             exception.Message);
     }
+
+    [TestMethod]
+    public void TestCantCreateBookingWithDateFromLessThanToday()
+    {
+        // Act
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() => new Booking(1, 1, Email, _today.AddDays(-1), _tomorrow));
+
+        // Assert
+        Assert.AreEqual("The starting date of the booking must not be earlier than today.", exception.Message);
+    }
 }
