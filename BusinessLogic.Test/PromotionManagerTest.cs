@@ -221,4 +221,34 @@ public class PromotionManagerTest
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCanCheckIfPromotionExists()
+    {
+        // Arrange
+        var addDto = new AddPromotionDto()
+        {
+            Label = Label,
+            Discount = Discount,
+            DateFrom = _today,
+            DateTo = _tomorrow
+        };
+        _promotionManager.Add(addDto, _adminCredentials);
+
+        // Act
+        var exists = _promotionManager.Exists(1);
+
+        // Assert
+        Assert.IsTrue(exists);
+    }
+    
+    [TestMethod]
+    public void TestCanCheckIfPromotionDoesNotExist()
+    {
+        // Act
+        var exists = _promotionManager.Exists(1);
+
+        // Assert
+        Assert.IsFalse(exists);
+    }
 }
