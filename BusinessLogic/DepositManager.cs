@@ -17,6 +17,14 @@ public class DepositManager
         }
     }
     
+    private static void EnsureUserIsAdmin(Credentials credentials)
+    {
+        if (credentials.Rank != "Administrator")
+        {
+            throw new UnauthorizedAccessException("Only administrators can manage deposits.");
+        }
+    }
+    
     private Deposit GetDepositById(int id)
     {
         return Deposits.First(d => d.Id == id);
@@ -24,10 +32,8 @@ public class DepositManager
 
     public void Add(AddDepositDto addDepositDto, Credentials credentials, PromotionManager promotionManager)
     {
-        if (credentials.Rank != "Administrator")
-        {
-            throw new UnauthorizedAccessException("Only administrators can add deposits.");
-        }
+        EnsureUserIsAdmin(credentials);
+
         var deposit = new Deposit(NextDepositId, addDepositDto.Area, addDepositDto.Size, addDepositDto.ClimateControl,
             addDepositDto.PromotionList, promotionManager);
         Deposits.Add(deposit);
@@ -36,10 +42,7 @@ public class DepositManager
     public void Delete(int id, Credentials credentials)
     {
         EnsureDepositExists(id);
-        if (credentials.Rank != "Administrator")
-        {
-            throw new UnauthorizedAccessException("Only administrators can delete deposits.");
-        }
+        EnsureUserIsAdmin(credentials);
         
         var deposit = GetDepositById(id);
         Deposits.Remove(deposit);

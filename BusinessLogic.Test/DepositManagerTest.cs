@@ -130,7 +130,7 @@ public class DepositManagerTest
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.Add(depositAddDto, _clientCredentials, _promotionManager));
 
         // Assert
-        Assert.AreEqual("Only administrators can add deposits.", exception.Message);
+        Assert.AreEqual("Only administrators can manage deposits.", exception.Message);
     }
     
     [TestMethod]
@@ -150,6 +150,6 @@ public class DepositManagerTest
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.Delete(1, _clientCredentials));
 
         // Assert
-        Assert.AreEqual("Only administrators can delete deposits.", exception.Message);
+        Assert.AreEqual("Only administrators can manage deposits.", exception.Message);
     }
 }
