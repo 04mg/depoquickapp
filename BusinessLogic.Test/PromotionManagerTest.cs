@@ -241,4 +241,14 @@ public class PromotionManagerTest
         // Assert
         Assert.IsTrue(exists);
     }
+    
+    [TestMethod]
+    public void TestCanCheckIfPromotionDoesNotExist()
+    {
+        // Act
+        var exists = _promotionManager.Exists(1);
+
+        // Assert
+        Assert.IsFalse(exists);
+    }
 }
