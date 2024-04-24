@@ -6,11 +6,13 @@ public class BookingManager
     
     public BookingManager()
     {
-        throw new NotImplementedException();
+        Bookings = new List<Booking>();
     }
 
     public void Add(AddBookingDto addBookingDto, DepositManager depositManager, AuthManager authManager)
     {
-        throw new NotImplementedException();
+        var booking = new Booking(NextBookingId, addBookingDto.DepositId, addBookingDto.Email, addBookingDto.DateFrom, addBookingDto.DateTo, depositManager, authManager);
+        Bookings.Add(booking);
     }
+    private int NextBookingId => Bookings.Count > 0 ? Bookings.Max(d => d.Id) + 1 : 1;
 }
