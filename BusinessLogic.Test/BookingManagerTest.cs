@@ -109,6 +109,10 @@ public class BookingManagerTest
         var bookings = bookingManager.GetBookingsByEmail("admin@test.com", _credentials);
 
         //Assert
-        Assert.AreEqual(1, bookings.Count);
+        Assert.AreEqual(bookings[0].Id, 1);
+        Assert.AreEqual(bookings[0].Email, "admin@test.com");
+        Assert.AreEqual(bookings[0].DepositId, 1);
+        Assert.AreEqual(bookings[0].Duration.Item1, DateOnly.FromDateTime(DateTime.Now));
+        Assert.AreEqual(bookings[0].Duration.Item2, DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
     }
 }

@@ -24,6 +24,13 @@ public class BookingManager
 
     public List<Booking> GetBookingsByEmail(string email, Credentials credentials)
     {
-        throw new NotImplementedException();
+        if (credentials.Rank == "Administrator" || credentials.Email == email)
+        {
+            return Bookings.Where(b => b.Email == email).ToList();
+        }
+        else
+        {
+            return new List<Booking>();
+        }
     }
 }
