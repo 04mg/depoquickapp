@@ -33,7 +33,7 @@ public class Booking
             throw new ArgumentException("The starting date of the booking must not be earlier than today.");
         }
     }
-    
+
     private static void EnsureDepositExists(int depositId, DepositManager depositManager)
     {
         if (depositManager.Deposits.All(d => d.Id != depositId))
@@ -41,12 +41,22 @@ public class Booking
             throw new ArgumentException("The deposit does not exist.");
         }
     }
-    
-    public Booking(int id, int depositId, string email, DateOnly startDate, DateOnly endDate, DepositManager depositManager)
+
+    private static void EnsureUserExists(string email, AuthManager authManager)
+    {
+        if (!authManager.Exists(email))
+        {
+            throw new ArgumentException("The user does not exist.");
+        }
+    }
+
+    public Booking(int id, int depositId, string email, DateOnly startDate, DateOnly endDate,
+        DepositManager depositManager, AuthManager authManager)
     {
         Id = id;
         EnsureDepositExists(depositId, depositManager);
         DepositId = depositId;
+        EnsureUserExists(email, authManager);
         Email = email;
         Duration = new Tuple<DateOnly, DateOnly>(startDate, endDate);
     }
