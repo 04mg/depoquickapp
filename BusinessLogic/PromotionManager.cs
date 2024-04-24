@@ -60,6 +60,10 @@ public class PromotionManager
     
     public bool Exists(int id)
     {
+        if (Promotions.All(p => p.Id == id))
+        {
+            return true;
+        }
         throw new NotImplementedException();
     }
 
