@@ -2,10 +2,11 @@ namespace BusinessLogic;
 
 public class Deposit
 {
-    private string _area;
-    private string _size;
+    private string _area = "";
+    private string _size = "";
     public bool ClimateControl { get; set; }
     public List<int> PromotionList { get; set; }
+    public int Id { get; }
     
     public string Area
     {
@@ -28,8 +29,9 @@ public class Deposit
         
     }
     
-    public Deposit(string area, string size, bool climateControl, List<int> promotionList, PromotionManager promotionManager)
+    public Deposit(int id, string area, string size, bool climateControl, List<int> promotionList, PromotionManager promotionManager)
     {
+        Id = id;
         Area = area;    
         Size = size;
         ClimateControl = climateControl;
@@ -47,7 +49,7 @@ public class Deposit
 
     private static void EnsurePromotionExistsForId(PromotionManager promotionManager, int id)
     {
-        if(promotionManager.Promotions.All(p => p.Id != id))
+        if(!promotionManager.Exists(id))
         {
             throw new ArgumentException("Promotion with id " + id + " does not exist.");
         }
