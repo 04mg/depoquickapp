@@ -36,7 +36,11 @@ public class DepositManager
     public void Delete(int id, Credentials credentials)
     {
         EnsureDepositExists(id);
-
+        if (credentials.Rank != "Administrator")
+        {
+            throw new UnauthorizedAccessException("Only administrators can delete deposits.");
+        }
+        
         var deposit = GetDepositById(id);
         Deposits.Remove(deposit);
     }
