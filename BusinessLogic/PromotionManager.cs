@@ -57,6 +57,11 @@ public class PromotionManager
         promotion.Discount = dto.Discount;
         promotion.Validity = new Tuple<DateOnly, DateOnly>(dto.DateFrom, dto.DateTo);
     }
+    
+    public bool Exists(int id)
+    {
+        throw new NotImplementedException();
+    }
 
     private int NextPromotionId => Promotions.Count > 0 ? Promotions.Max(p => p.Id) + 1 : 1;
 }
