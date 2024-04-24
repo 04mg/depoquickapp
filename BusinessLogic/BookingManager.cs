@@ -46,7 +46,7 @@ public class BookingManager
         }
     }
 
-    public void Manage(int i, Credentials credentials, bool isApproved)
+    public void Manage(int i, Credentials credentials, bool isApproved, string message = "")
     {
         if (credentials.Rank == "Administrator")
         {

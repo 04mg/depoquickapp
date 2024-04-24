@@ -6,7 +6,7 @@ public class Booking
     public int Id { get; }
     public int DepositId { get; }
     public string Email { get; }
-    
+    public string Message { get; set; } = "";
     public BookingStage Stage { get; set; } = BookingStage.Pending;
 
     public Tuple<DateOnly, DateOnly> Duration
@@ -19,6 +19,8 @@ public class Booking
             _duration = value;
         }
     }
+
+    
 
     private static void EnsureDateFromIsLesserThanDateTo(DateOnly dateFrom, DateOnly dateTo)
     {
