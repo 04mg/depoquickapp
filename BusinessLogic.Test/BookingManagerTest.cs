@@ -73,4 +73,23 @@ public class BookingManagerTest
         // Assert
         Assert.AreEqual(1, bookingManager.Bookings.Count);
     }
+
+    [TestMethod]
+    public void TestCanCheckIfBookingExists()
+    {
+        var addBookingDto = new AddBookingDto()
+        {
+            DepositId = 1,
+            Email = "test@test.com",
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+        bookingManager.Add(addBookingDto, _depositManager, _authManager);
+        
+        //Act
+        var bookingExists = bookingManager.Exists(1);
+        
+        //Assert
+        Assert.IsTrue(bookingExists);        
+    }
 }
