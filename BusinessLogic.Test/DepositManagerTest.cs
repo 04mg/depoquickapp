@@ -89,4 +89,14 @@ public class DepositManagerTest
         // Assert
         Assert.AreEqual(0, _depositManager.Deposits.Count);
     }
+
+    [TestMethod]
+    public void TestCantDeleteNonExistentDeposit()
+    {
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => _depositManager.Delete(1, _credentials));
+        
+        // Assert
+        Assert.AreEqual("Deposit not found", exception.Message);
+    }
 }
