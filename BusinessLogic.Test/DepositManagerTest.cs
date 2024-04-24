@@ -132,4 +132,24 @@ public class DepositManagerTest
         // Assert
         Assert.AreEqual("Only administrators can add deposits.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCantDeleteDepositIfNotAdministrator()
+    {
+        // Arrange
+        var depositAddDto = new AddDepositDto()
+        {
+            Area = Area,
+            Size = Size,
+            ClimateControl = ClimateControl,
+            PromotionList = _promotionList
+        };
+        _depositManager.Add(depositAddDto, _adminCredentials, _promotionManager);
+
+        // Act
+        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.Delete(1, _clientCredentials));
+
+        // Assert
+        Assert.AreEqual("Only administrators can delete deposits.", exception.Message);
+    }
 }
