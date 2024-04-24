@@ -4,13 +4,15 @@ public class DepositManager
 {
     public DepositManager()
     {
-        throw new NotImplementedException();
+        Deposits = new List<Deposit>();
     }
 
     public List<Deposit> Deposits { get; set; }
 
     public void Add(AddDepositDto addDepositDto, Credentials credentials, PromotionManager promotionManager)
     {
-        throw new NotImplementedException();
+        var deposit = new Deposit(addDepositDto.Area, addDepositDto.Size, addDepositDto.ClimateControl,
+            addDepositDto.PromotionList, promotionManager);
+        Deposits.Add(deposit);
     }
 }
