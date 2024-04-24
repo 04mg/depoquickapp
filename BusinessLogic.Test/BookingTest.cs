@@ -3,6 +3,7 @@ namespace BusinessLogic.Test;
 [TestClass]
 public class BookingTest
 {
+    private const string Email = "test@test.com";
     private readonly DateOnly _today = DateOnly.FromDateTime(DateTime.Now);
     private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
 
@@ -10,9 +11,21 @@ public class BookingTest
     public void TestCanCreateBookingWithValidData()
     {
         // Act
-        var booking = new Booking(1, 1, "test@test.com", _today, _tomorrow);
+        var booking = new Booking(1, 1, Email, _today, _tomorrow);
 
         // Assert
         Assert.IsNotNull(booking);
+    }
+
+    [TestMethod]
+    public void TestCantCreateBookingWithDateFromGreaterThanDateTo()
+    {
+        // Act
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() => new Booking(1, 1, Email, _tomorrow, _today));
+
+        // Assert
+        Assert.AreEqual("The starting date of the booking must not be later than the ending date.",
+            exception.Message);
     }
 }
