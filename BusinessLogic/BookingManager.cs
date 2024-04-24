@@ -45,4 +45,9 @@ public class BookingManager
             return new List<Booking>();
         }
     }
+
+    public void Manage(int i, Credentials credentials, bool isApproved)
+    {
+        throw new NotImplementedException();
+    }
 }

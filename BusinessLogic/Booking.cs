@@ -6,6 +6,8 @@ public class Booking
     public int Id { get; }
     public int DepositId { get; }
     public string Email { get; }
+    
+    public BookingStage Stage { get; set; }
 
     public Tuple<DateOnly, DateOnly> Duration
     {
@@ -60,4 +62,11 @@ public class Booking
         Email = email;
         Duration = new Tuple<DateOnly, DateOnly>(startDate, endDate);
     }
+}
+
+public enum BookingStage
+{
+    Approved,
+    Pending,
+    Rejected
 }
