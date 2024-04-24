@@ -53,7 +53,7 @@ public class DepositManagerTest
     [TestMethod]
     public void TestCanAddDepositWithValidData()
     {
-        //Arrange
+        // Arrange
         var depositManager = new DepositManager();
         var depositAddDto = new AddDepositDto()
         {
@@ -62,10 +62,31 @@ public class DepositManagerTest
             ClimateControl = ClimateControl,
             PromotionList = _promotionList
         };
-        //Act
+        // Act
         depositManager.Add(depositAddDto, _credentials, _promotionManager);
 
-        //Assert
+        // Assert
         Assert.AreEqual(1, depositManager.Deposits.Count);
+    }
+
+    [TestMethod]
+    public void TestCanDeleteDeposit()
+    {
+        // Arrange
+        var depositManager = new DepositManager();
+        var depositAddDto = new AddDepositDto()
+        {
+            Area = Area,
+            Size = Size,
+            ClimateControl = ClimateControl,
+            PromotionList = _promotionList
+        };
+        depositManager.Add(depositAddDto, _credentials, _promotionManager);
+
+        // Act
+        depositManager.Delete(depositAddDto, _credentials);
+
+        // Assert
+        Assert.AreEqual(0, depositManager.Deposits.Count);
     }
 }

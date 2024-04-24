@@ -47,7 +47,7 @@ public class Deposit
 
     private static void EnsurePromotionExistsForId(PromotionManager promotionManager, int id)
     {
-        if(promotionManager.Exists(id))
+        if(!promotionManager.Exists(id))
         {
             throw new ArgumentException("Promotion with id " + id + " does not exist.");
         }
