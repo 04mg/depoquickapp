@@ -60,7 +60,7 @@ public class BookingTest
     public void TestCanCreateBookingWithValidData()
     {
         // Act
-        var booking = new Booking(1, 1, Email, _today, _tomorrow);
+        var booking = new Booking(1, 1, Email, _today, _tomorrow, _depositManager);
 
         // Assert
         Assert.IsNotNull(booking);
@@ -71,7 +71,7 @@ public class BookingTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Booking(1, 1, Email, _tomorrow, _today));
+            Assert.ThrowsException<ArgumentException>(() => new Booking(1, 1, Email, _tomorrow, _today, _depositManager));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be later than the ending date.",
@@ -83,7 +83,7 @@ public class BookingTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Booking(1, 1, Email, _today.AddDays(-1), _tomorrow));
+            Assert.ThrowsException<ArgumentException>(() => new Booking(1, 1, Email, _today.AddDays(-1), _tomorrow, _depositManager));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be earlier than today.", exception.Message);
@@ -94,9 +94,9 @@ public class BookingTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Booking(1, 2, Email, _today, _tomorrow));
+            Assert.ThrowsException<ArgumentException>(() => new Booking(1, 2, Email, _today, _tomorrow, _depositManager));
 
         // Assert
-        Assert.AreEqual("The deposit with the specified ID does not exist.", exception.Message);
+        Assert.AreEqual("The deposit does not exist.", exception.Message);
     }
 }

@@ -34,9 +34,18 @@ public class Booking
         }
     }
     
-    public Booking(int id, int depositId, string email, DateOnly startDate, DateOnly endDate)
+    private static void EnsureDepositExists(int depositId, DepositManager depositManager)
+    {
+        if (depositManager.Deposits.All(d => d.Id != depositId))
+        {
+            throw new ArgumentException("The deposit does not exist.");
+        }
+    }
+    
+    public Booking(int id, int depositId, string email, DateOnly startDate, DateOnly endDate, DepositManager depositManager)
     {
         Id = id;
+        EnsureDepositExists(depositId, depositManager);
         DepositId = depositId;
         Email = email;
         Duration = new Tuple<DateOnly, DateOnly>(startDate, endDate);
