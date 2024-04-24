@@ -7,6 +7,11 @@ public class AuthManager
     private Dictionary<string, User> UsersByEmail { set; get; } = new();
     private bool IsAdminRegistered { set; get; }
 
+    public bool Exists(string email)
+    {
+        return UsersByEmail.ContainsKey(email);
+    }
+
     private static void EnsurePasswordConfirmationMatch(string password, string passwordConfirmation)
     {
         if (password != passwordConfirmation)
