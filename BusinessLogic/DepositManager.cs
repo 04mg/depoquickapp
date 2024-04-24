@@ -8,7 +8,7 @@ public class DepositManager
     }
 
     public List<Deposit> Deposits { get; set; }
-
+    
     private void EnsureDepositExists(int id)
     {
         if (Deposits.All(d => d.Id != id))
@@ -24,6 +24,10 @@ public class DepositManager
 
     public void Add(AddDepositDto addDepositDto, Credentials credentials, PromotionManager promotionManager)
     {
+        if (credentials.Rank != "Administrator")
+        {
+            throw new UnauthorizedAccessException("Only administrators can add deposits.");
+        }
         var deposit = new Deposit(NextDepositId, addDepositDto.Area, addDepositDto.Size, addDepositDto.ClimateControl,
             addDepositDto.PromotionList, promotionManager);
         Deposits.Add(deposit);
