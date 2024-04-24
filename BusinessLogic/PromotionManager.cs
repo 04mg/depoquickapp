@@ -64,7 +64,8 @@ public class PromotionManager
         {
             return true;
         }
-        throw new NotImplementedException();
+
+        return false;
     }
 
     private int NextPromotionId => Promotions.Count > 0 ? Promotions.Max(p => p.Id) + 1 : 1;
