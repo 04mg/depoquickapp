@@ -54,16 +54,10 @@ public class BookingManagerTest
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
         };
         promotionManager.Add(promotionModel1, _adminCredentials);
-        var promotionList = new List<int>() { 1 };
 
-        var depositModel = new AddDepositDto()
-        {
-            Area = "A",
-            Size = "Small",
-            ClimateControl = true,
-            PromotionList = promotionList
-        };
-        _depositManager.Add(depositModel, _adminCredentials, promotionManager);
+        var promotionList = new List<Promotion>() {promotionManager.Promotions[0]};
+        var deposit = new Deposit(1, "A", "Small", true, promotionList);
+        _depositManager.Add(deposit, _adminCredentials);
     }
 
     [TestMethod]

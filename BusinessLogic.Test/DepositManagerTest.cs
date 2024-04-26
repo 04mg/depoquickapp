@@ -70,15 +70,11 @@ public class DepositManagerTest
     public void TestCanAddDepositWithValidData()
     {
         // Arrange
-        var depositAddDto = new AddDepositDto()
-        {
-            Area = Area,
-            Size = Size,
-            ClimateControl = ClimateControl,
-            PromotionList = _promotionList
-        };
+        var promotionList = new List<Promotion>() {_promotionManager.Promotions[0]};
+        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        
         // Act
-        _depositManager.Add(depositAddDto, _adminCredentials, _promotionManager);
+        _depositManager.Add(deposit, _adminCredentials);
 
         // Assert
         Assert.AreEqual(1, _depositManager.Deposits.Count);
@@ -88,14 +84,9 @@ public class DepositManagerTest
     public void TestCanDeleteDeposit()
     {
         // Arrange
-        var depositAddDto = new AddDepositDto()
-        {
-            Area = Area,
-            Size = Size,
-            ClimateControl = ClimateControl,
-            PromotionList = _promotionList
-        };
-        _depositManager.Add(depositAddDto, _adminCredentials, _promotionManager);
+        var promotionList = new List<Promotion>() {_promotionManager.Promotions[0]};
+        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        _depositManager.Add(deposit, _adminCredentials);
 
         // Act
         _depositManager.Delete(1, _adminCredentials);
@@ -118,16 +109,11 @@ public class DepositManagerTest
     public void TestCantAddDepositIfNotAdministrator()
     {
         // Arrange
-        var depositAddDto = new AddDepositDto()
-        {
-            Area = Area,
-            Size = Size,
-            ClimateControl = ClimateControl,
-            PromotionList = _promotionList
-        };
+        var promotionList = new List<Promotion>() {_promotionManager.Promotions[0]};
+        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
 
         // Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.Add(depositAddDto, _clientCredentials, _promotionManager));
+        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.Add(deposit, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage deposits.", exception.Message);
@@ -137,14 +123,9 @@ public class DepositManagerTest
     public void TestCantDeleteDepositIfNotAdministrator()
     {
         // Arrange
-        var depositAddDto = new AddDepositDto()
-        {
-            Area = Area,
-            Size = Size,
-            ClimateControl = ClimateControl,
-            PromotionList = _promotionList
-        };
-        _depositManager.Add(depositAddDto, _adminCredentials, _promotionManager);
+        var promotionList = new List<Promotion>() {_promotionManager.Promotions[0]};
+        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        _depositManager.Add(deposit, _adminCredentials);
 
         // Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.Delete(1, _clientCredentials));
