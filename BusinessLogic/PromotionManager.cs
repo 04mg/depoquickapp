@@ -30,32 +30,30 @@ public class PromotionManager
         return Promotions.First(p => p.Id == id);
     }
 
-    public void Add(AddPromotionDto dto, Credentials credentials)
+    public void Add(Promotion promotion, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
-
-        Promotions.Add(new Promotion(NextPromotionId, dto.Label, dto.Discount, dto.DateFrom,
-            dto.DateTo));
+        promotion.Id = NextPromotionId;
+        Promotions.Add(promotion);
     }
 
     public void Delete(int id, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
         EnsurePromotionExists(id);
-
         var promotion = GetPromotionById(id);
         Promotions.Remove(promotion);
     }
 
-    public void Modify(ModifyPromotionDto dto, Credentials credentials)
+    public void Modify(int id, Promotion newPromotion, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
-        EnsurePromotionExists(dto.Id);
+        EnsurePromotionExists(id);
 
-        var promotion = GetPromotionById(dto.Id);
-        promotion.Label = dto.Label;
-        promotion.Discount = dto.Discount;
-        promotion.Validity = new Tuple<DateOnly, DateOnly>(dto.DateFrom, dto.DateTo);
+        var oldPromotion = GetPromotionById(id);
+        oldPromotion.Label = newPromotion.Label;
+        oldPromotion.Discount = newPromotion.Discount;
+        oldPromotion.Validity = newPromotion.Validity;
     }
 
     public bool Exists(int id)

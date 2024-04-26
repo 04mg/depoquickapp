@@ -46,16 +46,11 @@ public class BookingManagerTest
         _authManager.Register(otherUserModel);
 
         var promotionManager = new PromotionManager();
-        var promotionModel1 = new AddPromotionDto()
-        {
-            Label = "label",
-            Discount = 50,
-            DateFrom = DateOnly.FromDateTime(DateTime.Now),
-            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
-        };
-        promotionManager.Add(promotionModel1, _adminCredentials);
+        var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        promotionManager.Add(promotion, _adminCredentials);
 
-        var promotionList = new List<Promotion>() {promotionManager.Promotions[0]};
+        var promotionList = new List<Promotion>() { promotion };
         var deposit = new Deposit(1, "A", "Small", true, promotionList);
         _depositManager.Add(deposit, _adminCredentials);
     }
@@ -275,7 +270,7 @@ public class BookingManagerTest
         // Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
             _bookingManager.GetBookingsByEmail("other@test.com", _userCredentials));
-        
+
         // Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
