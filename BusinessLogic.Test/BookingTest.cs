@@ -36,14 +36,8 @@ public class BookingTest
         _authManager.Register(userModel);
 
         var promotionManager = new PromotionManager();
-        var promotionModel1 = new AddPromotionDto()
-        {
-            Label = "label",
-            Discount = 50,
-            DateFrom = DateOnly.FromDateTime(DateTime.Now),
-            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
-        };
-        promotionManager.Add(promotionModel1, _credentials);
+        var promotion = new Promotion(1, "A", 5, _today, _tomorrow);
+        promotionManager.Add(promotion, _credentials);
         var promotionList = new List<Promotion>() { promotionManager.Promotions[0] };
         
         var deposit = new Deposit(1, "A", "Small", true, promotionList);
