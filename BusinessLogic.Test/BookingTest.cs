@@ -36,31 +36,19 @@ public class BookingTest
         _authManager.Register(userModel);
 
         var promotionManager = new PromotionManager();
-        var promotionModel1 = new AddPromotionDto()
-        {
-            Label = "label",
-            Discount = 50,
-            DateFrom = DateOnly.FromDateTime(DateTime.Now),
-            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
-        };
-        promotionManager.Add(promotionModel1, _credentials);
-        var promotionList = new List<int>() { 1 };
-
-        var depositModel = new AddDepositDto()
-        {
-            Area = "A",
-            Size = "Small",
-            ClimateControl = true,
-            PromotionList = promotionList
-        };
-        _depositManager.Add(depositModel, _credentials, promotionManager);
+        var promotion = new Promotion(1, "A", 5, _today, _tomorrow);
+        promotionManager.Add(promotion, _credentials);
+        var promotionList = new List<Promotion>() { promotionManager.Promotions[0] };
+        
+        var deposit = new Deposit(1, "A", "Small", true, promotionList);
+        _depositManager.Add(deposit, _credentials);
     }
 
     [TestMethod]
     public void TestCanCreateBookingWithValidData()
     {
         // Act
-        var booking = new Booking(1, 1, Email, _today, _tomorrow, _depositManager);
+        var booking = new Booking(1, 1, Email, _today, _tomorrow, _depositManager, _authManager);
 
         // Assert
         Assert.IsNotNull(booking);
@@ -71,7 +59,8 @@ public class BookingTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Booking(1, 1, Email, _tomorrow, _today, _depositManager));
+            Assert.ThrowsException<ArgumentException>(
+                () => new Booking(1, 1, Email, _tomorrow, _today, _depositManager, _authManager));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be later than the ending date.",
@@ -83,7 +72,8 @@ public class BookingTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Booking(1, 1, Email, _today.AddDays(-1), _tomorrow, _depositManager));
+            Assert.ThrowsException<ArgumentException>(() =>
+                new Booking(1, 1, Email, _today.AddDays(-1), _tomorrow, _depositManager, _authManager));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be earlier than today.", exception.Message);
@@ -94,9 +84,22 @@ public class BookingTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Booking(1, 2, Email, _today, _tomorrow, _depositManager));
+            Assert.ThrowsException<ArgumentException>(
+                () => new Booking(1, 2, Email, _today, _tomorrow, _depositManager, _authManager));
 
         // Assert
         Assert.AreEqual("The deposit does not exist.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantCreateBookingWithNonExistentUser()
+    {
+        // Act
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() =>
+                new Booking(1, 1, "wrong@test.com", _today, _tomorrow, _depositManager, _authManager));
+
+        // Assert
+        Assert.AreEqual("The user does not exist.", exception.Message);
     }
 }

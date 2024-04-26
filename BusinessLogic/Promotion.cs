@@ -39,7 +39,6 @@ public class Promotion
         set
         {
             EnsureDiscountIsWithinRange(value);
-
             _discount = value;
         }
     }
@@ -75,7 +74,7 @@ public class Promotion
             throw new ArgumentException("The starting date of the promotion must not be later than the ending date.");
         }
     }
-    
+
     private static void EnsureDateToIsGreaterThanToday(Tuple<DateOnly, DateOnly> validity)
     {
         if (validity.Item2 <= DateOnly.FromDateTime(DateTime.Now))
@@ -83,7 +82,7 @@ public class Promotion
             throw new ArgumentException("The ending date of the promotion cannot be in the past.");
         }
     }
-    
+
     private static void EnsureLabelIsNotEmpty(string label)
     {
         if (string.IsNullOrWhiteSpace(label))

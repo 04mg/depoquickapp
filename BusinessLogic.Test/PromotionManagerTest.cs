@@ -47,16 +47,10 @@ public class PromotionManagerTest
     public void TestCanAddPromotion()
     {
         // Arrange
-        var addDto = new AddPromotionDto()
-        {
-            Label = Label,
-            Discount = Discount,
-            DateFrom = _today,
-            DateTo = _tomorrow
-        };
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
 
         // Act
-        _promotionManager.Add(addDto, _adminCredentials);
+        _promotionManager.Add(promotion, _adminCredentials);
 
         // Assert
         Assert.AreEqual(1, _promotionManager.Promotions.Count);
@@ -66,15 +60,8 @@ public class PromotionManagerTest
     public void TestCanDeletePromotion()
     {
         // Arrange
-        var addDto = new AddPromotionDto()
-        {
-            Label = Label,
-            Discount = Discount,
-            DateFrom = _today,
-            DateTo = _tomorrow
-        };
-        var promotion = new Promotion(1, addDto.Label, addDto.Discount, addDto.DateFrom, addDto.DateTo);
-        _promotionManager.Add(addDto, _adminCredentials);
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
+        _promotionManager.Add(promotion, _adminCredentials);
 
         // Act
         _promotionManager.Delete(1, _adminCredentials);
@@ -87,49 +74,28 @@ public class PromotionManagerTest
     public void TestCanModifyPromotion()
     {
         // Arrange
-        var addDto = new AddPromotionDto()
-        {
-            Label = Label,
-            Discount = Discount,
-            DateFrom = _today,
-            DateTo = _tomorrow
-        };
-
-        var promotion = new Promotion(1, addDto.Label, addDto.Discount, addDto.DateFrom, addDto.DateTo);
-        _promotionManager.Add(addDto, _adminCredentials);
-
-        var modifyDto = new ModifyPromotionDto()
-        {
-            Id = 1,
-            Label = "new label",
-            Discount = 20,
-            DateFrom = DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
-            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(3))
-        };
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
+        _promotionManager.Add(promotion, _adminCredentials);
+        var modifiedPromotion = new Promotion(1, "new label", 20, DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(3)));
 
         // Act
-        _promotionManager.Modify(modifyDto, _adminCredentials);
+        _promotionManager.Modify(1, modifiedPromotion, _adminCredentials);
 
         // Assert
-        Assert.IsFalse(_promotionManager.Promotions.Contains(promotion));
+        Assert.IsFalse(_promotionManager.Promotions.Contains(modifiedPromotion));
     }
 
     [TestMethod]
     public void TestCantAddPromotionIfNotAdministrator()
     {
         // Arrange
-        var addDto = new AddPromotionDto()
-        {
-            Label = Label,
-            Discount = Discount,
-            DateFrom = _today,
-            DateTo = _tomorrow
-        };
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
 
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _promotionManager.Add(addDto, _clientCredentials));
+                _promotionManager.Add(promotion, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
@@ -139,14 +105,8 @@ public class PromotionManagerTest
     public void TestCantDeletePromotionIfNotAdministrator()
     {
         // Arrange
-        var addDto = new AddPromotionDto()
-        {
-            Label = Label,
-            Discount = Discount,
-            DateFrom = _today,
-            DateTo = _tomorrow
-        };
-        _promotionManager.Add(addDto, _adminCredentials);
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
+        _promotionManager.Add(promotion, _adminCredentials);
 
         // Act
         var exception =
@@ -161,28 +121,15 @@ public class PromotionManagerTest
     public void TestCantModifyPromotionIfNotAdministrator()
     {
         // Arrange
-        var addDto = new AddPromotionDto()
-        {
-            Label = Label,
-            Discount = Discount,
-            DateFrom = _today,
-            DateTo = _tomorrow
-        };
-        _promotionManager.Add(addDto, _adminCredentials);
-
-        var modifyDto = new ModifyPromotionDto()
-        {
-            Id = 1,
-            Label = "new label",
-            Discount = 20,
-            DateFrom = DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
-            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(3))
-        };
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
+        _promotionManager.Add(promotion, _adminCredentials);
+        var modifiedPromotion = new Promotion(1, "new label", 20, DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(3)));
 
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _promotionManager.Modify(modifyDto, _clientCredentials));
+                _promotionManager.Modify(1, modifiedPromotion, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
@@ -192,19 +139,12 @@ public class PromotionManagerTest
     public void TestCantModifyNonExistentPromotion()
     {
         // Arrange
-        var modifyDto = new ModifyPromotionDto()
-        {
-            Id = 1,
-            Label = "new label",
-            Discount = 20,
-            DateFrom = DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
-            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(3))
-        };
+        var modifiedPromotion = new Promotion(1, "new label", 20, _today, _tomorrow);
 
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                _promotionManager.Modify(modifyDto, _adminCredentials));
+                _promotionManager.Modify(1, modifiedPromotion, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
@@ -221,19 +161,13 @@ public class PromotionManagerTest
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCanCheckIfPromotionExists()
     {
         // Arrange
-        var addDto = new AddPromotionDto()
-        {
-            Label = Label,
-            Discount = Discount,
-            DateFrom = _today,
-            DateTo = _tomorrow
-        };
-        _promotionManager.Add(addDto, _adminCredentials);
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
+        _promotionManager.Add(promotion, _adminCredentials);
 
         // Act
         var exists = _promotionManager.Exists(1);
@@ -241,7 +175,7 @@ public class PromotionManagerTest
         // Assert
         Assert.IsTrue(exists);
     }
-    
+
     [TestMethod]
     public void TestCanCheckIfPromotionDoesNotExist()
     {
