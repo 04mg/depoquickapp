@@ -13,37 +13,28 @@ public class BookingManagerTest
     public void Initialize()
     {
         _authManager = new AuthManager();
-        var adminModel = new RegisterDto()
-        {
-            NameSurname = "Name Surname",
-            Email = "admin@test.com",
-            Password = "12345678@mE",
-            PasswordConfirmation = "12345678@mE",
-            Rank = "Administrator"
-        };
-        _authManager.Register(adminModel);
+        var passwordConfirmation = "12345678@mE";
+        var admin = new User(
+            "Name Surname",
+            "admin@test.com",
+            "12345678@mE",
+            "Administrator"
+        );
+        var client = new User(
+            "Name Surname",
+            "test@test.com",
+            "12345678@mE"
+        );
+        var otherClient = new User(
+            "Name Surname",
+            "other@test.com",
+            "12345678@mE"
+        );
+        _authManager.Register(admin, passwordConfirmation);
         _adminCredentials = _authManager.Login(new LoginDto() { Email = "admin@test.com", Password = "12345678@mE" });
-
-        var userModel = new RegisterDto()
-        {
-            NameSurname = "Name Surname",
-            Email = "test@test.com",
-            Password = "12345678@mE",
-            PasswordConfirmation = "12345678@mE",
-            Rank = "Client"
-        };
-        _authManager.Register(userModel);
+        _authManager.Register(client, passwordConfirmation);
         _userCredentials = _authManager.Login(new LoginDto() { Email = "test@test.com", Password = "12345678@mE" });
-
-        var otherUserModel = new RegisterDto()
-        {
-            NameSurname = "Name Surname",
-            Email = "other@test.com",
-            Password = "12345678@mE",
-            PasswordConfirmation = "12345678@mE",
-            Rank = "Client"
-        };
-        _authManager.Register(otherUserModel);
+        _authManager.Register(otherClient, passwordConfirmation);
 
         var promotionManager = new PromotionManager();
         var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),

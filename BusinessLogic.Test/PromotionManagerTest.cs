@@ -17,30 +17,24 @@ public class PromotionManagerTest
         _promotionManager = new PromotionManager();
         var authManager = new AuthManager();
 
-        var adminModel = new RegisterDto()
-        {
-            Email = "admin@admin.com",
-            Password = "12345678@mE",
-            PasswordConfirmation = "12345678@mE",
-            NameSurname = "Name Surname",
-            Rank = "Administrator"
-        };
-
-        var clientModel = new RegisterDto()
-        {
-            Email = "client@client.com",
-            Password = "12345678@mE",
-            PasswordConfirmation = "12345678@mE",
-            NameSurname = "Name Surname",
-            Rank = "Client"
-        };
-
-        authManager.Register(adminModel);
-        authManager.Register(clientModel);
+        var passwordConfirmation = "12345678@mE";
+        var admin = new User(
+            "Name Surname",
+            "admin@admin.com",
+            "12345678@mE",
+            "Administrator"
+        );
+        var client = new User(
+            "Name Surname",
+            "client@client.com",
+            "12345678@mE"
+        );
+        authManager.Register(admin, passwordConfirmation);
+        authManager.Register(client, passwordConfirmation);
         _adminCredentials = authManager.Login(new LoginDto()
-            { Email = adminModel.Email, Password = adminModel.Password });
+            { Email = admin.Email, Password = admin.Password });
         _clientCredentials = authManager.Login(new LoginDto()
-            { Email = clientModel.Email, Password = clientModel.Password });
+            { Email = client.Email, Password = client.Password });
     }
 
     [TestMethod]
