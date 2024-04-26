@@ -47,6 +47,10 @@ public class BookingManager
         }
         else
         {
+            if (credentials.Rank != "Administrator")
+            {
+                throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+            }
             return new List<Booking>();
         }
     }

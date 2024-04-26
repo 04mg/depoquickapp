@@ -35,6 +35,16 @@ public class BookingManagerTest
         _authManager.Register(userModel);
         _userCredentials = _authManager.Login(new LoginDto() { Email = "test@test.com", Password = "12345678@mE" });
 
+        var otherUserModel = new RegisterDto()
+        {
+            NameSurname = "Name Surname",
+            Email = "other@test.com",
+            Password = "12345678@mE",
+            PasswordConfirmation = "12345678@mE",
+            Rank = "Client"
+        };
+        _authManager.Register(otherUserModel);
+
         var promotionManager = new PromotionManager();
         var promotionModel1 = new AddPromotionDto()
         {
