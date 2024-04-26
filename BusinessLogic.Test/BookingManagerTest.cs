@@ -233,4 +233,25 @@ public class BookingManagerTest
         // Assert
         Assert.AreEqual("User already has a booking for this period.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCantGetBookingsByEmailOfAnotherUserIfNotAdministrator()
+    {
+        // Arrange
+        var addBookingDto = new AddBookingDto()
+        {
+            DepositId = 1,
+            Email = "other@test.com",
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+        _bookingManager.Add(addBookingDto, _depositManager, _authManager);
+
+        // Act
+        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            _bookingManager.GetBookingsByEmail("other@test.com", _userCredentials));
+
+        // Assert
+        Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
+    }
 }
