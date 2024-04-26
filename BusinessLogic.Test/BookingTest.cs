@@ -14,7 +14,7 @@ public class BookingTest
     public void Initialize()
     {
         _authManager = new AuthManager();
-        var passwordConfirmation = "12345678@mE";
+        const string passwordConfirmation = "12345678@mE";
         var admin = new User(
             "Name Surname",
             "admin@admin.com",

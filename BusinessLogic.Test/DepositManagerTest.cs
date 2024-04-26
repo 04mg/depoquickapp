@@ -18,7 +18,7 @@ public class DepositManagerTest
         _depositManager = new DepositManager();
         var authManager = new AuthManager();
 
-        var passwordConfirmation = "12345678@mE";
+        const string passwordConfirmation = "12345678@mE";
         var admin = new User(
             "Name Surname",
             "admin@admin.com",
