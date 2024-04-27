@@ -30,12 +30,10 @@ public class DepositManager
         return Deposits.First(d => d.Id == id);
     }
 
-    public void Add(AddDepositDto addDepositDto, Credentials credentials, PromotionManager promotionManager)
+    public void Add(Deposit deposit, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
-
-        var deposit = new Deposit(NextDepositId, addDepositDto.Area, addDepositDto.Size, addDepositDto.ClimateControl,
-            addDepositDto.PromotionList, promotionManager);
+        deposit.Id = NextDepositId;
         Deposits.Add(deposit);
     }
 

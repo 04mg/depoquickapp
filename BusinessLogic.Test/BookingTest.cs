@@ -3,7 +3,7 @@ namespace BusinessLogic.Test;
 [TestClass]
 public class BookingTest
 {
-    private const string Email = "test@test.com";
+    private const string Email = "admin@admin.com";
     private readonly DateOnly _today = DateOnly.FromDateTime(DateTime.Now);
     private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
     private AuthManager _authManager = new();
@@ -14,46 +14,29 @@ public class BookingTest
     public void Initialize()
     {
         _authManager = new AuthManager();
-        var adminModel = new RegisterDto()
-        {
-            NameSurname = "Name Surname",
-            Email = "admin@test.com",
-            Password = "12345678@mE",
-            PasswordConfirmation = "12345678@mE",
-            Rank = "Administrator"
-        };
-        _authManager.Register(adminModel);
-        _credentials = _authManager.Login(new LoginDto() { Email = "admin@test.com", Password = "12345678@mE" });
-
-        var userModel = new RegisterDto()
-        {
-            NameSurname = "Name Surname",
-            Email = Email,
-            Password = "12345678@mE",
-            PasswordConfirmation = "12345678@mE",
-            Rank = "Client"
-        };
-        _authManager.Register(userModel);
+        const string passwordConfirmation = "12345678@mE";
+        var admin = new User(
+            "Name Surname",
+            "admin@admin.com",
+            "12345678@mE",
+            "Administrator"
+        );
+        var client = new User(
+            "Name Surname",
+            "client@client.com",
+            "12345678@mE"
+        );
+        _authManager.Register(admin, passwordConfirmation);
+        _credentials = _authManager.Login(new LoginDto() { Email = "admin@admin.com", Password = "12345678@mE" });
+        _authManager.Register(client, passwordConfirmation);
 
         var promotionManager = new PromotionManager();
-        var promotionModel1 = new AddPromotionDto()
-        {
-            Label = "label",
-            Discount = 50,
-            DateFrom = DateOnly.FromDateTime(DateTime.Now),
-            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
-        };
-        promotionManager.Add(promotionModel1, _credentials);
-        var promotionList = new List<int>() { 1 };
-
-        var depositModel = new AddDepositDto()
-        {
-            Area = "A",
-            Size = "Small",
-            ClimateControl = true,
-            PromotionList = promotionList
-        };
-        _depositManager.Add(depositModel, _credentials, promotionManager);
+        var promotion = new Promotion(1, "A", 5, _today, _tomorrow);
+        promotionManager.Add(promotion, _credentials);
+        var promotionList = new List<Promotion>() { promotionManager.Promotions[0] };
+        
+        var deposit = new Deposit(1, "A", "Small", true, promotionList);
+        _depositManager.Add(deposit, _credentials);
     }
 
     [TestMethod]

@@ -13,57 +13,37 @@ public class BookingManagerTest
     public void Initialize()
     {
         _authManager = new AuthManager();
-        var adminModel = new RegisterDto()
-        {
-            NameSurname = "Name Surname",
-            Email = "admin@test.com",
-            Password = "12345678@mE",
-            PasswordConfirmation = "12345678@mE",
-            Rank = "Administrator"
-        };
-        _authManager.Register(adminModel);
+        const string passwordConfirmation = "12345678@mE";
+        var admin = new User(
+            "Name Surname",
+            "admin@test.com",
+            "12345678@mE",
+            "Administrator"
+        );
+        var client = new User(
+            "Name Surname",
+            "test@test.com",
+            "12345678@mE"
+        );
+        var otherClient = new User(
+            "Name Surname",
+            "other@test.com",
+            "12345678@mE"
+        );
+        _authManager.Register(admin, passwordConfirmation);
         _adminCredentials = _authManager.Login(new LoginDto() { Email = "admin@test.com", Password = "12345678@mE" });
-
-        var userModel = new RegisterDto()
-        {
-            NameSurname = "Name Surname",
-            Email = "test@test.com",
-            Password = "12345678@mE",
-            PasswordConfirmation = "12345678@mE",
-            Rank = "Client"
-        };
-        _authManager.Register(userModel);
+        _authManager.Register(client, passwordConfirmation);
         _userCredentials = _authManager.Login(new LoginDto() { Email = "test@test.com", Password = "12345678@mE" });
-
-        var otherUserModel = new RegisterDto()
-        {
-            NameSurname = "Name Surname",
-            Email = "other@test.com",
-            Password = "12345678@mE",
-            PasswordConfirmation = "12345678@mE",
-            Rank = "Client"
-        };
-        _authManager.Register(otherUserModel);
+        _authManager.Register(otherClient, passwordConfirmation);
 
         var promotionManager = new PromotionManager();
-        var promotionModel1 = new AddPromotionDto()
-        {
-            Label = "label",
-            Discount = 50,
-            DateFrom = DateOnly.FromDateTime(DateTime.Now),
-            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
-        };
-        promotionManager.Add(promotionModel1, _adminCredentials);
-        var promotionList = new List<int>() { 1 };
+        var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        promotionManager.Add(promotion, _adminCredentials);
 
-        var depositModel = new AddDepositDto()
-        {
-            Area = "A",
-            Size = "Small",
-            ClimateControl = true,
-            PromotionList = promotionList
-        };
-        _depositManager.Add(depositModel, _adminCredentials, promotionManager);
+        var promotionList = new List<Promotion>() { promotion };
+        var deposit = new Deposit(1, "A", "Small", true, promotionList);
+        _depositManager.Add(deposit, _adminCredentials);
     }
 
     [TestMethod]
@@ -281,7 +261,7 @@ public class BookingManagerTest
         // Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
             _bookingManager.GetBookingsByEmail("other@test.com", _userCredentials));
-        
+
         // Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
