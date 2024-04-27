@@ -8,16 +8,22 @@ public class AuthManagerTest
     private const string NameSurname = "Name Surname";
     private const string Email = "test@test.com";
     private const string Password = "12345678@mE";
-
+    private User _client;
+    
+    [TestInitialize]
+    public void SetUp()
+    {
+        _client = new User(NameSurname, Email, Password);
+    }
+    
     [TestMethod]
     public void TestCanRegisterWithValidCredentials()
     {
         // Arrange
         var credManager = new AuthManager();
-        var userModel = new RegisterDto(NameSurname, Email, Password, Password);
 
         // Act
-        var credentials = credManager.Register(userModel);
+        var credentials = credManager.Register(_client, Password);
 
         // Assert
         Assert.AreSame(credentials.Email, Email);
@@ -28,8 +34,7 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
-        var userModel = new RegisterDto(NameSurname, Email, Password, Password);
-        credManager.Register(userModel);
+        credManager.Register(_client, Password);
 
         // Act
         var credentials = credManager.Login(new LoginDto() { Email = Email, Password = Password });
@@ -43,12 +48,12 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
-        var userModel = new RegisterDto(NameSurname, Email, Password, Password);
-        var otherUserModel = new RegisterDto("Other Name", Email, "OtherP@ssw0rd", "OtherP@ssw0rd");
-        credManager.Register(userModel);
+        var otherClient = new User("Other Name", Email, "OtherP@ssw0rd");
+
+        credManager.Register(_client, Password);
 
         // Act & Assert
-        Assert.ThrowsException<UserAlreadyExistsException>(() => { credManager.Register(otherUserModel); });
+        Assert.ThrowsException<UserAlreadyExistsException>(() => { credManager.Register(otherClient, "OtherP@ssw0rd"); });
     }
 
     [TestMethod]
@@ -56,10 +61,9 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
-        var userModel = new RegisterDto(NameSurname, Email, Password, "wrong");
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.Register(userModel); });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.Register(_client, "wrong"); });
 
         // Assert
         Assert.IsTrue(exception.Message.Contains("Passwords do not match."));
@@ -70,8 +74,7 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
-        var userModel = new RegisterDto(NameSurname, Email, Password, Password);
-        credManager.Register(userModel);
+        credManager.Register(_client, Password);
 
         // Act
         var exception =
@@ -105,12 +108,22 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
-        var userModel = new RegisterDto(NameSurname, Email, Password, Password, "Administrator");
-        var otherUserModel = new RegisterDto("Other Name", "test2@test.com", Password, Password, "Administrator");
+        var admin = new User(
+            NameSurname, 
+            Email, 
+            Password, 
+            "Administrator"
+            );
+        var otherAdmin = new User(
+            "Other Name",
+            "test2@test.com",
+            Password,
+            "Administrator"
+            );
 
         // Act
-        credManager.Register(userModel);
-        var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.Register(otherUserModel); });
+        credManager.Register(admin, Password);
+        var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.Register(otherAdmin, Password); });
 
         // Assert
         Assert.AreSame(exception.Message, "There can only be one administrator.");
@@ -121,8 +134,8 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
-        var userModel = new RegisterDto(NameSurname, Email, Password, Password);
-        credManager.Register(userModel);
+
+        credManager.Register(_client, Password);
 
         // Act
         var userExists = credManager.Exists(Email);

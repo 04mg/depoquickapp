@@ -44,28 +44,28 @@ public class AuthManager
         }
     }
 
-    private void EnsureSingleAdmin(string rank)
+    private void EnsureSingleAdmin(UserRank rank)
     {
-        if (rank.Equals("Administrator") && IsAdminRegistered)
+        if (rank == UserRank.Administrator && IsAdminRegistered)
         {
             throw new ArgumentException("There can only be one administrator.");
         }
     }
 
-    private void SetAdminRegisteredIfAdmin(string rank)
+    private void SetAdminRegisteredIfAdmin(UserRank rank)
     {
-        if (rank.Equals("Administrator"))
+        if (rank == UserRank.Administrator)
         {
             IsAdminRegistered = true;
         }
     }
 
-    private void ValidateRegistration(RegisterDto registerDto)
+    private void ValidateRegistration(User user, string passwordConfirmation)
     {
-        EnsureUserIsNotRegistered(registerDto.Email);
-        EnsurePasswordConfirmationMatch(registerDto.Password, registerDto.PasswordConfirmation);
-        EnsureSingleAdmin(registerDto.Rank);
-        SetAdminRegisteredIfAdmin(registerDto.Rank);
+        EnsureUserIsNotRegistered(user.Email);
+        EnsurePasswordConfirmationMatch(user.Password, passwordConfirmation);
+        EnsureSingleAdmin(user.Rank);
+        SetAdminRegisteredIfAdmin(user.Rank);
     }
 
     private void ValidateLogin(string email, string password)
@@ -74,15 +74,13 @@ public class AuthManager
         EnsurePasswordMatchWithEmail(email, password);
     }
 
-    public Credentials Register(RegisterDto registerDto)
+    public Credentials Register(User user, string passwordConfirmation)
     {
-        ValidateRegistration(registerDto);
+        ValidateRegistration(user, passwordConfirmation);
 
-        var user = new User(registerDto.NameSurname, registerDto.Email, registerDto.Password,
-            registerDto.Rank);
-        UsersByEmail.Add(registerDto.Email, user);
+        UsersByEmail.Add(user.Email, user);
 
-        return new Credentials(registerDto.Email, registerDto.Rank);
+        return new Credentials(user.Email, user.Rank.ToString());
     }
 
     public Credentials Login(LoginDto loginDto)
