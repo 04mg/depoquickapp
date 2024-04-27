@@ -9,41 +9,38 @@ public class BookingManager
         Bookings = new List<Booking>();
     }
 
-    public void Add(AddBookingDto addBookingDto, DepositManager depositManager, AuthManager authManager)
+    public void Add(Booking booking)
     {
-        foreach (var booking in Bookings)
+        foreach (var b in Bookings)
         {
-            if (booking.DepositId == addBookingDto.DepositId && booking.Email == addBookingDto.Email)
+            if (b.Deposit == booking.Deposit && b.Client == booking.Client)
             {
-                if(addBookingDto.DateFrom >= booking.Duration.Item1 && addBookingDto.DateFrom <= booking.Duration.Item2)
+                if(booking.Duration.Item1 >= b.Duration.Item1 && booking.Duration.Item2 <= b.Duration.Item2)
                 {
                     throw new ArgumentException("User already has a booking for this period.");
                 }
-                if(addBookingDto.DateTo >= booking.Duration.Item1 && addBookingDto.DateTo <= booking.Duration.Item2)
+                if(booking.Duration.Item1 >= b.Duration.Item1 && booking.Duration.Item2 <= b.Duration.Item2)
                 {
                     throw new ArgumentException("User already has a booking for this period.");
                 }
             }
         }
-            
-        {
-            var booking = new Booking(NextBookingId, addBookingDto.DepositId, addBookingDto.Email, addBookingDto.DateFrom, addBookingDto.DateTo, depositManager, authManager);
-            Bookings.Add(booking);
-        }
+        booking.Id = NextBookingId;
+        Bookings.Add(booking);
     }
     
     private int NextBookingId => Bookings.Count > 0 ? Bookings.Max(d => d.Id) + 1 : 1;
 
-    public bool Exists(int i)
+    public bool Exists(int id)
     {
-        return Bookings.Any(b => b.Id == i);
+        return Bookings.Any(b => b.Id == id);
     }
 
     public List<Booking> GetBookingsByEmail(string email, Credentials credentials)
     {
         if (credentials.Rank == "Administrator" || credentials.Email == email)
         {
-            return Bookings.Where(b => b.Email == email).ToList();
+            return Bookings.Where(b => b.Client.Email == email).ToList();
         }
         else
         {

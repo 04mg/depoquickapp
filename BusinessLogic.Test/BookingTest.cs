@@ -3,47 +3,24 @@ namespace BusinessLogic.Test;
 [TestClass]
 public class BookingTest
 {
-    private const string Email = "admin@admin.com";
-    private readonly DateOnly _today = DateOnly.FromDateTime(DateTime.Now);
-    private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
-    private AuthManager _authManager = new();
-    private DepositManager _depositManager = new();
-    private Credentials _credentials;
-
-    [TestInitialize]
-    public void Initialize()
+    private static readonly DateOnly Today = DateOnly.FromDateTime(DateTime.Now);
+    private static readonly DateOnly Tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+    private static readonly User Client = new User(
+        "Name Surname",
+        "client@client.com",
+        "12345678@mE"
+    );
+    private static readonly List<Promotion> Promotions = new List<Promotion>
     {
-        _authManager = new AuthManager();
-        const string passwordConfirmation = "12345678@mE";
-        var admin = new User(
-            "Name Surname",
-            "admin@admin.com",
-            "12345678@mE",
-            "Administrator"
-        );
-        var client = new User(
-            "Name Surname",
-            "client@client.com",
-            "12345678@mE"
-        );
-        _authManager.Register(admin, passwordConfirmation);
-        _credentials = _authManager.Login(new LoginDto() { Email = "admin@admin.com", Password = "12345678@mE" });
-        _authManager.Register(client, passwordConfirmation);
-
-        var promotionManager = new PromotionManager();
-        var promotion = new Promotion(1, "A", 5, _today, _tomorrow);
-        promotionManager.Add(promotion, _credentials);
-        var promotionList = new List<Promotion>() { promotionManager.Promotions[0] };
-        
-        var deposit = new Deposit(1, "A", "Small", true, promotionList);
-        _depositManager.Add(deposit, _credentials);
-    }
+        new Promotion(1, "label", 50, Today, Tomorrow)
+    };
+    private static readonly Deposit Deposit = new Deposit(1, "A", "Small", true, Promotions);
 
     [TestMethod]
     public void TestCanCreateBookingWithValidData()
     {
         // Act
-        var booking = new Booking(1, 1, Email, _today, _tomorrow, _depositManager, _authManager);
+        var booking = new Booking(1, Deposit, Client, Today, Tomorrow);
 
         // Assert
         Assert.IsNotNull(booking);
@@ -54,8 +31,8 @@ public class BookingTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(
-                () => new Booking(1, 1, Email, _tomorrow, _today, _depositManager, _authManager));
+            Assert.ThrowsException<ArgumentException>(() =>
+                new Booking(1, Deposit, Client, Tomorrow, Today));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be later than the ending date.",
@@ -68,33 +45,9 @@ public class BookingTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                new Booking(1, 1, Email, _today.AddDays(-1), _tomorrow, _depositManager, _authManager));
+                new Booking(1, Deposit, Client, Today.AddDays(-1), Tomorrow));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be earlier than today.", exception.Message);
-    }
-
-    [TestMethod]
-    public void TestCantCreateBookingWithNonExistentDeposit()
-    {
-        // Act
-        var exception =
-            Assert.ThrowsException<ArgumentException>(
-                () => new Booking(1, 2, Email, _today, _tomorrow, _depositManager, _authManager));
-
-        // Assert
-        Assert.AreEqual("The deposit does not exist.", exception.Message);
-    }
-
-    [TestMethod]
-    public void TestCantCreateBookingWithNonExistentUser()
-    {
-        // Act
-        var exception =
-            Assert.ThrowsException<ArgumentException>(() =>
-                new Booking(1, 1, "wrong@test.com", _today, _tomorrow, _depositManager, _authManager));
-
-        // Assert
-        Assert.AreEqual("The user does not exist.", exception.Message);
     }
 }
