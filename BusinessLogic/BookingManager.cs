@@ -71,14 +71,8 @@ public class BookingManager
 
     public List<Booking> GetAllBookings(Credentials credentials)
     {
-        if (credentials.Rank == "Administrator")
-        {
-            return Bookings;
-        }
-        else
-        {
-            return new List<Booking>();
-        }
+        EnsureUserIsAdministrator(credentials);
+        return Bookings;
     }
 
     public void Manage(int i, Credentials credentials, bool isApproved, string message = "")

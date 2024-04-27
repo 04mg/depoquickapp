@@ -204,4 +204,20 @@ public class BookingManagerTest
         // Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCantGetAllBookingsIfNotAdministrator()
+    {
+        // Arrange
+        var booking = new Booking(1, _deposit!, _otherClient!, DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        _bookingManager.Add(booking);
+
+        // Act
+        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            _bookingManager.GetAllBookings(_userCredentials));
+
+        // Assert
+        Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
+    }
 }
