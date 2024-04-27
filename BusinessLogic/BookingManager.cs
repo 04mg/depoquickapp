@@ -77,8 +77,7 @@ public class BookingManager
 
     public void Manage(int i, Credentials credentials, bool isApproved, string message = "")
     {
-        if (credentials.Rank == "Administrator")
-        {
+        EnsureUserIsAdministrator(credentials);
             if (isApproved)
             {
                 Bookings.First(b => b.Id == i).Stage = BookingStage.Approved;
@@ -92,7 +91,5 @@ public class BookingManager
                     Bookings.First(b => b.Id == i).Message = message;
                 }
             }
-            
-        }
     }
 }
