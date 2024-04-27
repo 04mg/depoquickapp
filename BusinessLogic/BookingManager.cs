@@ -78,18 +78,19 @@ public class BookingManager
     public void Manage(int i, Credentials credentials, bool isApproved, string message = "")
     {
         EnsureUserIsAdministrator(credentials);
-            if (isApproved)
-            {
-                Bookings.First(b => b.Id == i).Stage = BookingStage.Approved;
-            }
+        if (isApproved)
+        {
+            GetBookingById(i).Stage = BookingStage.Approved;
+        }
+        else
+        {
+            GetBookingById(i).Stage = BookingStage.Rejected;
+            GetBookingById(i).Message = message;
+        }
+    }
 
-            if (!isApproved)
-            {
-                Bookings.First(b => b.Id == i).Stage = BookingStage.Rejected;
-                if (!String.IsNullOrEmpty(message))
-                {
-                    Bookings.First(b => b.Id == i).Message = message;
-                }
-            }
+    private Booking GetBookingById(int i)
+    {
+        return Bookings.First(b => b.Id == i);
     }
 }
