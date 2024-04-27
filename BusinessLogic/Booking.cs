@@ -44,6 +44,8 @@ public class Booking
         Client = client;
         Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
     }
+    
+    
 }
 
 public enum BookingStage
