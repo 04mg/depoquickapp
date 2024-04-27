@@ -2,7 +2,7 @@ namespace BusinessLogic;
 
 public class BookingManager
 {
-    public List<Booking> Bookings { get; set; }
+    private List<Booking> Bookings { get; set; }
     
     public BookingManager()
     {

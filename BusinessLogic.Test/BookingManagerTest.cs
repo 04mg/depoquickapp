@@ -58,7 +58,7 @@ public class BookingManagerTest
         _bookingManager.Add(booking);
 
         // Assert
-        Assert.AreEqual(1, _bookingManager.Bookings.Count);
+        Assert.AreEqual(1, _bookingManager.GetAllBookings(_adminCredentials).Count);
     }
 
     [TestMethod]
@@ -121,7 +121,7 @@ public class BookingManagerTest
         _bookingManager.Manage(1, _adminCredentials, true);
 
         // Assert
-        Assert.AreEqual(BookingStage.Approved, _bookingManager.Bookings[0].Stage);
+        Assert.AreEqual(BookingStage.Approved, _bookingManager.GetAllBookings(_adminCredentials)[0].Stage);
     }
 
     [TestMethod]
@@ -136,7 +136,7 @@ public class BookingManagerTest
         _bookingManager.Manage(1, _adminCredentials, false);
 
         // Assert
-        Assert.AreEqual(BookingStage.Rejected, _bookingManager.Bookings[0].Stage);
+        Assert.AreEqual(BookingStage.Rejected, _bookingManager.GetAllBookings(_adminCredentials)[0].Stage);
     }
 
     [TestMethod]
@@ -152,7 +152,7 @@ public class BookingManagerTest
         _bookingManager.Manage(1, _adminCredentials, false, message);
 
         //Assert
-        Assert.AreEqual(message, _bookingManager.Bookings[0].Message);
+        Assert.AreEqual(message, _bookingManager.GetAllBookings(_adminCredentials)[0].Message);
     }
 
     [TestMethod]
