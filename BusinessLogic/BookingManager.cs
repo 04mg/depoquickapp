@@ -48,17 +48,8 @@ public class BookingManager
 
     public List<Booking> GetBookingsByEmail(string email, Credentials credentials)
     {
-        EnsureUserIsAdministrator(credentials);
-        EnsureEmailMatch(email, credentials); 
+        EnsureUserIsAdministratorOrEmailMatch(email, credentials);
         return Bookings.Where(b => b.Client.Email == email).ToList();
-    }
-
-    private static void EnsureEmailMatch(string email, Credentials credentials)
-    {
-        if (credentials.Email == email)
-        {
-            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
-        }
     }
 
     private static void EnsureUserIsAdministrator(Credentials credentials)
@@ -66,6 +57,17 @@ public class BookingManager
         if (credentials.Rank != "Administrator")
         {
             throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+        }
+    }
+    
+    private static void EnsureUserIsAdministratorOrEmailMatch(string email, Credentials credentials)
+    {
+        if (credentials.Rank != "Administrator")
+        {
+            if (credentials.Email != email)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+            }
         }
     }
 
