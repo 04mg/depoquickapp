@@ -108,4 +108,21 @@ public class PriceCalculatorTest
             new Tuple<DateOnly, DateOnly>(_today, _today.AddDays(durationInDays)));
         Assert.AreEqual(expectedPrice, price);
     }
+    
+    [TestMethod]
+    [DataRow(50, 51, "Small", 1)]
+    [DataRow(50, 46, "Medium", 7)]
+    [DataRow(50, 41, "Large", 15)]
+    public void TestCanCalculatePriceWithPromotionsOverFullDiscount(int discount1, int discount2, string size,
+        int durationInDays)
+    {
+        var promotion1 = new Promotion(1, "label", discount1, _today, _today.AddDays(durationInDays));
+        var promotion2 = new Promotion(2, "label", discount2, _today, _today.AddDays(durationInDays));
+        var promotions = new List<Promotion> { promotion1, promotion2 };
+        var deposit = new Deposit(1, "A", size, true, promotions);
+        var priceCalculator = new PriceCalculator();
+        var price = priceCalculator.CalculatePrice(deposit,
+            new Tuple<DateOnly, DateOnly>(_today, _today.AddDays(durationInDays)));
+        Assert.AreEqual(0, price);
+    }
 }
