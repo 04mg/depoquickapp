@@ -44,4 +44,36 @@ public class PriceCalculatorTest
             new Tuple<DateOnly, DateOnly>(_today, _today.AddDays(duration)));
         Assert.AreEqual(expectedPrice, price);
     }
+    
+    [TestMethod]
+    [DataRow(5, "Small", false, 1, 47.5)]
+    [DataRow(5, "Small", false, 7, 315)]
+    [DataRow(5, "Small", false, 15, 637.5)]
+    [DataRow(5, "Medium", false, 1, 71.25)]
+    [DataRow(5, "Medium", false, 7, 472.5)]
+    [DataRow(5, "Medium", false, 15, 956.25)]
+    [DataRow(5, "Large", false, 1, 95)]
+    [DataRow(5, "Large", false, 7, 630)]
+    [DataRow(5, "Large", false, 15, 1275)]
+    [DataRow(5, "Small", true, 1, 66.5)]
+    [DataRow(5, "Small", true, 7, 441)]
+    [DataRow(5, "Small", true, 15, 892.5)]
+    [DataRow(5, "Medium", true, 1, 90.25)]
+    [DataRow(5, "Medium", true, 7, 598.5)]
+    [DataRow(5, "Medium", true, 15, 1211.25)]
+    [DataRow(5, "Large", true, 1, 114)]
+    [DataRow(5, "Large", true, 7, 756)]
+    [DataRow(5, "Large", true, 15, 1530)]
+    public void TestCanCalculatePriceWithOnePromotionUnderFullDiscount(int discount, string size, bool climateControl,
+        int durationInDays,
+        double expectedPrice)
+    {
+        var promotion = new Promotion(1, "label", discount, _today, _today.AddDays(durationInDays));
+        var promotions = new List<Promotion> { promotion };
+        var deposit = new Deposit(1, "A", size, climateControl, promotions);
+        var priceCalculator = new PriceCalculator();
+        var price = priceCalculator.CalculatePrice(deposit,
+            new Tuple<DateOnly, DateOnly>(_today, _today.AddDays(durationInDays)));
+        Assert.AreEqual(expectedPrice, price);
+    }
 }
