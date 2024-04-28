@@ -4,6 +4,7 @@ public class PriceCalculator
 {
     public double CalculatePrice(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
     {
+        var discount = 0;
         float pricePerDay = deposit.Size switch
         {
             "Small" => 50,
@@ -16,7 +17,23 @@ public class PriceCalculator
         {
             pricePerDay += 20;
         }
+        
+        switch (duration)
+        {
+            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber < 7:
+                discount += 0;
+                break;
+            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber >= 7 &&
+                                             dateTo.DayNumber - dateFrom.DayNumber <= 14:
+                discount += 5;
+                break;
+            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber > 14:
+                discount += 10;
+                break;
+        }
 
-        return pricePerDay;
+        var basePrice = pricePerDay * (duration.Item2.DayNumber - duration.Item1.DayNumber);
+        var finalPrice = basePrice - (basePrice * discount / 100);
+        return finalPrice;
     }
 }
