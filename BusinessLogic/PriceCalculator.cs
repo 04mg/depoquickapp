@@ -34,7 +34,7 @@ public class PriceCalculator
         
         if (deposit.Promotions.Count > 0)
         {
-            discount += deposit.Promotions[0].Discount;
+            discount += deposit.Promotions.Sum(promotion => promotion.Discount);
         }
 
         var basePrice = pricePerDay * (duration.Item2.DayNumber - duration.Item1.DayNumber);
