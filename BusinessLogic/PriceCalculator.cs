@@ -31,6 +31,11 @@ public class PriceCalculator
                 discount += 10;
                 break;
         }
+        
+        if (deposit.Promotions.Count > 0)
+        {
+            discount += deposit.Promotions[0].Discount;
+        }
 
         var basePrice = pricePerDay * (duration.Item2.DayNumber - duration.Item1.DayNumber);
         var finalPrice = basePrice - (basePrice * discount / 100);
