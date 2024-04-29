@@ -149,11 +149,41 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
+        var credentials = new Credentials()
+        {
+            Email = "test@test.com",
+            Rank = "Administrator"
+        };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.GetUserByEmail(Email); });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.GetUserByEmail(Email, credentials); });
 
         // Assert
         Assert.AreSame(exception.Message, "User does not exist.");
+    }
+
+    [TestMethod]
+    public void TestCantGetUserByEmailOfAnotherUserIfNotAdministrator()
+    {
+        // Arrange
+        var credManager = new AuthManager();
+        credManager.Register(_client, Password);
+        var otherClient = new User(
+            "Other Name", 
+            "other@test.com", 
+            "OtherP@ssw0rd");
+        credManager.Register(otherClient, "OtherP@ssw0rd");
+        var loginDto = new LoginDto()
+        {
+            Email = otherClient.Email,
+            Password = otherClient.Password
+        };
+        var credentials = credManager.Login(loginDto);
+
+        // Act
+        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => { credManager.GetUserByEmail(Email, credentials); });
+
+        // Assert
+        Assert.AreSame(exception.Message, "You are not authorized to perform this action.");
     }
 }

@@ -167,7 +167,7 @@ public class DepoQuickAppTest
         _app.AddDeposit(_addDepositDto, credentials);
 
         // Act
-        _app.AddBooking(_addBookingDto);
+        _app.AddBooking(_addBookingDto, _credentials);
         var booking = _app.ListAllBookings(_credentials).Find(b => b.Id == 1);
 
         // Assert
@@ -186,7 +186,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
-        _app.AddBooking(_addBookingDto);
+        _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
         _app.ManageBooking(1, credentials, true, "Approved");
@@ -205,7 +205,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
-        _app.AddBooking(_addBookingDto);
+        _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
         _app.ManageBooking(1, credentials, false, "Rejected");
@@ -224,7 +224,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
-        _app.AddBooking(_addBookingDto);
+        _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() => _app.DeleteDeposit(1, credentials));
@@ -266,7 +266,7 @@ public class DepoQuickAppTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => { _app.AddBooking(wrongBookingDto); });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { _app.AddBooking(wrongBookingDto, _credentials); });
 
         // Assert
         Assert.AreEqual("User not found.", exception.Message);
@@ -281,7 +281,7 @@ public class DepoQuickAppTest
         _app.AddPromotion(_addPromotionDto, credentials);
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => { _app.AddBooking(_addBookingDto); });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { _app.AddBooking(_addBookingDto, _credentials); });
         
         // Assert
         Assert.IsTrue(exception.Message.Contains("Deposit not found."));

@@ -92,15 +92,23 @@ public class AuthManager
         return credentials;
     }
 
-    public User GetUserByEmail(string email)
+    public User GetUserByEmail(string email, Credentials credentials)
     {
         if (!Exists(email))
         {
             throw new ArgumentException("User does not exist.");
         }
-        else
+        
+        EnsureUserIsAdminOrSameUser(email, credentials);
+        return UsersByEmail[email];
+    }
+
+    private void EnsureUserIsAdminOrSameUser(string requestedEmail, Credentials credentials)
+    {
+        if (credentials.Rank == "Administrator") return;
+        if (credentials.Email != requestedEmail)
         {
-            return UsersByEmail[email];
+            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
         }
     }
 }

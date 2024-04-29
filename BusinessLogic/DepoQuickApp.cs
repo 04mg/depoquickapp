@@ -136,12 +136,12 @@ public class DepoQuickApp
         }).ToList();
     }
     
-    public void AddBooking(AddBookingDto addBookingDto)
+    public void AddBooking(AddBookingDto addBookingDto, Credentials credentials)
     {
         EnsureUserExists(addBookingDto.Email);
         EnsureDepositExists(addBookingDto.DepositId);
         var deposit = _depositManager.Deposits.First(d => d.Id == addBookingDto.DepositId);
-        var user = _authManager.GetUserByEmail(addBookingDto.Email);
+        var user = _authManager.GetUserByEmail(addBookingDto.Email, credentials);
         var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo);
         _bookingManager.Add(booking);
     }
