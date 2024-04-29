@@ -143,4 +143,17 @@ public class AuthManagerTest
         // Assert
         Assert.IsTrue(userExists);
     }
+    
+    [TestMethod]
+    public void TestCantGetUserByEmailIfUserDoesNotExist()
+    {
+        // Arrange
+        var credManager = new AuthManager();
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => { credManager.GetUserByEmail(Email); });
+
+        // Assert
+        Assert.AreSame(exception.Message, "User does not exist.");
+    }
 }

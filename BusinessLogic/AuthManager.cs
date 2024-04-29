@@ -94,6 +94,13 @@ public class AuthManager
 
     public User GetUserByEmail(string email)
     {
-        return UsersByEmail[email];
+        if (!Exists(email))
+        {
+            throw new ArgumentException("User does not exist.");
+        }
+        else
+        {
+            return UsersByEmail[email];
+        }
     }
 }
