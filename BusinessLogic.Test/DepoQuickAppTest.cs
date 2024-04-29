@@ -9,6 +9,7 @@ public class DepoQuickAppTest
     private Credentials _credentials;
     private AddPromotionDto _addPromotionDto;
     private ModifyPromotionDto _modifyPromotionDto;
+    private AddDepositDto _addDepositDto;
 
     [TestInitialize]
     public void SetUp()
@@ -40,6 +41,13 @@ public class DepoQuickAppTest
             Discount = 20, 
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+        _addDepositDto = new AddDepositDto
+        {
+            Area = "A", 
+            Size = "Small", 
+            ClimateControl = true, 
+            PromotionList = new List<int>{1}
         };
     }
 
@@ -102,5 +110,25 @@ public class DepoQuickAppTest
         Assert.AreEqual(_modifyPromotionDto.Discount, promotion.Discount);
         Assert.AreEqual(_modifyPromotionDto.DateFrom, promotion.DateFrom);
         Assert.AreEqual(_modifyPromotionDto.DateTo, promotion.DateTo);
+    }
+    
+    [TestMethod]
+    public void TestCanAddDeposit()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+
+        // Act
+        _app.AddDeposit(_addDepositDto, credentials);
+        var deposit = _app.ListAllDeposits(_credentials)[0];
+
+        // Assert
+        Assert.AreEqual(_addDepositDto.Area, deposit.Area);
+        Assert.AreEqual(_addDepositDto.Size, deposit.Size);
+        Assert.AreEqual(_addDepositDto.ClimateControl, deposit.ClimateControl);
+        Assert.AreEqual(_addDepositDto.PromotionList[0], deposit.PromotionList[0]);
+        Assert.AreEqual(_addDepositDto.PromotionList.Count, deposit.PromotionList.Count);
     }
 }

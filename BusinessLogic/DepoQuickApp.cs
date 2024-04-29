@@ -1,13 +1,18 @@
+using BusinessLogic.DTOs;
+
 namespace BusinessLogic;
 
 public class DepoQuickApp
 {
     private AuthManager _authManager;
     private PromotionManager _promotionManager;
+    private DepositManager _depositManager;
+
     public DepoQuickApp()
     {
         _authManager = new AuthManager();
         _promotionManager = new PromotionManager();
+        _depositManager = new DepositManager();
     }
     
     public void RegisterUser(RegisterDto registerDto)
@@ -67,6 +72,35 @@ public class DepoQuickApp
             modifyPromotionDto.DateFrom,
             modifyPromotionDto.DateTo);
         _promotionManager.Modify(id, promotion, credentials);
+    }
+    
+    public void AddDeposit(AddDepositDto depositDto, Credentials credentials)
+    {
+        var promotions = CreatePromotionListFromDto(depositDto);
+        var deposit = new Deposit(1, depositDto.Area, depositDto.Size, depositDto.ClimateControl, promotions);
+        _depositManager.Add(deposit, credentials);
+    }
+
+    private List<Promotion> CreatePromotionListFromDto(AddDepositDto depositDto)
+    {
+        var promotions = new List<Promotion>();
+        foreach (var promotion in depositDto.PromotionList)
+        {
+            promotions.Add(_promotionManager.GetPromotionById(promotion));
+        }
+        return promotions;
+    }
+
+    public List<ListDepositDto> ListAllDeposits(Credentials credentials)
+    {
+        return _depositManager.Deposits.Select(d => new ListDepositDto()
+        {
+            Id = d.Id,
+            Area = d.Area,
+            Size = d.Size,
+            ClimateControl = d.ClimateControl,
+            PromotionList = d.Promotions.Select(p => p.Id).ToList()
+        }).ToList();
     }
 }
 
