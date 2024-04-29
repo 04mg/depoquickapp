@@ -48,8 +48,9 @@ public class DepositManager
 
     private int NextDepositId => Deposits.Count > 0 ? Deposits.Max(d => d.Id) + 1 : 1;
 
-    public List<Deposit> GetAllDeposits()
+    public List<Deposit> GetAllDeposits(Credentials credentials)
     {
+        EnsureUserIsAdmin(credentials);
         return Deposits;
     }
 }
