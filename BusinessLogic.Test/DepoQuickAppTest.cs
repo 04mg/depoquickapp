@@ -215,4 +215,21 @@ public class DepoQuickAppTest
         Assert.AreEqual("Rejected", booking?.Stage);
         Assert.AreEqual("Rejected", booking?.Message);
     }
+    
+    [TestMethod]
+    public void TestCantDeleteDepositIncludedInBookings()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddBooking(_addBookingDto);
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => _app.DeleteDeposit(1, credentials));
+        
+        // Assert
+        Assert.AreEqual("Cant delete deposit, it is included in bookings.", exception.Message);
+    }   
 }

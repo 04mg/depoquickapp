@@ -85,6 +85,7 @@ public class DepoQuickApp
     
     public void DeleteDeposit(int id, Credentials credentials)
     {
+        EnsureThereAreNoBookingsWithThisDeposit(id, credentials);
         _depositManager.Delete(id, credentials);
     }
 
@@ -135,6 +136,20 @@ public class DepoQuickApp
     public void ManageBooking(int id, Credentials credentials, bool isApproved, string message)
     {
         _bookingManager.Manage(id, credentials, isApproved, message);
+    }
+    
+    private void EnsureThereAreNoBookingsWithThisDeposit(int id, Credentials credentials)
+    {
+        foreach (var booking in _bookingManager.GetAllBookings(credentials))
+        {
+            EnsureThatDepositNotExists(id, booking.Deposit.Id);
+        }
+    }
+
+    private static void EnsureThatDepositNotExists(int id, int depositId)
+    {
+        if (depositId == id)
+            throw new ArgumentException("Cant delete deposit, it is included in bookings.");
     }
 
 }
