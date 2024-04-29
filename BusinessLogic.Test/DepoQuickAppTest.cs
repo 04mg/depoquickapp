@@ -8,6 +8,7 @@ public class DepoQuickAppTest
     private LoginDto _loginDto;
     private Credentials _credentials;
     private AddPromotionDto _addPromotionDto;
+    private ModifyPromotionDto _modifyPromotionDto;
 
     [TestInitialize]
     public void SetUp()
@@ -29,6 +30,14 @@ public class DepoQuickAppTest
         {
             Label = "Test Promotion", 
             Discount = 10, 
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+        _modifyPromotionDto = new ModifyPromotionDto
+        {
+            Id = 1,
+            Label = "Test Promotion", 
+            Discount = 20, 
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
         };
@@ -74,5 +83,24 @@ public class DepoQuickAppTest
 
         // Assert
         Assert.AreEqual(0, promotions.Count);
+    }
+    
+    [TestMethod]
+    public void TestCanModifyPromotion()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+
+        // Act
+        _app.ModifyPromotion(1, _modifyPromotionDto, credentials);
+        var promotion = _app.ListAllPromotions(_credentials).First(p => p.Id == 1);
+
+        // Assert
+        Assert.AreEqual(_modifyPromotionDto.Label, promotion.Label);
+        Assert.AreEqual(_modifyPromotionDto.Discount, promotion.Discount);
+        Assert.AreEqual(_modifyPromotionDto.DateFrom, promotion.DateFrom);
+        Assert.AreEqual(_modifyPromotionDto.DateTo, promotion.DateTo);
     }
 }

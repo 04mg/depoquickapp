@@ -45,16 +45,28 @@ public class DepoQuickApp
     {
         _promotionManager.Delete(i, credentials);
     }
-
-    public List<AddPromotionDto> ListAllPromotions(Credentials credentials)
+    
+    public List<ModifyPromotionDto> ListAllPromotions(Credentials credentials)
     {
-        return _promotionManager.Promotions.Select(p => new AddPromotionDto
+        return _promotionManager.Promotions.Select(p => new ModifyPromotionDto()
         {
+            Id = p.Id,
             Label = p.Label,
             Discount = p.Discount,
             DateFrom = p.Validity.Item1,
             DateTo = p.Validity.Item2
         }).ToList();
+    }
+
+    public void ModifyPromotion(int id, ModifyPromotionDto modifyPromotionDto, Credentials credentials)
+    {
+        var promotion = new Promotion(
+            id,
+            modifyPromotionDto.Label,
+            modifyPromotionDto.Discount,
+            modifyPromotionDto.DateFrom,
+            modifyPromotionDto.DateTo);
+        _promotionManager.Modify(id, promotion, credentials);
     }
 }
 
