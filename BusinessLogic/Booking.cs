@@ -36,10 +36,9 @@ public class Booking
             throw new ArgumentException("The starting date of the booking must not be earlier than today.");
         }
     }
-    
-    public double CalculatePrice()
+
+    public double CalculatePrice(IPriceCalculator priceCalculator)
     {
-        var priceCalculator = new PriceCalculator();
         return priceCalculator.CalculatePrice(Deposit, Duration);
     }
 

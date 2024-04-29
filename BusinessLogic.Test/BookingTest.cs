@@ -60,7 +60,7 @@ public class BookingTest
         var expectedPrice = priceCalculator.CalculatePrice(booking.Deposit, booking.Duration);
 
         // Act
-        var price = booking.CalculatePrice();
+        var price = booking.CalculatePrice(priceCalculator);
 
         // Assert
         Assert.AreEqual(expectedPrice, price);

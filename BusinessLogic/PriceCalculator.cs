@@ -1,6 +1,6 @@
 namespace BusinessLogic;
 
-public class PriceCalculator
+public class PriceCalculator : IPriceCalculator
 {
     private const double SmallPricePerDay = 50;
     private const double MediumPricePerDay = 75;
