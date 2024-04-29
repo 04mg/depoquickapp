@@ -40,6 +40,22 @@ public class DepoQuickApp
     {
         return _promotionManager.GetPromotionById(id);
     }
+
+    public void DeletePromotion(int i, Credentials credentials)
+    {
+        _promotionManager.Delete(i, credentials);
+    }
+
+    public List<AddPromotionDto> ListAllPromotions(Credentials credentials)
+    {
+        return _promotionManager.Promotions.Select(p => new AddPromotionDto
+        {
+            Label = p.Label,
+            Discount = p.Discount,
+            DateFrom = p.Validity.Item1,
+            DateTo = p.Validity.Item2
+        }).ToList();
+    }
 }
 
 

@@ -58,6 +58,21 @@ public class DepoQuickAppTest
         // Assert
         var promotion = _app.GetPromotion(1);
         Assert.AreEqual(_addPromotionDto.Label, promotion.Label);
-        
+    }
+    
+    [TestMethod]
+    public void TestCanDeletePromotion()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+
+        // Act
+        _app.DeletePromotion(1, credentials);
+        var promotions = _app.ListAllPromotions(_credentials);
+
+        // Assert
+        Assert.AreEqual(0, promotions.Count);
     }
 }
