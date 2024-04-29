@@ -15,8 +15,8 @@ public class PriceCalculator
     {
         var pricePerDay = GetPricePerDay(deposit.Size, deposit.ClimateControl);
         var discount = GetTotalDiscount(duration, deposit.Promotions);
-
-        var basePrice = pricePerDay * (duration.Item2.DayNumber - duration.Item1.DayNumber);
+        var days = duration.Item2.DayNumber - duration.Item1.DayNumber;
+        var basePrice = pricePerDay * days;
         var finalPrice = basePrice - (basePrice * discount / 100);
         return finalPrice;
     }
@@ -41,8 +41,8 @@ public class PriceCalculator
 
     private static int GetDurationDiscount(Tuple<DateOnly, DateOnly> duration)
     {
-        var durationInDays = duration.Item2.DayNumber - duration.Item1.DayNumber;
-        return durationInDays switch
+        var days = duration.Item2.DayNumber - duration.Item1.DayNumber;
+        return days switch
         {
             < DurationThresholdForFirstDiscount => 0,
             <= DurationThresholdForSecondDiscount => FirstDiscount,
