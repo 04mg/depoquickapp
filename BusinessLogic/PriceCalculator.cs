@@ -14,13 +14,7 @@ public class PriceCalculator
     public double CalculatePrice(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
     {
         var pricePerDay = GetPricePerDay(deposit.Size, deposit.ClimateControl);
-        var discount = GetDurationDiscount(duration);
-        discount += GetPromotionsDiscount(deposit.Promotions);
-
-        if (discount > 100)
-        {
-            discount = 100;
-        }
+        var discount = GetTotalDiscount(duration, deposit.Promotions);
 
         var basePrice = pricePerDay * (duration.Item2.DayNumber - duration.Item1.DayNumber);
         var finalPrice = basePrice - (basePrice * discount / 100);
@@ -59,5 +53,13 @@ public class PriceCalculator
     private static int GetPromotionsDiscount(IEnumerable<Promotion> promotions)
     {
         return promotions.Sum(promotion => promotion.Discount);
+    }
+    
+    private static int GetTotalDiscount(Tuple<DateOnly, DateOnly> duration, IEnumerable<Promotion> promotions)
+    {
+        var durationDiscount = GetDurationDiscount(duration);
+        var promotionsDiscount = GetPromotionsDiscount(promotions);
+        var totalDiscount = durationDiscount + promotionsDiscount;
+        return totalDiscount > 100 ? 100 : totalDiscount;
     }
 }
