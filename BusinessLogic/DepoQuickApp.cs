@@ -126,7 +126,7 @@ public class DepoQuickApp
 
     public List<ListDepositDto> ListAllDeposits(Credentials credentials)
     {
-        return _depositManager.Deposits.Select(d => new ListDepositDto()
+        return _depositManager.GetAllDeposits().Select(d => new ListDepositDto()
         {
             Id = d.Id,
             Area = d.Area,
@@ -140,7 +140,7 @@ public class DepoQuickApp
     {
         EnsureUserExists(addBookingDto.Email);
         EnsureDepositExists(addBookingDto.DepositId);
-        var deposit = _depositManager.Deposits.First(d => d.Id == addBookingDto.DepositId);
+        var deposit = _depositManager.GetAllDeposits().First(d => d.Id == addBookingDto.DepositId);
         var user = _authManager.GetUserByEmail(addBookingDto.Email, credentials);
         var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo);
         _bookingManager.Add(booking);
@@ -148,7 +148,7 @@ public class DepoQuickApp
 
     private void EnsureDepositExists(int depositId)
     {
-        if (!_depositManager.Deposits.Any(d => d.Id == depositId))
+        if (!_depositManager.GetAllDeposits().Any(d => d.Id == depositId))
         {
             throw new ArgumentException("Deposit not found.");
         }

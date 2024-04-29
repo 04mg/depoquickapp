@@ -7,7 +7,7 @@ public class DepositManager
         Deposits = new List<Deposit>();
     }
 
-    public List<Deposit> Deposits { get; set; }
+    private List<Deposit> Deposits { get; set; }
     
     private void EnsureDepositExists(int id)
     {
@@ -47,4 +47,9 @@ public class DepositManager
     }
 
     private int NextDepositId => Deposits.Count > 0 ? Deposits.Max(d => d.Id) + 1 : 1;
+
+    public List<Deposit> GetAllDeposits()
+    {
+        return Deposits;
+    }
 }

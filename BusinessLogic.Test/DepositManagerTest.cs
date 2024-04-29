@@ -55,7 +55,7 @@ public class DepositManagerTest
         _depositManager.Add(deposit, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(1, _depositManager.Deposits.Count);
+        Assert.AreEqual(1, _depositManager.GetAllDeposits().Count);
     }
 
     [TestMethod]
@@ -70,7 +70,7 @@ public class DepositManagerTest
         _depositManager.Delete(1, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(0, _depositManager.Deposits.Count);
+        Assert.AreEqual(0, _depositManager.GetAllDeposits().Count);
     }
 
     [TestMethod]
