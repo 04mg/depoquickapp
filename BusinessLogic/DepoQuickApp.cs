@@ -7,12 +7,14 @@ public class DepoQuickApp
     private AuthManager _authManager;
     private PromotionManager _promotionManager;
     private DepositManager _depositManager;
+    private BookingManager _bookingManager;
 
     public DepoQuickApp()
     {
         _authManager = new AuthManager();
         _promotionManager = new PromotionManager();
         _depositManager = new DepositManager();
+        _bookingManager = new BookingManager();
     }
     
     public void RegisterUser(RegisterDto registerDto)
@@ -105,6 +107,26 @@ public class DepoQuickApp
             Size = d.Size,
             ClimateControl = d.ClimateControl,
             PromotionList = d.Promotions.Select(p => p.Id).ToList()
+        }).ToList();
+    }
+    
+    public void AddBooking(AddBookingDto addBookingDto)
+    {
+        var deposit = _depositManager.Deposits.First(d => d.Id == addBookingDto.DepositId);
+        var user = _authManager.GetUserByEmail(addBookingDto.Email);
+        var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo);
+        _bookingManager.Add(booking);
+    }
+
+    public List<ListBookingDto> ListAllBookings(Credentials credentials)
+    {
+        return _bookingManager.Bookings.Select(b => new ListBookingDto()
+        {
+            Id = b.Id,
+            DepositId = b.Deposit.Id,
+            Email = b.Client.Email,
+            DateFrom = b.Duration.Item1,
+            DateTo = b.Duration.Item2,
         }).ToList();
     }
 }

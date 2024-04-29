@@ -91,4 +91,9 @@ public class AuthManager
         var credentials = new Credentials(loginDto.Email, userRank.ToString());
         return credentials;
     }
+
+    public User GetUserByEmail(string email)
+    {
+        return UsersByEmail[email];
+    }
 }

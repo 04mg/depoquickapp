@@ -10,6 +10,7 @@ public class DepoQuickAppTest
     private AddPromotionDto _addPromotionDto;
     private ModifyPromotionDto _modifyPromotionDto;
     private AddDepositDto _addDepositDto;
+    private AddBookingDto _addBookingDto;
 
     [TestInitialize]
     public void SetUp()
@@ -48,6 +49,13 @@ public class DepoQuickAppTest
             Size = "Small", 
             ClimateControl = true, 
             PromotionList = new List<int>{1}
+        };
+        _addBookingDto = new AddBookingDto
+        {
+            DepositId = 1, 
+            Email = "test@test.com",
+            DateFrom = DateOnly.FromDateTime(DateTime.Now), 
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
         };
     }
 
@@ -147,5 +155,26 @@ public class DepoQuickAppTest
 
         // Assert
         Assert.AreEqual(0, deposits.Count);
+    }
+    
+    [TestMethod]
+    public void TestCanAddBooking()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+
+        // Act
+        _app.AddBooking(_addBookingDto);
+        var booking = _app.ListAllBookings(_credentials).Find(b => b.Id == 1);
+
+        // Assert
+        Assert.IsNotNull(booking);
+        Assert.AreEqual(_addBookingDto.DepositId, booking.Id);
+        Assert.AreEqual(_addBookingDto.Email, booking.Email);
+        Assert.AreEqual(_addBookingDto.DateFrom, booking.DateFrom);
+        Assert.AreEqual(_addBookingDto.DateTo, booking.DateTo);
     }
 }
