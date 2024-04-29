@@ -36,6 +36,11 @@ public class Booking
             throw new ArgumentException("The starting date of the booking must not be earlier than today.");
         }
     }
+    
+    public double CalculatePrice()
+    {
+        return 0;
+    }
 
     public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo)
     {
@@ -44,8 +49,6 @@ public class Booking
         Client = client;
         Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
     }
-    
-    
 }
 
 public enum BookingStage
