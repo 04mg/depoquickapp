@@ -248,4 +248,27 @@ public class DepoQuickAppTest
         // Assert
         Assert.AreEqual("Cant delete promotion, it is included in deposits.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCantCreateBookingIfUserDoesNotExist()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+        var wrongBookingDto = new AddBookingDto
+        {
+            DepositId = 1,
+            Email = "wrong@test.com",
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => { _app.AddBooking(wrongBookingDto); });
+
+        // Assert
+        Assert.AreEqual("User not found.", exception.Message);
+    }
 }

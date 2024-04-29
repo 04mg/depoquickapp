@@ -129,10 +129,19 @@ public class DepoQuickApp
     
     public void AddBooking(AddBookingDto addBookingDto)
     {
+        EnsureUserExists(addBookingDto.Email);
         var deposit = _depositManager.Deposits.First(d => d.Id == addBookingDto.DepositId);
         var user = _authManager.GetUserByEmail(addBookingDto.Email);
         var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo);
         _bookingManager.Add(booking);
+    }
+
+    private void EnsureUserExists(string email)
+    {
+        if (!_authManager.Exists(email))
+        {
+            throw new ArgumentException("User not found.");
+        }
     }
 
     public List<ListBookingDto> ListAllBookings(Credentials credentials)
