@@ -1,0 +1,33 @@
+@code {
+    [Parameter] public int DepositId { get; set; }
+}
+
+<dialog id="deposit-@DepositId">
+    <h6>New booking</h6>
+    <div class="grid">
+        <div class="s12">
+            <b class="medium-text">Duration</b>
+        </div>
+        <div class="s6">
+            <div class="field label suffix border no-margin">
+                <input type="date">
+                <label>From</label>
+                <i>calendar_today</i>
+            </div>
+        </div>
+        <div class="s6">
+            <div class="field label suffix border no-margin">
+                <input type="date">
+                <label>To</label>
+                <i>event_upcoming</i>
+            </div>
+        </div>
+        <div class="s12 primary medium-padding">
+            Price will be shown here
+        </div>
+    </div>
+    <nav class="right-align no-space">
+        <button class="transparent link" data-ui="#book">Cancel</button>
+        <button class="transparent link">Confirm</button>
+    </nav>
+</dialog>
