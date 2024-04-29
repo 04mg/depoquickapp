@@ -1,4 +1,4 @@
-namespace BusinessLogic.DTOs;
+namespace BusinessLogic;
 
 public class ListBookingDto
 {
@@ -7,4 +7,6 @@ public class ListBookingDto
     public DateOnly DateTo { get; init; }
     public int DepositId { get; init; }
     public string Email { get; init; }
+    public string Stage { get; init; }
+    public string Message { get; init; }
 }

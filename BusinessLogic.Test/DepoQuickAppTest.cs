@@ -177,4 +177,42 @@ public class DepoQuickAppTest
         Assert.AreEqual(_addBookingDto.DateFrom, booking.DateFrom);
         Assert.AreEqual(_addBookingDto.DateTo, booking.DateTo);
     }
+    
+    [TestMethod]
+    public void TestCanApproveBooking()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddBooking(_addBookingDto);
+
+        // Act
+        _app.ManageBooking(1, credentials, true, "Approved");
+        var booking = _app.ListAllBookings(_credentials).Find(b => b.Id == 1);
+
+        // Assert
+        Assert.AreEqual("Approved", booking?.Stage);
+        Assert.AreEqual( "", booking?.Message);
+    }
+    
+    [TestMethod]
+    public void TestCanRejectBooking()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddBooking(_addBookingDto);
+
+        // Act
+        _app.ManageBooking(1, credentials, false, "Rejected");
+        var booking = _app.ListAllBookings(_credentials).Find(b => b.Id == 1);
+
+        // Assert
+        Assert.AreEqual("Rejected", booking?.Stage);
+        Assert.AreEqual("Rejected", booking?.Message);
+    }
 }

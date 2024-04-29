@@ -127,8 +127,16 @@ public class DepoQuickApp
             Email = b.Client.Email,
             DateFrom = b.Duration.Item1,
             DateTo = b.Duration.Item2,
+            Stage = b.Stage.ToString(),
+            Message = b.Message
         }).ToList();
     }
+
+    public void ManageBooking(int id, Credentials credentials, bool isApproved, string message)
+    {
+        _bookingManager.Manage(id, credentials, isApproved, message);
+    }
+
 }
 
 
