@@ -90,6 +90,21 @@ public class BookingManagerTest
         // Assert
         Assert.AreSame(bookings[0], booking);
     }
+    
+    [TestMethod]
+    public void TestCanGetBookingsByEmailIfSameEmail()
+    {
+        // Arrange
+        var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        _bookingManager.Add(booking);
+
+        // Act
+        var bookings = _bookingManager.GetBookingsByEmail("test@test.com", _userCredentials);
+
+        // Assert
+        Assert.AreSame(bookings[0], booking);
+    }
 
     [TestMethod]
     public void TestCanGetAllBookings()
