@@ -1,51 +1,11 @@
 @page "/deposits"
 
+
 <title>Deposits</title>
 
 <main class="responsive">
     <h6 class="vertical-margin">Deposits</h6>
     <article>
-        <a class="row padding surface-container wave scroll" data-ui="#book">
-            <div class="row max">
-                <div class="button circle">1</div>
-            </div>
-            <div>
-                <h6 class="button small primary-container">Area: A</h6>
-                <h6 class="button small primary-container">Size: Medium</h6>
-                <h6 class="button small primary-container">Climate Control</h6>
-                <h6 class="button small primary">-50%</h6>
-            </div>
-        </a>
-        <div class="divider right-align"></div>
+        <DepositItem Id="1" Area="A" Size="Small" Discount="50" ClimateControl="true" />
     </article>
-    <div class="overlay blur"></div>
-    <dialog id="book">
-        <h6>New booking</h6>
-        <div class="grid">
-            <div class="s12">
-                <b class="medium-text">Duration</b>
-            </div>
-            <div class="s6">
-                <div class="field label suffix border no-margin">
-                    <input type="date">
-                    <label>From</label>
-                    <i>calendar_today</i>
-                </div>
-            </div>
-            <div class="s6">
-                <div class="field label suffix border no-margin">
-                    <input type="date">
-                    <label>To</label>
-                    <i>event_upcoming</i>
-                </div>
-            </div>
-            <div class="s12 primary medium-padding">
-                Price will be shown here
-            </div>
-        </div>
-        <nav class="right-align no-space">
-            <button class="transparent link" data-ui="#book">Cancel</button>
-            <button class="transparent link">Confirm</button>
-        </nav>
-    </dialog>
 </main>

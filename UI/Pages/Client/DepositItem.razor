@@ -1,0 +1,60 @@
+@code {
+    [Parameter] public int Id { get; set; }
+
+    [Parameter] public string? Area { get; set; }
+
+    [Parameter] public string? Size { get; set; }
+
+    [Parameter] public bool ClimateControl { get; set; }
+
+    [Parameter] public int Discount { get; set; }
+}
+
+<a class="row padding surface-container wave scroll" data-ui="#book">
+    <div class="row max">
+        <div class="button circle">@Id</div>
+    </div>
+    <div>
+        <h6 class="button small primary-container">Area: @Area</h6>
+        <h6 class="button small primary-container">Size: @Size</h6>
+        <h6 class="button small primary-container">
+            @if (ClimateControl)
+            {
+                <text>"Climate Control"</text>
+            }
+        </h6>
+        <h6 class="button small primary">@Discount</h6>
+    </div>
+</a>
+<div class="divider right-align"></div>
+<div class="overlay blur"></div>
+
+<dialog id="book">
+    <h6>New booking</h6>
+    <div class="grid">
+        <div class="s12">
+            <b class="medium-text">Duration</b>
+        </div>
+        <div class="s6">
+            <div class="field label suffix border no-margin">
+                <input type="date">
+                <label>From</label>
+                <i>calendar_today</i>
+            </div>
+        </div>
+        <div class="s6">
+            <div class="field label suffix border no-margin">
+                <input type="date">
+                <label>To</label>
+                <i>event_upcoming</i>
+            </div>
+        </div>
+        <div class="s12 primary medium-padding">
+            Price will be shown here
+        </div>
+    </div>
+    <nav class="right-align no-space">
+        <button class="transparent link" data-ui="#book">Cancel</button>
+        <button class="transparent link">Confirm</button>
+    </nav>
+</dialog>
