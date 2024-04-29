@@ -80,6 +80,11 @@ public class DepoQuickApp
         var deposit = new Deposit(1, depositDto.Area, depositDto.Size, depositDto.ClimateControl, promotions);
         _depositManager.Add(deposit, credentials);
     }
+    
+    public void DeleteDeposit(int id, Credentials credentials)
+    {
+        _depositManager.Delete(id, credentials);
+    }
 
     private List<Promotion> CreatePromotionListFromDto(AddDepositDto depositDto)
     {

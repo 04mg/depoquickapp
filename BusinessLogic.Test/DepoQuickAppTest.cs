@@ -131,4 +131,21 @@ public class DepoQuickAppTest
         Assert.AreEqual(_addDepositDto.PromotionList[0], deposit.PromotionList[0]);
         Assert.AreEqual(_addDepositDto.PromotionList.Count, deposit.PromotionList.Count);
     }
+    
+    [TestMethod]
+    public void TestCanDeleteDeposit()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+
+        // Act
+        _app.DeleteDeposit(1, credentials);
+        var deposits = _app.ListAllDeposits(_credentials);
+
+        // Assert
+        Assert.AreEqual(0, deposits.Count);
+    }
 }
