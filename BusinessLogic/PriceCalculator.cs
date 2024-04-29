@@ -15,11 +15,7 @@ public class PriceCalculator
     {
         var pricePerDay = GetPricePerDay(deposit.Size, deposit.ClimateControl);
         var discount = GetDurationDiscount(duration);
-        
-        if(deposit.Promotions.Count > 0)
-        {
-            discount += deposit.Promotions.Sum(promotion => promotion.Discount);
-        }
+        discount += GetPromotionsDiscount(deposit.Promotions);
 
         if (discount > 100)
         {
@@ -58,5 +54,10 @@ public class PriceCalculator
             <= DurationThresholdForSecondDiscount => FirstDiscount,
             _ => SecondDiscount
         };
+    }
+
+    private static int GetPromotionsDiscount(IEnumerable<Promotion> promotions)
+    {
+        return promotions.Sum(promotion => promotion.Discount);
     }
 }
