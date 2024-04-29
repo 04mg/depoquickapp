@@ -164,7 +164,7 @@ public class DepoQuickApp
 
     public List<ListBookingDto> ListAllBookings(Credentials credentials)
     {
-        return _bookingManager.Bookings.Select(b => new ListBookingDto()
+        return _bookingManager.GetAllBookings(credentials).Select(b => new ListBookingDto()
         {
             Id = b.Id,
             DepositId = b.Deposit.Id,
