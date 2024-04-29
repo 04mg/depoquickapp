@@ -2,18 +2,23 @@
 
 <PageTitle>UI</PageTitle>
 
-<div class="page">
-    <div class="sidebar">
+<nav class="l left drawer center-align surface-container">
+    <NavMenu/>
+</nav>
+<dialog class="left surface-container" id="dialog">
+    <nav class="drawer">
         <NavMenu/>
-    </div>
-
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    </nav>
+</dialog>
+<nav class="m s surface-container medium-padding no-margin">
+    <button class="circle transparent" data-ui="#dialog">
+        <i>menu</i>
+    </button>
+    <h5 class="max center-align">
+        <i class="medium">warehouse</i>
+        <span class="tiny-margin">DepoQuick</span>
+    </h5>
+</nav>
+<main class="responsive middle-align center-align">
+    @Body
+</main>
