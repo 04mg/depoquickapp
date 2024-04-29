@@ -7,7 +7,7 @@ public class DepoQuickAppTest
     private RegisterDto _registerDto;
     private LoginDto _loginDto;
     private Credentials _credentials;
-    private AuthManager _authManager;
+    private AddPromotionDto _addPromotionDto;
 
     [TestInitialize]
     public void SetUp()
@@ -25,6 +25,13 @@ public class DepoQuickAppTest
         _credentials = new Credentials{
             Email = "test@test.com", 
             Rank = "Administrator"};
+        _addPromotionDto = new AddPromotionDto
+        {
+            Label = "Test Promotion", 
+            Discount = 10, 
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
     }
 
     [TestMethod]
@@ -36,5 +43,21 @@ public class DepoQuickAppTest
         
         Assert.AreEqual(_credentials.Email, credentials.Email);
         Assert.AreEqual(_credentials.Rank, credentials.Rank);
+    }
+    
+    [TestMethod]
+    public void TestCanAddPromotion()
+    {
+        //Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        
+        // Act
+        _app.AddPromotion(_addPromotionDto, credentials);
+        
+        // Assert
+        var promotion = _app.GetPromotion(1);
+        Assert.AreEqual(_addPromotionDto.Label, promotion.Label);
+        
     }
 }
