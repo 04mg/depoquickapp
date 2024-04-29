@@ -271,4 +271,19 @@ public class DepoQuickAppTest
         // Assert
         Assert.AreEqual("User not found.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCantCreateBookingIfDepositDoesNotExist()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => { _app.AddBooking(_addBookingDto); });
+        
+        // Assert
+        Assert.IsTrue(exception.Message.Contains("Deposit not found."));
+    }
 }
