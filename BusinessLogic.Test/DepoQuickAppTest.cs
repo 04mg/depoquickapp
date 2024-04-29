@@ -286,4 +286,25 @@ public class DepoQuickAppTest
         // Assert
         Assert.IsTrue(exception.Message.Contains("Deposit not found."));
     }
+    
+    [TestMethod]
+    public void TestCantCreateDepositIfPromotionDoesNotExist()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        var wrongAddDepositDto = new AddDepositDto
+        {
+            Area = "A",
+            Size = "Small",
+            ClimateControl = true,
+            PromotionList = new List<int> {1}
+        };
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => { _app.AddDeposit(wrongAddDepositDto, credentials); });
+        
+        // Assert
+        Assert.IsTrue(exception.Message.Contains("Promotion not found."));
+    }
 }
