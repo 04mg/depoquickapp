@@ -39,7 +39,8 @@ public class Booking
     
     public double CalculatePrice()
     {
-        return 0;
+        var priceCalculator = new PriceCalculator();
+        return priceCalculator.CalculatePrice(Deposit, Duration);
     }
 
     public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo)
