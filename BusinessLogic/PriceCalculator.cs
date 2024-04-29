@@ -2,33 +2,42 @@ namespace BusinessLogic;
 
 public class PriceCalculator
 {
+    private const float SmallPricePerDay = 50;
+    private const float MediumPricePerDay = 75;
+    private const float LargePricePerDay = 100;
+    private const float ClimateControlPrice = 20;
+    private const int DurationDiscount1 = 5;
+    private const int DurationDiscount2 = 10;
+    private const int DurationDiscountThreshold1 = 7;
+    private const int DurationDiscountThreshold2 = 14;
+
     public double CalculatePrice(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
     {
         var discount = 0;
         float pricePerDay = deposit.Size switch
         {
-            "Small" => 50,
-            "Medium" => 75,
-            "Large" => 100,
+            "Small" => SmallPricePerDay,
+            "Medium" => MediumPricePerDay,
+            "Large" => LargePricePerDay,
             _ => throw new ArgumentOutOfRangeException()
         };
 
         if (deposit.ClimateControl)
         {
-            pricePerDay += 20;
+            pricePerDay += ClimateControlPrice;
         }
 
         switch (duration)
         {
-            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber < 7:
+            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber < DurationDiscountThreshold1:
                 discount += 0;
                 break;
-            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber >= 7 &&
-                                             dateTo.DayNumber - dateFrom.DayNumber <= 14:
-                discount += 5;
+            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber >= DurationDiscountThreshold1 &&
+                                             dateTo.DayNumber - dateFrom.DayNumber <= DurationDiscountThreshold2:
+                discount += DurationDiscount1;
                 break;
-            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber > 14:
-                discount += 10;
+            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber > DurationDiscountThreshold2:
+                discount += DurationDiscount2;
                 break;
         }
 
