@@ -6,31 +6,17 @@ public class PriceCalculator
     private const double MediumPricePerDay = 75;
     private const double LargePricePerDay = 100;
     private const double ClimateControlPrice = 20;
-    private const int DurationDiscount1 = 5;
-    private const int DurationDiscount2 = 10;
-    private const int DurationDiscountThreshold1 = 7;
-    private const int DurationDiscountThreshold2 = 14;
+    private const int FirstDiscount = 5;
+    private const int SecondDiscount = 10;
+    private const int DurationThresholdForFirstDiscount = 7;
+    private const int DurationThresholdForSecondDiscount = 14;
 
     public double CalculatePrice(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
     {
-        var discount = 0;
         var pricePerDay = GetPricePerDay(deposit.Size, deposit.ClimateControl);
-
-        switch (duration)
-        {
-            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber < 7:
-                discount += 0;
-                break;
-            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber >= 7 &&
-                                             dateTo.DayNumber - dateFrom.DayNumber <= 14:
-                discount += 5;
-                break;
-            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber > 14:
-                discount += 10;
-                break;
-        }
-
-        if (deposit.Promotions.Count > 0)
+        var discount = GetDurationDiscount(duration);
+        
+        if(deposit.Promotions.Count > 0)
         {
             discount += deposit.Promotions.Sum(promotion => promotion.Discount);
         }
@@ -61,5 +47,16 @@ public class PriceCalculator
     private static double GetClimateControlExtraPerDay(bool climateControl)
     {
         return climateControl ? ClimateControlPrice : 0;
+    }
+
+    private static int GetDurationDiscount(Tuple<DateOnly, DateOnly> duration)
+    {
+        var durationInDays = duration.Item2.DayNumber - duration.Item1.DayNumber;
+        return durationInDays switch
+        {
+            < DurationThresholdForFirstDiscount => 0,
+            <= DurationThresholdForSecondDiscount => FirstDiscount,
+            _ => SecondDiscount
+        };
     }
 }
