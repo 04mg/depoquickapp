@@ -2,10 +2,10 @@ namespace BusinessLogic;
 
 public class PriceCalculator
 {
-    private const float SmallPricePerDay = 50;
-    private const float MediumPricePerDay = 75;
-    private const float LargePricePerDay = 100;
-    private const float ClimateControlPrice = 20;
+    private const double SmallPricePerDay = 50;
+    private const double MediumPricePerDay = 75;
+    private const double LargePricePerDay = 100;
+    private const double ClimateControlPrice = 20;
     private const int DurationDiscount1 = 5;
     private const int DurationDiscount2 = 10;
     private const int DurationDiscountThreshold1 = 7;
@@ -14,12 +14,7 @@ public class PriceCalculator
     public double CalculatePrice(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
     {
         var discount = 0;
-        var pricePerDay = GetPricePerDay(deposit.Size);
-
-        if (deposit.ClimateControl)
-        {
-            pricePerDay += 20;
-        }
+        var pricePerDay = GetPricePerDay(deposit.Size, deposit.ClimateControl);
 
         switch (duration)
         {
@@ -50,14 +45,21 @@ public class PriceCalculator
         return finalPrice;
     }
 
-    private static double GetPricePerDay(string size)
+    private static double GetPricePerDay(string size, bool climateControl)
     {
-        return size switch
+        var pricePerDay = size switch
         {
             "Small" => SmallPricePerDay,
             "Medium" => MediumPricePerDay,
             "Large" => LargePricePerDay,
             _ => throw new ArgumentOutOfRangeException(nameof(size))
         };
+        pricePerDay += GetClimateControlExtraPerDay(climateControl);
+        return pricePerDay;
+    }
+
+    private static double GetClimateControlExtraPerDay(bool climateControl)
+    {
+        return climateControl ? ClimateControlPrice : 0;
     }
 }
