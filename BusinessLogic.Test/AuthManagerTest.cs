@@ -184,6 +184,6 @@ public class AuthManagerTest
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => { credManager.GetUserByEmail(Email, credentials); });
 
         // Assert
-        Assert.AreSame(exception.Message, "You are not authorized to perform this action.");
+        Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
 }
