@@ -14,30 +14,24 @@ public class PriceCalculator
     public double CalculatePrice(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
     {
         var discount = 0;
-        float pricePerDay = deposit.Size switch
-        {
-            "Small" => SmallPricePerDay,
-            "Medium" => MediumPricePerDay,
-            "Large" => LargePricePerDay,
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        var pricePerDay = GetPricePerDay(deposit.Size);
 
         if (deposit.ClimateControl)
         {
-            pricePerDay += ClimateControlPrice;
+            pricePerDay += 20;
         }
 
         switch (duration)
         {
-            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber < DurationDiscountThreshold1:
+            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber < 7:
                 discount += 0;
                 break;
-            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber >= DurationDiscountThreshold1 &&
-                                             dateTo.DayNumber - dateFrom.DayNumber <= DurationDiscountThreshold2:
-                discount += DurationDiscount1;
+            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber >= 7 &&
+                                             dateTo.DayNumber - dateFrom.DayNumber <= 14:
+                discount += 5;
                 break;
-            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber > DurationDiscountThreshold2:
-                discount += DurationDiscount2;
+            case var (dateFrom, dateTo) when dateTo.DayNumber - dateFrom.DayNumber > 14:
+                discount += 10;
                 break;
         }
 
@@ -54,5 +48,16 @@ public class PriceCalculator
         var basePrice = pricePerDay * (duration.Item2.DayNumber - duration.Item1.DayNumber);
         var finalPrice = basePrice - (basePrice * discount / 100);
         return finalPrice;
+    }
+
+    private static double GetPricePerDay(string size)
+    {
+        return size switch
+        {
+            "Small" => SmallPricePerDay,
+            "Medium" => MediumPricePerDay,
+            "Large" => LargePricePerDay,
+            _ => throw new ArgumentOutOfRangeException(nameof(size))
+        };
     }
 }
