@@ -55,7 +55,7 @@ public class DepositManagerTest
         _depositManager.Add(deposit, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(1, _depositManager.Deposits.Count);
+        Assert.AreEqual(1, _depositManager.GetAllDeposits(_adminCredentials).Count);
     }
 
     [TestMethod]
@@ -70,7 +70,7 @@ public class DepositManagerTest
         _depositManager.Delete(1, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(0, _depositManager.Deposits.Count);
+        Assert.AreEqual(0, _depositManager.GetAllDeposits(_adminCredentials).Count);
     }
 
     [TestMethod]
@@ -109,6 +109,22 @@ public class DepositManagerTest
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.Delete(1, _clientCredentials));
+
+        // Assert
+        Assert.AreEqual("Only administrators can manage deposits.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantGetAllDepositsIfNotAdministrator()
+    {
+        // Arrange
+        var promotionList = new List<Promotion>() { _promotionManager.Promotions[0] };
+        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        _depositManager.Add(deposit, _adminCredentials);
+
+        // Act
+        var exception =
+            Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.GetAllDeposits(_clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage deposits.", exception.Message);

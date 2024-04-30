@@ -91,4 +91,24 @@ public class AuthManager
         var credentials = new Credentials(loginDto.Email, userRank.ToString());
         return credentials;
     }
+
+    public User GetUserByEmail(string email, Credentials credentials)
+    {
+        if (!Exists(email))
+        {
+            throw new ArgumentException("User does not exist.");
+        }
+        
+        EnsureUserIsAdminOrSameUser(email, credentials);
+        return UsersByEmail[email];
+    }
+
+    private void EnsureUserIsAdminOrSameUser(string requestedEmail, Credentials credentials)
+    {
+        if (credentials.Rank == "Administrator") return;
+        if (credentials.Email != requestedEmail)
+        {
+            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+        }
+    }
 }
