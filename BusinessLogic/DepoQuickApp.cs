@@ -16,17 +16,17 @@ public class DepoQuickApp
         _depositManager = new DepositManager();
         _bookingManager = new BookingManager();
     }
-    
+
     public void RegisterUser(RegisterDto registerDto)
     {
         var user = new User(
             registerDto.NameSurname,
-            registerDto.Email, 
+            registerDto.Email,
             registerDto.Password,
             registerDto.Rank);
         _authManager.Register(user, registerDto.PasswordConfirmation);
     }
-    
+
     public Credentials Login(LoginDto loginDto)
     {
         return _authManager.Login(loginDto);
@@ -43,9 +43,16 @@ public class DepoQuickApp
         _promotionManager.Add(promotion, credentials);
     }
 
-    public Promotion GetPromotion(int id)
+    public AddPromotionDto GetPromotion(int id)
     {
-        return _promotionManager.GetPromotionById(id);
+        var promotion = _promotionManager.GetPromotionById(id);
+        return new AddPromotionDto()
+        {
+            Label = promotion.Label,
+            Discount = promotion.Discount,
+            DateFrom = promotion.Validity.Item1,
+            DateTo = promotion.Validity.Item2
+        };
     }
 
     public void DeletePromotion(int i, Credentials credentials)
@@ -62,7 +69,7 @@ public class DepoQuickApp
             EnsureThatPromotionNotExists(i, deposit.PromotionList);
         }
     }
-    
+
     private static void EnsureThatPromotionNotExists(int id, List<int> promotionList)
     {
         if (promotionList.Contains(id))
@@ -91,14 +98,14 @@ public class DepoQuickApp
             modifyPromotionDto.DateTo);
         _promotionManager.Modify(id, promotion, credentials);
     }
-    
+
     public void AddDeposit(AddDepositDto depositDto, Credentials credentials)
     {
         var promotions = CreatePromotionListFromDto(depositDto);
         var deposit = new Deposit(1, depositDto.Area, depositDto.Size, depositDto.ClimateControl, promotions);
         _depositManager.Add(deposit, credentials);
     }
-    
+
     public void DeleteDeposit(int id, Credentials credentials)
     {
         EnsureThereAreNoBookingsWithThisDeposit(id, credentials);
@@ -113,6 +120,7 @@ public class DepoQuickApp
             EnsurePromotionExists(promotion);
             promotions.Add(_promotionManager.GetPromotionById(promotion));
         }
+
         return promotions;
     }
 
@@ -135,7 +143,7 @@ public class DepoQuickApp
             PromotionList = d.Promotions.Select(p => p.Id).ToList()
         }).ToList();
     }
-    
+
     public ListDepositDto GetDeposit(int id, Credentials credentials)
     {
         var deposit = _depositManager.GetDepositById(id);
@@ -148,7 +156,7 @@ public class DepoQuickApp
             PromotionList = deposit.Promotions.Select(p => p.Id).ToList()
         };
     }
-    
+
     public void AddBooking(AddBookingDto addBookingDto, Credentials credentials)
     {
         EnsureUserExists(addBookingDto.Email);
@@ -193,12 +201,12 @@ public class DepoQuickApp
     {
         _bookingManager.Approve(id, credentials);
     }
-    
+
     public void RejectBooking(int id, string message, Credentials credentials)
     {
         _bookingManager.Reject(id, credentials, message);
     }
-    
+
     private void EnsureThereAreNoBookingsWithThisDeposit(int id, Credentials credentials)
     {
         foreach (var booking in _bookingManager.GetAllBookings(credentials))
@@ -212,7 +220,4 @@ public class DepoQuickApp
         if (depositId == id)
             throw new ArgumentException("Cant delete deposit, it is included in bookings.");
     }
-
 }
-
-
