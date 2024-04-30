@@ -306,4 +306,24 @@ public class DepoQuickAppTest
         // Assert
         Assert.IsTrue(exception.Message.Contains("Promotion not found."));
     }
+    
+    [TestMethod]
+    public void TestCanGetDepositById()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+
+        // Act
+        var deposit = _app.GetDeposit(1, credentials);
+
+        // Assert
+        Assert.AreEqual(_addDepositDto.Area, deposit.Area);
+        Assert.AreEqual(_addDepositDto.Size, deposit.Size);
+        Assert.AreEqual(_addDepositDto.ClimateControl, deposit.ClimateControl);
+        Assert.AreEqual(_addDepositDto.PromotionList[0], deposit.PromotionList[0]);
+        Assert.AreEqual(_addDepositDto.PromotionList.Count, deposit.PromotionList.Count);
+    }
 }
