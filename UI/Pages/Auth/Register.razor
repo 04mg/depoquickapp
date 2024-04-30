@@ -1,43 +1,76 @@
 @page "/register"
+@using BusinessLogic
+@using BusinessLogic.Exceptions
+@using UI.Data
+@inject AuthController Auth
+@inject NavigationManager NavigationManager
+
+@code {
+
+    private RegisterDto _registerDto = new RegisterDto { Rank = "Client" };
+    private Snackbar _snackbar = new();
+    private void ConfirmRegister()
+    {
+        try
+        {
+            Auth.Register(_registerDto);
+            NavigationManager.NavigateTo("/Login");
+        }
+        catch (ArgumentException e)
+        {
+            _snackbar.ErrorMessage = e.Message;
+        }
+        catch (UserAlreadyExistsException e)
+        {
+            _snackbar.ErrorMessage = e.Message;
+        }
+        catch (NullReferenceException)
+        {
+            _snackbar.ErrorMessage = "Fields cannot be empty.";
+        }
+    }
+
+}
 
 <PageTitle>Register</PageTitle>
 
 <main class="responsive middle-align center-align">
-<div class="grid large-width">
-    <div class="s12">
-        <i class="extra">person_add</i>
-        <h5 class="center-align">Create new user</h5>
-        <div class="small-space"></div>
-    </div>
-    <div class="s12">
-        <div class="field label prefix border left-align">
-            <i>person</i>
-            <input type="text">
-            <label>Name and Surname</label>
+    <div class="grid large-width">
+        <div class="s12">
+            <i class="extra">person_add</i>
+            <h5 class="center-align">Create new user</h5>
+            <div class="small-space"></div>
+        </div>
+        <div class="s12">
+            <div class="field label prefix border left-align">
+                <i>person</i>
+                <input type="text" @bind="_registerDto.NameSurname">
+                <label>Name and Surname</label>
+            </div>
+        </div>
+        <div class="s12">
+            <div class="field label prefix border left-align">
+                <i>mail</i>
+                <input type="email" @bind="_registerDto.Email">
+                <label>Email</label>
+            </div>
+        </div>
+        <div class="s12">
+            <div class="field label prefix border left-align">
+                <i>key</i>
+                <input type="password" @bind="_registerDto.Password">
+                <label>Password</label>
+            </div>
+        </div>
+        <div class="s12">
+            <div class="field label border left-align">
+                <input type="password" @bind="_registerDto.PasswordConfirmation">
+                <label>Confirm password</label>
+            </div>
+        </div>
+        <div class="s12">
+            <button class="responsive small-elevate small-round large no-margin" @onclick="ConfirmRegister">Register</button>
         </div>
     </div>
-    <div class="s12">
-        <div class="field label prefix border left-align">
-            <i>mail</i>
-            <input type="email">
-            <label>Email</label>
-        </div>
-    </div>
-    <div class="s12">
-        <div class="field label prefix border left-align">
-            <i>key</i>
-            <input type="password">
-            <label>Password</label>
-        </div>
-    </div>
-    <div class="s12">
-        <div class="field label border left-align">
-            <input type="password">
-            <label>Confirm password</label>
-        </div>
-    </div>
-    <div class="s12">
-        <button class="responsive small-elevate small-round large no-margin">Register</button>
-    </div>
-</div>
+    <Snackbar @ref="_snackbar"/>
 </main>

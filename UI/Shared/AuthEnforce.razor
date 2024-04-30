@@ -1,0 +1,16 @@
+@using UI.Data;
+@inject NavigationManager NavigationManager;
+@inject AuthController Auth;
+
+@code {
+    protected override void OnAfterRender(bool firstRender) => CheckUserAuthentication();
+
+    private void CheckUserAuthentication()
+    {
+        var uri = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        if (!Auth.IsLoggedIn && uri != "/login" && uri != "/register")
+        {
+            NavigationManager.NavigateTo("/Login");
+        }
+    }
+}

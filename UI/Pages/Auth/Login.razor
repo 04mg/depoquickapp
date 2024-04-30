@@ -1,30 +1,59 @@
 ﻿@page "/login"
+@using BusinessLogic
+@using UI.Data
+@inject AuthController Auth
+@inject NavigationManager NavigationManager
+
+@code {
+
+    private LoginDto _loginDto;
+    private Snackbar _snackbar = new();
+
+    private void ConfirmLogin()
+    {
+        try
+        {
+            Auth.LogIn(_loginDto);
+            NavigationManager.NavigateTo("/Deposits", forceLoad: true);
+        }
+        catch (ArgumentException e)
+        {
+            _snackbar.ErrorMessage = e.Message;
+        }
+        catch (NullReferenceException)
+        {
+            _snackbar.ErrorMessage = "Fields cannot be empty.";
+        }
+    }
+
+}
 
 <PageTitle>Login</PageTitle>
 
 <main class="responsive middle-align center-align">
-<div class="grid large-width">
-    <div class="s12">
-        <i class="extra">person</i>
-        <h5 class="center-align">Welcome back</h5>
-        <div class="small-space"></div>
-    </div>
-    <div class="s12">
-        <div class="field label prefix border left-align">
-            <i>mail</i>
-            <input type="email">
-            <label>Email</label>
+    <div class="grid large-width">
+        <div class="s12">
+            <i class="extra">person</i>
+            <h5 class="center-align">Welcome back</h5>
+            <div class="small-space"></div>
+        </div>
+        <div class="s12">
+            <div class="field label prefix border left-align">
+                <i>mail</i>
+                <input type="email" @bind="_loginDto.Email">
+                <label>Email</label>
+            </div>
+        </div>
+        <div class="s12">
+            <div class="field label prefix border left-align">
+                <i>key</i>
+                <input type="password" @bind="_loginDto.Password">
+                <label>Password</label>
+            </div>
+        </div>
+        <div class="s12">
+            <button class="responsive small-elevate small-round large no-margin" @onclick="ConfirmLogin">Login</button>
         </div>
     </div>
-    <div class="s12">
-        <div class="field label prefix border left-align">
-            <i>key</i>
-            <input type="password">
-            <label>Password</label>
-        </div>
-    </div>
-    <div class="s12">
-        <button class="responsive small-elevate small-round large no-margin">Login</button>
-    </div>
-</div>
+    <Snackbar @ref="_snackbar"/>
 </main>

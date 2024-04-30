@@ -1,16 +1,23 @@
-﻿<NavLink href="Login">
-    <i>login</i>
-    <span>Log In</span>
-</NavLink>
-<NavLink href="Register">
-    <i>passkey</i>
-    <span>Register</span>
-</NavLink>
-<NavLink href="Deposits">
-    <i>garage_door</i>
-    <span>Deposits</span>
-</NavLink>
-<NavLink href="Bookings">
-    <i>book</i>
-    <span>Bookings</span>
-</NavLink>
+﻿@using UI.Data
+@inject AuthController Auth;
+@if (Auth.IsLoggedIn)
+{
+    <NavLink href="Deposits">
+        <i>garage_door</i>
+        <span>Deposits</span>
+    </NavLink>
+    <NavLink href="Bookings">
+        <i>book</i>
+        <span>Bookings</span>
+    </NavLink>
+}
+else {
+    <NavLink href="Login">
+        <i>login</i>
+        <span>Log In</span>
+    </NavLink>
+    <NavLink href="Register">
+        <i>passkey</i>
+        <span>Register</span>
+    </NavLink>
+}
