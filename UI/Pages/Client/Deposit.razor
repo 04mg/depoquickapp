@@ -1,40 +1,60 @@
 @page "/Deposit/{Id}"
 @inherits AuthEnforce
+@using BusinessLogic.DTOs
+@using UI.Data
+@inject AuthController Auth
+@inject DepositController DepositController
 
 @code {
-    [Parameter] public string? Id { get; set; }
+    private ListDepositDto DepositDto { get; set; }
+
+    private int? _id;
+
+    [Parameter]
+    public int Id
+    {
+        get => _id ?? throw new NullReferenceException();
+        set => _id = value;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        DepositDto = DepositController.GetDeposit(Id, Auth.CurrentCredentials);
+    }
+
 }
 
 <title>Deposits</title>
 
 <main class="responsive">
-    <a class="extra transparent vertical-margin left-align" href="/Deposits">
+    <NavLink class="extra transparent vertical-margin left-align" href="/Deposits">
         <i>arrow_back</i>
-    </a>
+    </NavLink>
     <h6 class="vertical-margin">
         Deposit
         <span class="circle primary center-align middle-align left-margin">@Id</span>
     </h6>
     <article>
-        <h6 class="small tiny-padding">Area:&nbsp; <b>A</b></h6>
+        <h6 class="small tiny-padding">Area:&nbsp; <b>@DepositDto.Area</b></h6>
         <div class="divider"></div>
-        <h6 class="small tiny-padding">Size:&nbsp; <b>Small</b></h6>
+        <h6 class="small tiny-padding">Size:&nbsp; <b>@DepositDto.Size</b></h6>
         <div class="divider"></div>
-        <h6 class="small tiny-padding">Climate Control:&nbsp; <b>Yes</b></h6>
+        <h6 class="small tiny-padding">Climate Control:&nbsp; <b>@(DepositDto.ClimateControl ? "Yes" : "No")</b></h6>
         <div class="divider"></div>
-        <h6 class="small tiny-padding">There are the following promotions available for this deposit:</h6>
-        <div class="button no-wave margin">
-            Promotion label
-            <p class="badge">50%</p>
-        </div>
-        <div class="button no-wave margin">
-            Promotion label
-            <p class="badge">50%</p>
-        </div>
-        <div class="button no-wave margin">
-            Promotion label
-            <p class="badge">50%</p>
-        </div>
+        @if (DepositDto.PromotionList.Count == 0)
+        {
+            <h6 class="small tiny-padding">There are the following promotions available for this deposit:</h6>
+        }
+        else
+        {
+            @foreach (var promotion in DepositDto.PromotionList)
+            {
+                <div class="button no-wave margin">
+                    Promotion label
+                    <p class="badge">50%</p>
+                </div>
+            }
+        }
     </article>
     <div class="small-space"></div>
     <h6 class="vertical-margin">Book now</h6>

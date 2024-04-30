@@ -13,4 +13,5 @@ public class DepositController
     }
 
     public List<ListDepositDto> ListAllDeposits(Credentials credentials) => _app.ListAllDeposits(credentials);
+    public ListDepositDto GetDeposit(int id, Credentials credentials) => _app.GetDeposit(id, credentials);
 }
