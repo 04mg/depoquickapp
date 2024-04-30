@@ -50,4 +50,19 @@ public class BookingTest
         // Assert
         Assert.AreEqual("The starting date of the booking must not be earlier than today.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCanReturnCorrectPrice()
+    {
+        // Arrange
+        var booking = new Booking(1, Deposit, Client, Today, Tomorrow);
+        var priceCalculator = new PriceCalculator();
+        var expectedPrice = priceCalculator.CalculatePrice(booking.Deposit, booking.Duration);
+
+        // Act
+        var price = booking.CalculatePrice(priceCalculator);
+
+        // Assert
+        Assert.AreEqual(expectedPrice, price);
+    }
 }

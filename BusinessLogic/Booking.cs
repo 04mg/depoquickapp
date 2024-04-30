@@ -37,6 +37,11 @@ public class Booking
         }
     }
 
+    public double CalculatePrice(IPriceCalculator priceCalculator)
+    {
+        return priceCalculator.CalculatePrice(Deposit, Duration);
+    }
+
     public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo)
     {
         Id = id;
@@ -44,8 +49,6 @@ public class Booking
         Client = client;
         Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
     }
-    
-    
 }
 
 public enum BookingStage
