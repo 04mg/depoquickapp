@@ -76,11 +76,19 @@ public class AuthManager
 
     public Credentials Register(User user, string passwordConfirmation)
     {
+        SetRankAsAdminIfFirstUser(user);
         ValidateRegistration(user, passwordConfirmation);
-
         UsersByEmail.Add(user.Email, user);
 
         return new Credentials{Email = user.Email, Rank = user.Rank.ToString()};
+    }
+
+    private void SetRankAsAdminIfFirstUser(User user)
+    {
+        if (UsersByEmail.Count == 0)
+        {
+            user.Rank = UserRank.Administrator;
+        }
     }
 
     public Credentials Login(LoginDto loginDto)
