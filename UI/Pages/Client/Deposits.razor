@@ -1,13 +1,26 @@
 @page "/deposits"
-@inherits AuthEnforce;
+@inherits AuthEnforce
+@using UI.Data
+@inject AuthController Auth
+@inject DepositController DepositController
 
+@code {
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        
+    }
+
+}
 
 <title>Deposits</title>
 
 <main class="responsive">
     <h6 class="vertical-margin">Deposits</h6>
     <article>
-        <DepositItem Id="1" Area="A" Size="Small" Discount="50" ClimateControl="true" />
-        <DepositBookingModal DepositId="1" />
+        @foreach (var deposit in DepositController.ListAllDeposits(Auth.CurrentCredentials))
+        {
+            <DepositItem Id="@deposit.Id" Area="@deposit.Area" Size="@deposit.Size" ClimateControl="@deposit.ClimateControl"/>
+        }
     </article>
 </main>

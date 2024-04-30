@@ -6,13 +6,13 @@ using UI.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 var depoQuickApp = new DepoQuickApp();
-var authController = new AuthController(depoQuickApp);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddSingleton(authController);
+builder.Services.AddSingleton<DepoQuickApp>();
+builder.Services.AddSingleton<AuthController>();
 
 var app = builder.Build();
 
