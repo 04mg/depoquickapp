@@ -2,11 +2,11 @@ namespace BusinessLogic;
 
 public class ListBookingDto
 {
-    public int Id { get; init; }
-    public DateOnly DateFrom { get; init; }
-    public DateOnly DateTo { get; init; }
-    public int DepositId { get; init; }
-    public string Email { get; init; }
-    public string Stage { get; init; }
-    public string Message { get; init; }
+    public int Id { get; set; }
+    public DateOnly DateFrom { get; set; }
+    public DateOnly DateTo { get; set; }
+    public int DepositId { get; set; }
+    public string Email { get; set; }
+    public string Stage { get; set; }
+    public string Message { get; set; }
 }

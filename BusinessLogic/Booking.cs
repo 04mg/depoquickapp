@@ -49,6 +49,17 @@ public class Booking
         Client = client;
         Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
     }
+
+    public void Approve()
+    {
+        Stage = BookingStage.Approved;
+    }
+    
+    public void Reject(string message)
+    {
+        Stage = BookingStage.Rejected;
+        Message = message;
+    }
 }
 
 public enum BookingStage

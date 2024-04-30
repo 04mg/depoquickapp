@@ -2,8 +2,8 @@ namespace BusinessLogic;
 
 public class AddBookingDto
 {
-    public DateOnly DateFrom { get; init; }
-    public DateOnly DateTo { get; init; }
-    public int DepositId { get; init; }
-    public string Email { get; init; }
+    public DateOnly DateFrom { get; set; }
+    public DateOnly DateTo { get; set; }
+    public int DepositId { get; set; }
+    public string Email { get; set; }
 }

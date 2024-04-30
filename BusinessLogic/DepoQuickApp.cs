@@ -176,9 +176,14 @@ public class DepoQuickApp
         }).ToList();
     }
 
-    public void ManageBooking(int id, Credentials credentials, bool isApproved, string message)
+    public void ApproveBooking(int id, Credentials credentials)
     {
-        _bookingManager.Manage(id, credentials, isApproved, message);
+        _bookingManager.Approve(id, credentials);
+    }
+    
+    public void RejectBooking(int id, string message, Credentials credentials)
+    {
+        _bookingManager.Reject(id, credentials, message);
     }
     
     private void EnsureThereAreNoBookingsWithThisDeposit(int id, Credentials credentials)
