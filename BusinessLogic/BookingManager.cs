@@ -91,8 +91,17 @@ public class BookingManager
         booking.Reject(message);
     }
 
-    private Booking GetBookingById(int i)
+    private Booking GetBookingById(int id)
     {
-        return Bookings.First(b => b.Id == i);
+        EnsureBookingExists(id);
+        return Bookings.First(b => b.Id == id);
+    }
+
+    private void EnsureBookingExists(int id)
+    {
+        if (Bookings.All(b => b.Id != id))
+        {
+            throw new ArgumentException("Booking not found.");
+        }
     }
 }

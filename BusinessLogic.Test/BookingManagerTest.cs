@@ -264,4 +264,24 @@ public class BookingManagerTest
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);  
     }
+    
+    [TestMethod]
+    public void TestCantApproveNonExistentBooking()
+    {
+        //Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+            _bookingManager.Approve(1, _adminCredentials));
+        //Assert
+        Assert.AreEqual("Booking not found.", exception.Message);  
+    }
+    
+    [TestMethod]
+    public void TestCantRejectNonExistentBooking()
+    {
+        //Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+            _bookingManager.Reject(1, _adminCredentials, "message"));
+        //Assert
+        Assert.AreEqual("Booking not found.", exception.Message);  
+    }
 }
