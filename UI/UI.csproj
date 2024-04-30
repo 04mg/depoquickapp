@@ -25,6 +25,9 @@
       <Content Update="Pages\Client\DepositBookingModal.razor">
         <DependentUpon>Deposits.razor</DependentUpon>
       </Content>
+      <Content Update="Pages\Client\BookingItem.razor">
+        <DependentUpon>Bookings.razor</DependentUpon>
+      </Content>
     </ItemGroup>
 
 </Project>
