@@ -133,7 +133,7 @@ public class BookingManagerTest
         _bookingManager.Add(booking);
 
         // Act
-        _bookingManager.Manage(1, _adminCredentials, true);
+        _bookingManager.Approve(1, _adminCredentials);
 
         // Assert
         Assert.AreEqual(BookingStage.Approved, _bookingManager.GetAllBookings(_adminCredentials)[0].Stage);
@@ -148,7 +148,7 @@ public class BookingManagerTest
         _bookingManager.Add(booking);
 
         // Act
-        _bookingManager.Manage(1, _adminCredentials, false);
+        _bookingManager.Reject(1, _adminCredentials);
 
         // Assert
         Assert.AreEqual(BookingStage.Rejected, _bookingManager.GetAllBookings(_adminCredentials)[0].Stage);
@@ -164,7 +164,7 @@ public class BookingManagerTest
         _bookingManager.Add(booking);
 
         //Act
-        _bookingManager.Manage(1, _adminCredentials, false, message);
+        _bookingManager.Reject(1, _adminCredentials, message);
 
         //Assert
         Assert.AreEqual(message, _bookingManager.GetAllBookings(_adminCredentials)[0].Message);
@@ -237,7 +237,7 @@ public class BookingManagerTest
     }
 
     [TestMethod]
-    public void TestCantManageBookingsIfNotAdministrator()
+    public void TestCantApproveBookingsIfNotAdministrator()
     {
         //Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
@@ -246,8 +246,42 @@ public class BookingManagerTest
 
         //Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
-            _bookingManager.Manage(1, _userCredentials, true));
+            _bookingManager.Approve(1, _userCredentials));
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);  
+    }
+    
+    public void TestCantRejectBookingsIfNotAdministrator()
+    {
+        //Arrange
+        var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        _bookingManager.Add(booking);
+
+        //Act
+        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            _bookingManager.Reject(1, _userCredentials, "message"));
+        //Assert
+        Assert.AreEqual("You are not authorized to perform this action.", exception.Message);  
+    }
+    
+    [TestMethod]
+    public void TestCantApproveNonExistentBooking()
+    {
+        //Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+            _bookingManager.Approve(1, _adminCredentials));
+        //Assert
+        Assert.AreEqual("Booking not found.", exception.Message);  
+    }
+    
+    [TestMethod]
+    public void TestCantRejectNonExistentBooking()
+    {
+        //Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+            _bookingManager.Reject(1, _adminCredentials, "message"));
+        //Assert
+        Assert.AreEqual("Booking not found.", exception.Message);  
     }
 }

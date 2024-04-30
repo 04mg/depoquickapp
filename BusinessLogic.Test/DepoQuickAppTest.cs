@@ -189,12 +189,11 @@ public class DepoQuickAppTest
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
-        _app.ManageBooking(1, credentials, true, "Approved");
+        _app.ApproveBooking(1, credentials);
         var booking = _app.ListAllBookings(_credentials).Find(b => b.Id == 1);
 
         // Assert
         Assert.AreEqual("Approved", booking?.Stage);
-        Assert.AreEqual( "", booking?.Message);
     }
     
     [TestMethod]
@@ -208,7 +207,7 @@ public class DepoQuickAppTest
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
-        _app.ManageBooking(1, credentials, false, "Rejected");
+        _app.RejectBooking(1, "Rejected", credentials);
         var booking = _app.ListAllBookings(_credentials).Find(b => b.Id == 1);
 
         // Assert
