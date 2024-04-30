@@ -25,7 +25,7 @@ public class PromotionManager
         }
     }
 
-    private Promotion GetPromotionById(int id)
+    public Promotion GetPromotionById(int id)
     {
         return Promotions.First(p => p.Id == id);
     }

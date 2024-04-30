@@ -1,12 +1,12 @@
 namespace BusinessLogic;
 
-public readonly struct RegisterDto
+public struct RegisterDto
 {
-    public string NameSurname { get; init; }
-    public string Email { get; init; }
-    public string Password { get; init; }
-    public string PasswordConfirmation { get; init; }
-    public string Rank { get; init; }
+    public string NameSurname { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string PasswordConfirmation { get; set; }
+    public string Rank { get; set; }
 
     public RegisterDto(string nameSurname, string email, string password, string passwordConfirmation, string rank = "Client")
     {

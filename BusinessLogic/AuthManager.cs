@@ -80,7 +80,7 @@ public class AuthManager
 
         UsersByEmail.Add(user.Email, user);
 
-        return new Credentials(user.Email, user.Rank.ToString());
+        return new Credentials{Email = user.Email, Rank = user.Rank.ToString()};
     }
 
     public Credentials Login(LoginDto loginDto)
@@ -88,7 +88,27 @@ public class AuthManager
         ValidateLogin(loginDto.Email, loginDto.Password);
 
         var userRank = UsersByEmail[loginDto.Email].Rank;
-        var credentials = new Credentials(loginDto.Email, userRank.ToString());
+        var credentials = new Credentials { Email = loginDto.Email, Rank = userRank.ToString() };
         return credentials;
+    }
+
+    public User GetUserByEmail(string email, Credentials credentials)
+    {
+        if (!Exists(email))
+        {
+            throw new ArgumentException("User does not exist.");
+        }
+
+        EnsureUserIsAdminOrSameUser(email, credentials);
+        return UsersByEmail[email];
+    }
+
+    private void EnsureUserIsAdminOrSameUser(string requestedEmail, Credentials credentials)
+    {
+        if (credentials.Rank == "Administrator") return;
+        if (credentials.Email != requestedEmail)
+        {
+            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+        }
     }
 }
