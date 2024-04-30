@@ -77,18 +77,18 @@ public class BookingManager
         return Bookings;
     }
 
-    public void Manage(int i, Credentials credentials, bool isApproved, string message = "")
+    public void Approve(int id, Credentials credentials)
     {
         EnsureUserIsAdministrator(credentials);
-        if (isApproved)
-        {
-            GetBookingById(i).Stage = BookingStage.Approved;
-        }
-        else
-        {
-            GetBookingById(i).Stage = BookingStage.Rejected;
-            GetBookingById(i).Message = message;
-        }
+        var booking = GetBookingById(id);
+        booking.Approve();
+    }
+    
+    public void Reject(int id, Credentials credentials, string message = "")
+    {
+        EnsureUserIsAdministrator(credentials);
+        var booking = GetBookingById(id);
+        booking.Reject(message);
     }
 
     private Booking GetBookingById(int i)
