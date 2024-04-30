@@ -186,4 +186,22 @@ public class AuthManagerTest
         // Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestFirstUserIsAdmin()
+    {
+        // Arrange
+        var credManager = new AuthManager();
+        var admin = new User(
+            NameSurname,
+            Email,
+            Password
+            );
+
+        // Act
+        var credentials = credManager.Register(admin, Password);
+
+        // Assert
+        Assert.AreEqual("Administrator", credentials.Rank);
+    }
 }
