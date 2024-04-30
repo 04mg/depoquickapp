@@ -136,6 +136,19 @@ public class DepoQuickApp
         }).ToList();
     }
     
+    public ListDepositDto GetDeposit(int id, Credentials credentials)
+    {
+        var deposit = _depositManager.GetDepositById(id);
+        return new ListDepositDto()
+        {
+            Id = deposit.Id,
+            Area = deposit.Area,
+            Size = deposit.Size,
+            ClimateControl = deposit.ClimateControl,
+            PromotionList = deposit.Promotions.Select(p => p.Id).ToList()
+        };
+    }
+    
     public void AddBooking(AddBookingDto addBookingDto, Credentials credentials)
     {
         EnsureUserExists(addBookingDto.Email);

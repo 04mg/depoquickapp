@@ -25,7 +25,7 @@ public class DepositManager
         }
     }
     
-    private Deposit GetDepositById(int id)
+    public Deposit GetDepositById(int id)
     {
         return Deposits.First(d => d.Id == id);
     }
