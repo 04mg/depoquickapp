@@ -1,12 +1,15 @@
 @page "/Deposit/{Id}"
 @inherits AuthEnforce
+@using BusinessLogic
 @using BusinessLogic.DTOs
 @using UI.Data
 @inject AuthController Auth
 @inject DepositController DepositController
+@inject PromotionController PromotionController
 
 @code {
     private ListDepositDto DepositDto { get; set; }
+    private List<AddPromotionDto> Promotions { get; set; } = new();
 
     private int? _id;
 
@@ -20,6 +23,7 @@
     protected override void OnAfterRender(bool firstRender)
     {
         DepositDto = DepositController.GetDeposit(Id, Auth.CurrentCredentials);
+        Promotions = DepositDto.PromotionList.Select(p => PromotionController.GetPromotion(p)).ToList();
     }
 
 }
@@ -41,17 +45,17 @@
         <div class="divider"></div>
         <h6 class="small tiny-padding">Climate Control:&nbsp; <b>@(DepositDto.ClimateControl ? "Yes" : "No")</b></h6>
         <div class="divider"></div>
-        @if (DepositDto.PromotionList.Count == 0)
+        @if (Promotions.Count == 0)
         {
             <h6 class="small tiny-padding">There are the following promotions available for this deposit:</h6>
         }
         else
         {
-            @foreach (var promotion in DepositDto.PromotionList)
+            @foreach (var promotion in Promotions)
             {
                 <div class="button no-wave margin">
-                    Promotion label
-                    <p class="badge">50%</p>
+                    @promotion.Label
+                    <p class="badge">-@promotion.Discount%</p>
                 </div>
             }
         }
