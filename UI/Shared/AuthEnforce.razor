@@ -3,9 +3,9 @@
 @inject AuthController Auth;
 
 @code {
-    protected override void OnAfterRender(bool firstRender) => CheckUserAuthentication();
+    protected override void OnAfterRender(bool firstRender) => EnsureUserIsAuthenticated();
 
-    private void CheckUserAuthentication()
+    private void EnsureUserIsAuthenticated()
     {
         var uri = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         if (!Auth.IsLoggedIn && uri != "/login" && uri != "/register")
