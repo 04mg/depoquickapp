@@ -1,10 +1,10 @@
 namespace BusinessLogic.DTOs;
 
-public readonly struct ListDepositDto
+public struct ListDepositDto
 {
-    public int Id { get; init; }
-    public string Area { get; init; }
-    public string Size { get; init; }
-    public bool ClimateControl { get; init; }
-    public List<int> PromotionList { get; init; }
+    public int Id { get; set; }
+    public string Area { get; set; }
+    public string Size { get; set; }
+    public bool ClimateControl { get; set; }
+    public List<int> PromotionList { get; set; }
 }

@@ -1,9 +1,9 @@
 namespace BusinessLogic;
 
-public readonly struct AddPromotionDto
+public struct AddPromotionDto
 {
-    public string Label { init; get; }
-    public int Discount { init; get; }
-    public DateOnly DateFrom { init; get; }
-    public DateOnly DateTo { init; get; }
+    public string Label { set; get; }
+    public int Discount { set; get; }
+    public DateOnly DateFrom { set; get; }
+    public DateOnly DateTo { set; get; }
 }
