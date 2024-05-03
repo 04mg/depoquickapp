@@ -25,4 +25,6 @@ public class AuthController
     public void LogOut() => _currentCredentials = null;
     
     public bool IsLoggedIn => _currentCredentials != null;
+    
+    public bool IsAdmin => CurrentCredentials.Rank == "Administrator";
 }

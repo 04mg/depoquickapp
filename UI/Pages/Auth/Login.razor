@@ -8,6 +8,27 @@
 
     private LoginDto _loginDto;
     private Snackbar _snackbar = new();
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                Auth.Register(new RegisterDto
+                {
+                    Email = "manurz2121@gmail.com",
+                    NameSurname = "Name SUrname",
+                    Password = "manurz2121@gmail.comA",
+                    PasswordConfirmation = "manurz2121@gmail.comA",
+                    Rank = "Client"
+                });
+            } catch (Exception)
+            {
+            }
+            
+        }
+    }
 
     private void ConfirmLogin()
     {

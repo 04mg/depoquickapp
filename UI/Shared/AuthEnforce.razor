@@ -3,7 +3,7 @@
 @inject AuthController Auth;
 
 @code {
-    protected override void OnAfterRender(bool firstRender) => EnsureUserIsAuthenticated();
+    protected override void OnInitialized() => EnsureUserIsAuthenticated();
 
     private void EnsureUserIsAuthenticated()
     {

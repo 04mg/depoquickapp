@@ -1,17 +1,111 @@
-@page "/deposits"
+@page "/Deposits"
 @inherits AuthEnforce
+@using BusinessLogic
+@using BusinessLogic.DTOs
 @using UI.Data
 @inject AuthController Auth
 @inject DepositController DepositController
 
+@code {
+    private Snackbar _snackbar = new();
+
+    private AddDepositDto _addDepositDto = new AddDepositDto()
+    {
+        Area = "A",
+        Size = "Small",
+        ClimateControl = false,
+        PromotionList = new List<int>()
+    };
+
+    private List<ListDepositDto> DepositsDto { get; set; } = new();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        DepositsDto = DepositController.ListAllDeposits(Auth.CurrentCredentials);
+        StateHasChanged();
+    }
+
+    private void AddDeposit()
+    {
+        try
+        {
+            DepositController.AddDeposit(_addDepositDto, Auth.CurrentCredentials);
+            StateHasChanged();
+        }
+        catch (ArgumentException e)
+        {
+            _snackbar.ErrorMessage = e.Message;
+        }
+    }
+
+}
+
 <title>Deposits</title>
 
 <main class="responsive">
-    <h6 class="vertical-margin">Deposits</h6>
+    <h6 class="vertical-margin">
+        Deposits
+        @if (Auth.IsAdmin)
+        {
+            <button class="square round extra absolute right no-margin" data-ui="#add-deposit">
+                <i>add</i>
+            </button>
+            <div class="medium-space"></div>
+        }
+    </h6>
     <article>
-        @foreach (var deposit in DepositController.ListAllDeposits(Auth.CurrentCredentials))
+        @foreach (var deposit in DepositsDto)
         {
             <DepositItem Id="@deposit.Id" Area="@deposit.Area" Size="@deposit.Size" ClimateControl="@deposit.ClimateControl"/>
         }
+        @if (DepositsDto.Count == 0)
+        {
+            <p>No deposits found.</p>
+        }
     </article>
 </main>
+
+@if (Auth.IsAdmin)
+{
+    <div class="medium-space"></div>
+    <div class="overlay blur"></div>
+    <dialog class="medium-width no-elevate" id="add-deposit">
+        <div class="padding center-align">
+            <i>garage_door</i>
+            <h6 class="center-align">Add new deposit</h6>
+        </div>
+        <div class="field label suffix border">
+            <select @bind="_addDepositDto.Area">
+                <option>A</option>
+                <option>B</option>
+                <option>C</option>
+                <option>D</option>
+                <option>E</option>
+            </select>
+            <label>Area</label>
+            <i>arrow_drop_down</i>
+        </div>
+        <div class="field label suffix border">
+            <select @bind="_addDepositDto.Size">
+                <option>Small</option>
+                <option>Medium</option>
+                <option>Large</option>
+            </select>
+            <label>Size</label>
+            <i>arrow_drop_down</i>
+        </div>
+        <PromotionSelect @bind-Promotions="_addDepositDto.PromotionList"/>
+        <div class="divider"></div>
+        <div class="field no-margin top-padding">
+            <label class="checkbox">
+                <input type="checkbox" @bind="_addDepositDto.ClimateControl">
+                <span>Climate Control</span>
+            </label>
+        </div>
+        <nav class="right-align no-space no-margin">
+            <button class="transparent link" data-ui="#add-deposit">Cancel</button>
+            <button class="transparent link" @onclick="AddDeposit">Confirm</button>
+        </nav>
+    </dialog>
+    <Snackbar @ref="_snackbar"/>
+}

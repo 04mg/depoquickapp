@@ -13,6 +13,8 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<DepoQuickApp>();
 builder.Services.AddSingleton<AuthController>();
+builder.Services.AddSingleton<DepositController>();
+builder.Services.AddSingleton<PromotionController>();
 
 var app = builder.Build();
 

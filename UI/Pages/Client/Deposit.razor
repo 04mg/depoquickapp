@@ -1,4 +1,4 @@
-@page "/Deposit/{Id}"
+@page "/Deposit/{Id:int}"
 @inherits AuthEnforce
 @using BusinessLogic
 @using BusinessLogic.DTOs
@@ -24,6 +24,7 @@
     {
         DepositDto = DepositController.GetDeposit(Id, Auth.CurrentCredentials);
         Promotions = DepositDto.PromotionList.Select(p => PromotionController.GetPromotion(p)).ToList();
+        StateHasChanged();
     }
 
 }
@@ -47,10 +48,11 @@
         <div class="divider"></div>
         @if (Promotions.Count == 0)
         {
-            <h6 class="small tiny-padding">There are the following promotions available for this deposit:</h6>
+            <h6 class="small tiny-padding">There are no available promotions for this deposit</h6>
         }
         else
         {
+            <h6 class="small tiny-padding">There are the following promotions available for this deposit:</h6>
             @foreach (var promotion in Promotions)
             {
                 <div class="button no-wave margin">

@@ -12,4 +12,5 @@ public class PromotionController
     }
 
     public AddPromotionDto GetPromotion(int id) => _app.GetPromotion(id);
+    public List<ModifyPromotionDto> ListAllPromotions(Credentials credentials) => _app.ListAllPromotions(credentials);
 }

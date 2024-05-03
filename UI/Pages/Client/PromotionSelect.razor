@@ -1,0 +1,99 @@
+@using BusinessLogic
+@using UI.Data
+@inject AuthController Auth
+@inject PromotionController PromotionController
+
+@code {
+    private List<int> _promotions = new();
+    private List<ModifyPromotionDto> _allPromotions = new();
+    private List<ModifyPromotionDto> _addedPromotions = new();
+    private ModifyPromotionDto SelectedPromotion => _allPromotions.First(p => p.Id == _selectedPromotionId);
+    private int _selectedPromotionId = -1;
+    private bool IsPromotionSelected => _selectedPromotionId != -1;
+
+    [Parameter] public List<int> Promotions { get; set; } = new();
+
+    [Parameter] public EventCallback<List<int>> PromotionsChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _allPromotions = PromotionController.ListAllPromotions(Auth.CurrentCredentials);
+    }
+
+    private void SelectPromotion()
+    {
+        if (!IsPromotionSelected) return;
+        AddPromotionId(SelectedPromotion);
+        _addedPromotions.Add(SelectedPromotion);
+        _allPromotions.Remove(SelectedPromotion);
+        ResetSelection();
+        StateHasChanged();
+    }
+
+    private void RemovePromotion(ModifyPromotionDto promotion)
+    {
+        _allPromotions.Add(promotion);
+        _addedPromotions.Remove(promotion);
+        RemovePromotionId(promotion);
+        ResetSelection();
+        StateHasChanged();
+    }
+
+    private void AddPromotionId(ModifyPromotionDto promotion)
+    {
+        Promotions.Add(promotion.Id);
+        PromotionsChanged.InvokeAsync(Promotions);
+    }
+
+    private void RemovePromotionId(ModifyPromotionDto promotion)
+    {
+        Promotions.Remove(promotion.Id);
+        PromotionsChanged.InvokeAsync(Promotions);
+    }
+
+    private void ResetSelection()
+    {
+        _selectedPromotionId = -1;
+    }
+
+}
+
+<nav class="no-space">
+    <div class="max field border left-round">
+        <select @bind="_selectedPromotionId">
+            <option value="-1" disabled>- Select Promotion -</option>
+            @foreach (var promotion in _allPromotions)
+            {
+                <option value="@promotion.Id">@promotion.Label</option>
+            }
+        </select>
+    </div>
+    <button class="large right-round" @onclick="SelectPromotion">
+        <i>add</i>
+    </button>
+</nav>
+
+<div class="center-align fill tiny-padding vertical-margin">
+    @if (IsPromotionSelected)
+    {
+        <p class="horizontal-padding">Selected Promotion: @SelectedPromotion.Label</p>
+        <p class="horizontal-padding">Discount: @SelectedPromotion.Discount</p>
+        <p class="horizontal-padding">From @SelectedPromotion.DateFrom to @SelectedPromotion.DateTo</p>
+    }
+    else
+    {
+        <p class="horizontal-padding">No promotion selected.</p>
+    }
+</div>
+
+@foreach (var promotion in _addedPromotions)
+{
+    <div class="row padding no-margin">
+        <div class="max">
+            @promotion.Label
+        </div>
+        <a @onclick="() => RemovePromotion(promotion)">
+            <i>close</i>
+        </a>
+    </div>
+}

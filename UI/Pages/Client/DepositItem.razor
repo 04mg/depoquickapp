@@ -17,13 +17,16 @@
     <div>
         <h6 class="button small primary-container">Area: @Area</h6>
         <h6 class="button small primary-container">Size: @Size</h6>
-        <h6 class="button small primary-container">
-            @if (ClimateControl)
-            {
-                <text>"Climate Control"</text>
-            }
-        </h6>
-        <h6 class="button small primary">-@Discount%</h6>
+
+        @if (ClimateControl)
+        {
+            <h6 class="button small primary-container">Climate Control</h6>
+        }
+            
+        @if (Discount != 0)
+        {
+            <h6 class="button small primary">-@Discount%</h6>
+        }
     </div>
 </a>
 <div class="divider right-align"></div>
