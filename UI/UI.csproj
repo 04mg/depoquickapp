@@ -19,18 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="Pages\Client\DepositItem.razor">
-        <DependentUpon>Deposits.razor</DependentUpon>
-      </Content>
-      <Content Update="Pages\Client\BookingItem.razor">
-        <DependentUpon>Bookings.razor</DependentUpon>
-      </Content>
-      <Content Update="Pages\Client\PromotionSelect.razor">
-        <DependentUpon>Deposits.razor</DependentUpon>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
     </ItemGroup>
 

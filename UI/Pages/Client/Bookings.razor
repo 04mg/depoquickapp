@@ -2,8 +2,19 @@
 @inherits AuthEnforce
 
 <main class="responsive">
-    <h6 class="vertical-margin">Bookings</h6>
+    <h6 class="vertical-margin">
+        Bookings
+        <div class="medium-space"></div>
+    </h6>
     <article>
-        <BookingItem Id="1" StartDate="DateOnly.MinValue" EndDate="DateOnly.MaxValue" />
+        <a class="row padding surface-container wave scroll">
+            <div class="row max">
+                <div class="button circle">1</div>
+            </div>
+            <div>
+                <h6 class="button small">@DateOnly.MinValue &rarr; @DateOnly.MaxValue</h6>
+            </div>
+        </a>
+        <div class="divider right-align"></div>
     </article>
 </main>

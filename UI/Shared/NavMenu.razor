@@ -10,12 +10,22 @@
         <i>book</i>
         <span>Bookings</span>
     </NavLink>
+
+    @if (Auth.IsAdmin)
+    {
+        <NavLink href="Promotions">
+            <i>sell</i>
+            <span>Promotions</span>
+        </NavLink>
+    }
+
     <NavLink href="Logout">
         <i>logout</i>
         <span>Log Out</span>
     </NavLink>
 }
-else {
+else
+{
     <NavLink href="Login">
         <i>login</i>
         <span>Log In</span>

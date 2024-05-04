@@ -56,7 +56,21 @@
     <article>
         @foreach (var deposit in DepositsDto)
         {
-            <DepositItem Id="@deposit.Id" Area="@deposit.Area" Size="@deposit.Size" ClimateControl="@deposit.ClimateControl"/>
+            <a class="row padding surface-container wave scroll" href="/Deposit/@deposit.Id">
+                <div class="row max">
+                    <div class="button circle">@deposit.Id</div>
+                </div>
+                <div>
+                    <h6 class="button small primary-container">Area: @deposit.Area</h6>
+                    <h6 class="button small primary-container">Size: @deposit.Size</h6>
+
+                    @if (deposit.ClimateControl)
+                    {
+                        <h6 class="button small primary-container">Climate Control</h6>
+                    }
+                </div>
+            </a>
+            <div class="divider right-align"></div>
         }
         @if (DepositsDto.Count == 0)
         {
