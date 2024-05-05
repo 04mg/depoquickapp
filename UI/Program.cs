@@ -11,6 +11,7 @@ builder.Services.AddSingleton<DepoQuickApp>();
 builder.Services.AddSingleton<AuthController>();
 builder.Services.AddSingleton<DepositController>();
 builder.Services.AddSingleton<PromotionController>();
+builder.Services.AddSingleton<BookingController>();
 
 var app = builder.Build();
 

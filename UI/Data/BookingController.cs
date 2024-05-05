@@ -13,4 +13,7 @@ public class BookingController
     }
 
     public void AddBooking(AddBookingDto dto, Credentials credentials) => _app.AddBooking(dto, credentials);
+
+    public double CalculateBookingPrice(AddBookingDto dto, Credentials credentials) =>
+        _app.CalculateBookingPrice(dto, credentials);
 }
