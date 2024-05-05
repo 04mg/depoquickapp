@@ -1,7 +1,7 @@
-namespace BusinessLogic;
+namespace BusinessLogic.DTOs;
 
 public struct Credentials
 {
-    public string Email { set; get; }
-    public string Rank { set; get; }
+    public string Email { init; get; }
+    public string Rank { init; get; }
 }

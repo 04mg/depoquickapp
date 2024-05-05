@@ -1,3 +1,5 @@
+using BusinessLogic.DTOs;
+
 namespace BusinessLogic;
 
 public class BookingManager

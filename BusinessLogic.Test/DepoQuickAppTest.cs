@@ -1,3 +1,5 @@
+using BusinessLogic.DTOs;
+
 namespace BusinessLogic.Test;
 
 [TestClass]
@@ -8,7 +10,7 @@ public class DepoQuickAppTest
     private LoginDto _loginDto;
     private Credentials _credentials;
     private AddPromotionDto _addPromotionDto;
-    private ModifyPromotionDto _modifyPromotionDto;
+    private PromotionDto _promotionDto;
     private AddDepositDto _addDepositDto;
     private AddBookingDto _addBookingDto;
 
@@ -35,7 +37,7 @@ public class DepoQuickAppTest
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
         };
-        _modifyPromotionDto = new ModifyPromotionDto
+        _promotionDto = new PromotionDto
         {
             Id = 1,
             Label = "Test Promotion", 
@@ -110,14 +112,14 @@ public class DepoQuickAppTest
         _app.AddPromotion(_addPromotionDto, credentials);
 
         // Act
-        _app.ModifyPromotion(1, _modifyPromotionDto, credentials);
+        _app.ModifyPromotion(1, _promotionDto, credentials);
         var promotion = _app.ListAllPromotions(_credentials).First(p => p.Id == 1);
 
         // Assert
-        Assert.AreEqual(_modifyPromotionDto.Label, promotion.Label);
-        Assert.AreEqual(_modifyPromotionDto.Discount, promotion.Discount);
-        Assert.AreEqual(_modifyPromotionDto.DateFrom, promotion.DateFrom);
-        Assert.AreEqual(_modifyPromotionDto.DateTo, promotion.DateTo);
+        Assert.AreEqual(_promotionDto.Label, promotion.Label);
+        Assert.AreEqual(_promotionDto.Discount, promotion.Discount);
+        Assert.AreEqual(_promotionDto.DateFrom, promotion.DateFrom);
+        Assert.AreEqual(_promotionDto.DateTo, promotion.DateTo);
     }
     
     [TestMethod]

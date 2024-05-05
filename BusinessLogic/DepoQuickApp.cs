@@ -53,9 +53,9 @@ public class DepoQuickApp
         _promotionManager.Delete(i, credentials);
     }
 
-    public List<ModifyPromotionDto> ListAllPromotions(Credentials credentials)
+    public List<PromotionDto> ListAllPromotions(Credentials credentials)
     {
-        return _promotionManager.Promotions.Select(p => new ModifyPromotionDto()
+        return _promotionManager.Promotions.Select(p => new PromotionDto()
         {
             Id = p.Id,
             Label = p.Label,
@@ -65,14 +65,14 @@ public class DepoQuickApp
         }).ToList();
     }
 
-    public void ModifyPromotion(int id, ModifyPromotionDto modifyPromotionDto, Credentials credentials)
+    public void ModifyPromotion(int id, PromotionDto promotionDto, Credentials credentials)
     {
         var promotion = new Promotion(
             id,
-            modifyPromotionDto.Label,
-            modifyPromotionDto.Discount,
-            modifyPromotionDto.DateFrom,
-            modifyPromotionDto.DateTo);
+            promotionDto.Label,
+            promotionDto.Discount,
+            promotionDto.DateFrom,
+            promotionDto.DateTo);
         _promotionManager.Modify(id, promotion, credentials);
     }
 
@@ -101,9 +101,9 @@ public class DepoQuickApp
         return promotions;
     }
 
-    public List<ListDepositDto> ListAllDeposits(Credentials credentials)
+    public List<DepositDto> ListAllDeposits(Credentials credentials)
     {
-        return _depositManager.GetAllDeposits(credentials).Select(d => new ListDepositDto()
+        return _depositManager.GetAllDeposits(credentials).Select(d => new DepositDto()
         {
             Id = d.Id,
             Area = d.Area,
@@ -113,10 +113,10 @@ public class DepoQuickApp
         }).ToList();
     }
 
-    public ListDepositDto GetDeposit(int id, Credentials credentials)
+    public DepositDto GetDeposit(int id, Credentials credentials)
     {
         var deposit = _depositManager.GetDepositById(id);
-        return new ListDepositDto()
+        return new DepositDto()
         {
             Id = deposit.Id,
             Area = deposit.Area,
@@ -135,9 +135,9 @@ public class DepoQuickApp
         _bookingManager.Add(booking);
     }
 
-    public List<ListBookingDto> ListAllBookings(Credentials credentials)
+    public List<BookingDto> ListAllBookings(Credentials credentials)
     {
-        return _bookingManager.GetAllBookings(credentials).Select(b => new ListBookingDto()
+        return _bookingManager.GetAllBookings(credentials).Select(b => new BookingDto()
         {
             Id = b.Id,
             DepositId = b.Deposit.Id,
