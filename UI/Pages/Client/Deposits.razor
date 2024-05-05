@@ -5,9 +5,9 @@
 @using UI.Data
 @inject AuthController Auth
 @inject DepositController DepositController
+@inject NotificationService NotificationService
 
 @code {
-    private Snackbar _snackbar = new();
 
     private AddDepositDto _addDepositDto = new AddDepositDto()
     {
@@ -30,11 +30,12 @@
         try
         {
             DepositController.AddDeposit(_addDepositDto, Auth.CurrentCredentials);
+            NotificationService.ShowMessage("Deposit added successfully.");
             StateHasChanged();
         }
         catch (ArgumentException e)
         {
-            _snackbar.ErrorMessage = e.Message;
+            NotificationService.ShowError(e.Message);
         }
     }
 
@@ -47,8 +48,9 @@
         Deposits
         @if (Auth.IsAdmin)
         {
-            <button class="square round extra absolute right no-margin" data-ui="#add-deposit">
+            <button class="extend square round no-margin absolute right" data-ui="#add-deposit">
                 <i>add</i>
+                <span>Add</span>
             </button>
             <div class="medium-space"></div>
         }
@@ -121,5 +123,4 @@
             <button class="transparent link" @onclick="AddDeposit">Confirm</button>
         </nav>
     </dialog>
-    <Snackbar @ref="_snackbar"/>
 }

@@ -3,11 +3,11 @@
 @using UI.Data
 @inject AuthController Auth
 @inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
 
 @code {
 
     private LoginDto _loginDto;
-    private Snackbar _snackbar = new();
     
     protected override void OnAfterRender(bool firstRender)
     {
@@ -39,11 +39,7 @@
         }
         catch (ArgumentException e)
         {
-            _snackbar.ErrorMessage = e.Message;
-        }
-        catch (NullReferenceException)
-        {
-            _snackbar.ErrorMessage = "Fields cannot be empty.";
+            NotificationService.ShowError(e.Message);
         }
     }
 
@@ -52,7 +48,7 @@
 <PageTitle>Login</PageTitle>
 
 <main class="responsive middle-align center-align">
-    <div class="grid large-width">
+    <form class="grid large-width" @onsubmit="ConfirmLogin">
         <div class="s12">
             <i class="extra">person</i>
             <h5 class="center-align">Welcome back</h5>
@@ -61,20 +57,19 @@
         <div class="s12">
             <div class="field label prefix border left-align">
                 <i>mail</i>
-                <input type="email" @bind="_loginDto.Email">
+                <input type="email" @bind="_loginDto.Email" required>
                 <label>Email</label>
             </div>
         </div>
         <div class="s12">
             <div class="field label prefix border left-align">
                 <i>key</i>
-                <input type="password" @bind="_loginDto.Password">
+                <input type="password" @bind="_loginDto.Password" required>
                 <label>Password</label>
             </div>
         </div>
         <div class="s12">
-            <button class="responsive small-elevate small-round large no-margin" @onclick="ConfirmLogin">Login</button>
+            <button type="submit" class="responsive small-elevate small-round large no-margin">Login</button>
         </div>
-    </div>
-    <Snackbar @ref="_snackbar"/>
+    </form>
 </main>

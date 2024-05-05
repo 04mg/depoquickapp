@@ -6,6 +6,8 @@
 @inject AuthController Auth
 @inject DepositController DepositController
 @inject PromotionController PromotionController
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
 
 @code {
     private ListDepositDto DepositDto { get; set; }
@@ -22,9 +24,17 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
+        if (!firstRender) return;
         DepositDto = DepositController.GetDeposit(Id, Auth.CurrentCredentials);
         Promotions = DepositDto.PromotionList.Select(p => PromotionController.GetPromotion(p)).ToList();
         StateHasChanged();
+    }
+
+    private void DeleteDeposit()
+    {
+        DepositController.DeleteDeposit(Id, Auth.CurrentCredentials);
+        NotificationService.ShowMessage($"Deposit with ID: {Id} deleted successfully.");
+        NavigationManager.NavigateTo("/Deposits");
     }
 
 }
@@ -38,6 +48,14 @@
     <h6 class="vertical-margin">
         Deposit
         <span class="circle primary center-align middle-align left-margin">@Id</span>
+        @if (Auth.IsAdmin)
+        {
+            <button class="extend square round error no-margin absolute right" @onclick="DeleteDeposit">
+                <i>delete</i>
+                <span>Delete</span>
+            </button>
+            <div class="medium-space"></div>
+        }
     </h6>
     <article>
         <h6 class="small tiny-padding">Area:&nbsp; <b>@DepositDto.Area</b></h6>
@@ -57,7 +75,7 @@
             {
                 <div class="button no-wave margin">
                     @promotion.Label
-                    <p class="badge">-@promotion.Discount%</p>
+                    <div class="badge none">-@promotion.Discount%</div>
                 </div>
             }
         }

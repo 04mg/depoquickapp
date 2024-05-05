@@ -20,4 +20,6 @@ public class DepositController
     public ListDepositDto GetDeposit(int id, Credentials credentials) => _app.GetDeposit(id, credentials);
     
     public void AddDeposit(AddDepositDto deposit, Credentials credentials) => _app.AddDeposit(deposit, credentials);
+    
+    public void DeleteDeposit(int id, Credentials credentials) => _app.DeleteDeposit(id, credentials);
 }

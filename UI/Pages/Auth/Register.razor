@@ -4,29 +4,30 @@
 @using UI.Data
 @inject AuthController Auth
 @inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
 
 @code {
 
     private RegisterDto _registerDto = new RegisterDto { Rank = "Client" };
-    private Snackbar _snackbar = new();
     private void ConfirmRegister()
     {
         try
         {
             Auth.Register(_registerDto);
+            NotificationService.ShowMessage("User registered successfully. You can now log in.");
             NavigationManager.NavigateTo("/Login");
         }
         catch (ArgumentException e)
         {
-            _snackbar.ErrorMessage = e.Message;
+            NotificationService.ShowError(e.Message);
         }
         catch (UserAlreadyExistsException e)
         {
-            _snackbar.ErrorMessage = e.Message;
+            NotificationService.ShowError(e.Message);
         }
         catch (NullReferenceException)
         {
-            _snackbar.ErrorMessage = "Fields cannot be empty.";
+            NotificationService.ShowError("Fields cannot be empty");
         }
     }
 
@@ -72,5 +73,4 @@
             <button class="responsive small-elevate small-round large no-margin" @onclick="ConfirmRegister">Register</button>
         </div>
     </div>
-    <Snackbar @ref="_snackbar"/>
 </main>
