@@ -49,23 +49,8 @@ public class DepoQuickApp
 
     public void DeletePromotion(int i, Credentials credentials)
     {
-        EnsureThereAreNoDepositsWithThisPromotion(i, credentials);
+        _depositManager.EnsureThereAreNoDepositsWithThisPromotion(i, credentials);
         _promotionManager.Delete(i, credentials);
-    }
-
-    private void EnsureThereAreNoDepositsWithThisPromotion(int i, Credentials credentials)
-    {
-        var deposits = ListAllDeposits(credentials);
-        foreach (var deposit in deposits)
-        {
-            EnsureThatPromotionNotExists(i, deposit.PromotionList);
-        }
-    }
-
-    private static void EnsureThatPromotionNotExists(int id, List<int> promotionList)
-    {
-        if (promotionList.Contains(id))
-            throw new ArgumentException("Cant delete promotion, it is included in deposits.");
     }
 
     public List<ModifyPromotionDto> ListAllPromotions(Credentials credentials)
