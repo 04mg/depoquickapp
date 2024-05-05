@@ -1,4 +1,5 @@
 using BusinessLogic;
+using BusinessLogic.DTOs;
 
 namespace UI.Data;
 

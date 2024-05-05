@@ -1,6 +1,5 @@
 @page "/Deposit/{Id:int}"
 @inherits AuthEnforce
-@using BusinessLogic
 @using BusinessLogic.DTOs
 @using UI.Data
 @using UI.Pages.Components
@@ -11,7 +10,7 @@
 @inject NotificationService NotificationService
 
 @code {
-    private ListDepositDto DepositDto { get; set; }
+    private DepositDto DepositDto { get; set; }
     private List<AddPromotionDto> Promotions { get; set; } = new();
 
     private int? _id;

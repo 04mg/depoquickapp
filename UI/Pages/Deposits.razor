@@ -1,6 +1,5 @@
 @page "/Deposits"
 @inherits AuthEnforce
-@using BusinessLogic
 @using BusinessLogic.DTOs
 @using UI.Data
 @using UI.Pages.Components
@@ -18,7 +17,7 @@
         PromotionList = new List<int>()
     };
 
-    private List<ListDepositDto> DepositsDto { get; set; } = new();
+    private List<DepositDto> DepositsDto { get; set; } = new();
 
     protected override void OnAfterRender(bool firstRender)
     {

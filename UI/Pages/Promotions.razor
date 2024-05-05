@@ -1,6 +1,6 @@
 @page "/Promotions"
 @inherits AuthEnforce
-@using BusinessLogic
+@using BusinessLogic.DTOs
 @using UI.Data
 @inject AuthController Auth
 @inject PromotionController PromotionController
@@ -14,7 +14,7 @@
         Discount = 5
     };
 
-    private List<ModifyPromotionDto> PromotionsDto { get; set; } = new();
+    private List<PromotionDto> PromotionsDto { get; set; } = new();
 
     protected override void OnAfterRender(bool firstRender)
     {

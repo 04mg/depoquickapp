@@ -1,13 +1,13 @@
-@using BusinessLogic
+@using BusinessLogic.DTOs
 @using UI.Data
 @inject AuthController Auth
 @inject PromotionController PromotionController
 
 @code {
     private List<int> _promotions = new();
-    private List<ModifyPromotionDto> _allPromotions = new();
-    private List<ModifyPromotionDto> _addedPromotions = new();
-    private ModifyPromotionDto SelectedPromotion => _allPromotions.First(p => p.Id == _selectedPromotionId);
+    private List<PromotionDto> _allPromotions = new();
+    private List<PromotionDto> _addedPromotions = new();
+    private PromotionDto SelectedPromotion => _allPromotions.First(p => p.Id == _selectedPromotionId);
     private int _selectedPromotionId = -1;
     private bool IsPromotionSelected => _selectedPromotionId != -1;
 
@@ -30,7 +30,7 @@
         StateHasChanged();
     }
 
-    private void RemovePromotion(ModifyPromotionDto promotion)
+    private void RemovePromotion(PromotionDto promotion)
     {
         _allPromotions.Add(promotion);
         _addedPromotions.Remove(promotion);
@@ -39,13 +39,13 @@
         StateHasChanged();
     }
 
-    private void AddPromotionId(ModifyPromotionDto promotion)
+    private void AddPromotionId(PromotionDto promotion)
     {
         Promotions.Add(promotion.Id);
         PromotionsChanged.InvokeAsync(Promotions);
     }
 
-    private void RemovePromotionId(ModifyPromotionDto promotion)
+    private void RemovePromotionId(PromotionDto promotion)
     {
         Promotions.Remove(promotion.Id);
         PromotionsChanged.InvokeAsync(Promotions);

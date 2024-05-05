@@ -1,6 +1,5 @@
 @page "/register"
-@using BusinessLogic
-@using BusinessLogic.Exceptions
+@using BusinessLogic.DTOs
 @using UI.Data
 @inject AuthController Auth
 @inject NavigationManager NavigationManager
@@ -18,10 +17,6 @@
             NavigationManager.NavigateTo("/Login");
         }
         catch (ArgumentException e)
-        {
-            NotificationService.ShowError(e.Message);
-        }
-        catch (UserAlreadyExistsException e)
         {
             NotificationService.ShowError(e.Message);
         }

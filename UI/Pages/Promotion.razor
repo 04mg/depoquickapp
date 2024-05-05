@@ -1,6 +1,6 @@
 @page "/Promotion/{Id:int}"
 @inherits AuthEnforce
-@using BusinessLogic
+@using BusinessLogic.DTOs
 @using UI.Data
 @inject AuthController Auth
 @inject NavigationManager NavigationManager
@@ -8,7 +8,7 @@
 @inject NotificationService NotificationService
 
 @code {
-    private ModifyPromotionDto _promotionDto;
+    private PromotionDto _promotionDto;
     private string _promotionLabel = string.Empty;
 
     private int? _id;
@@ -36,7 +36,7 @@
 
     private void SetPromotionDto(AddPromotionDto promotion)
     {
-        _promotionDto = new ModifyPromotionDto
+        _promotionDto = new PromotionDto
         {
             Id = Id,
             Label = promotion.Label,
