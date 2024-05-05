@@ -56,10 +56,19 @@ public class DepositManager
 
     public void EnsureThereAreNoDepositsWithThisPromotion(int id, Credentials credentials)
     {
-        var deposits = GetAllDeposits(credentials);
-        if (deposits.Any(d => d.Promotions.Any(p => p.Id == id)))
+        EnsureUserIsAdmin(credentials);
+        if (Deposits.Any(d => d.Promotions.Any(p => p.Id == id)))
         {
             throw new ArgumentException("There are existing deposits for this promotion.");
+        }
+    }
+    
+    public void EnsureDepositExists(int id, Credentials credentials)
+    {
+        EnsureUserIsAdmin(credentials);
+        if (Deposits.All(d => d.Id != id))
+        {
+            throw new ArgumentException("Deposit not found.");
         }
     }
 }
