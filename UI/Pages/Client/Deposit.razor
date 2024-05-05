@@ -32,9 +32,16 @@
 
     private void DeleteDeposit()
     {
-        DepositController.DeleteDeposit(Id, Auth.CurrentCredentials);
-        NotificationService.ShowMessage($"Deposit with ID: {Id} deleted successfully.");
-        NavigationManager.NavigateTo("/Deposits");
+        try
+        {
+            DepositController.DeleteDeposit(Id, Auth.CurrentCredentials);
+            NotificationService.ShowMessage($"Deposit with ID: {Id} deleted successfully.");
+            NavigationManager.NavigateTo("/Deposits");
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
     }
 
 }

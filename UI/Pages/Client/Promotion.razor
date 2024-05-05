@@ -61,9 +61,16 @@
 
     private void DeletePromotion()
     {
-        PromotionController.DeletePromotion(Id, Auth.CurrentCredentials);
-        NotificationService.ShowMessage($"Promotion \"{_promotionLabel}\" deleted successfully.");
-        NavigationManager.NavigateTo("/Promotions");
+        try
+        {
+            PromotionController.DeletePromotion(Id, Auth.CurrentCredentials);
+            NotificationService.ShowMessage($"Promotion \"{_promotionLabel}\" deleted successfully.");
+            NavigationManager.NavigateTo("/Promotions");
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
     }
 
 }
