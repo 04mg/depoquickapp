@@ -229,7 +229,7 @@ public class DepoQuickAppTest
         var exception = Assert.ThrowsException<ArgumentException>(() => _app.DeleteDeposit(1, credentials));
         
         // Assert
-        Assert.AreEqual("Cant delete deposit, it is included in bookings.", exception.Message);
+        Assert.AreEqual("There are existing bookings for this deposit.", exception.Message);
     }
 
     [TestMethod]

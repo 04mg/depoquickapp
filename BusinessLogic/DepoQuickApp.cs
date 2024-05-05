@@ -4,18 +4,10 @@ namespace BusinessLogic;
 
 public class DepoQuickApp
 {
-    private AuthManager _authManager;
-    private PromotionManager _promotionManager;
-    private DepositManager _depositManager;
-    private BookingManager _bookingManager;
-
-    public DepoQuickApp()
-    {
-        _authManager = new AuthManager();
-        _promotionManager = new PromotionManager();
-        _depositManager = new DepositManager();
-        _bookingManager = new BookingManager();
-    }
+    private readonly AuthManager _authManager = new();
+    private readonly PromotionManager _promotionManager = new();
+    private readonly DepositManager _depositManager = new();
+    private readonly BookingManager _bookingManager = new();
 
     public void RegisterUser(RegisterDto registerDto)
     {
@@ -108,7 +100,7 @@ public class DepoQuickApp
 
     public void DeleteDeposit(int id, Credentials credentials)
     {
-        EnsureThereAreNoBookingsWithThisDeposit(id, credentials);
+        _bookingManager.EnsureThereAreNoBookingsWithThisDeposit(id);
         _depositManager.Delete(id, credentials);
     }
 
@@ -205,19 +197,5 @@ public class DepoQuickApp
     public void RejectBooking(int id, string message, Credentials credentials)
     {
         _bookingManager.Reject(id, credentials, message);
-    }
-
-    private void EnsureThereAreNoBookingsWithThisDeposit(int id, Credentials credentials)
-    {
-        foreach (var booking in _bookingManager.GetAllBookings(credentials))
-        {
-            EnsureThatDepositNotExists(id, booking.Deposit.Id);
-        }
-    }
-
-    private static void EnsureThatDepositNotExists(int id, int depositId)
-    {
-        if (depositId == id)
-            throw new ArgumentException("Cant delete deposit, it is included in bookings.");
     }
 }

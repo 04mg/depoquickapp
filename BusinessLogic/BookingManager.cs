@@ -70,6 +70,14 @@ public class BookingManager
             }
         }
     }
+    
+    public void EnsureThereAreNoBookingsWithThisDeposit(int id)
+    {
+        if (Bookings.Any(booking => booking.Deposit.Id == id))
+        {
+            throw new ArgumentException("There are existing bookings for this deposit.");
+        }
+    }
 
     public List<Booking> GetAllBookings(Credentials credentials)
     {
