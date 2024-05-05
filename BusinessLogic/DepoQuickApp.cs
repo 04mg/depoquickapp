@@ -129,7 +129,7 @@ public class DepoQuickApp
     public void AddBooking(AddBookingDto addBookingDto, Credentials credentials)
     {
         _depositManager.EnsureDepositExists(addBookingDto.DepositId, credentials);
-        var deposit = _depositManager.GetAllDeposits(credentials).First(d => d.Id == addBookingDto.DepositId);
+        var deposit = _depositManager.GetDepositById(addBookingDto.DepositId);
         var user = _authManager.GetUserByEmail(addBookingDto.Email, credentials);
         var priceCalculator = new PriceCalculator();
         var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo, priceCalculator);
@@ -139,7 +139,7 @@ public class DepoQuickApp
     public double CalculateBookingPrice(AddBookingDto addBookingDto, Credentials credentials)
     {
         var priceCalculator = new PriceCalculator();
-        var deposit = _depositManager.GetAllDeposits(credentials).First(d => d.Id == addBookingDto.DepositId);
+        var deposit = _depositManager.GetDepositById(addBookingDto.DepositId);
         return priceCalculator.CalculatePrice(deposit,
             new Tuple<DateOnly, DateOnly>(addBookingDto.DateFrom, addBookingDto.DateTo));
     }
