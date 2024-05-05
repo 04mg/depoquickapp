@@ -1,4 +1,7 @@
-namespace BusinessLogic;
+using BusinessLogic.Domain;
+using BusinessLogic.DTOs;
+
+namespace BusinessLogic.Managers;
 
 public class PromotionManager
 {
@@ -17,7 +20,7 @@ public class PromotionManager
         }
     }
 
-    private void EnsurePromotionExists(int id)
+    public void EnsurePromotionExists(int id)
     {
         if (Promotions.All(p => p.Id != id))
         {
@@ -25,7 +28,7 @@ public class PromotionManager
         }
     }
 
-    private Promotion GetPromotionById(int id)
+    public Promotion GetPromotionById(int id)
     {
         return Promotions.First(p => p.Id == id);
     }

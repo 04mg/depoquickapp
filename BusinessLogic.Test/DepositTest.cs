@@ -1,3 +1,7 @@
+using BusinessLogic.Domain;
+using BusinessLogic.DTOs;
+using BusinessLogic.Managers;
+
 namespace BusinessLogic.Test;
 
 [TestClass]
@@ -14,19 +18,18 @@ public class DepositTest
     public void SetUp()
     {
         _authManager = new AuthManager();
-        var userModel = new RegisterDto()
-        {
-            NameSurname = "Name Surname",
-            Email = "test@test.com",
-            Password = "12345678@mE",
-            PasswordConfirmation = "12345678@mE",
-            Rank = "Administrator"
-        };
-        _authManager.Register(userModel);
+        const string passwordConfirmation = "12345678@mE";
+        var admin = new User(
+            "Name Surname",
+            "test@test.com",
+            "12345678@mE",
+            "Administrator"
+        );
+        _authManager.Register(admin, passwordConfirmation);
         var loginModel = new LoginDto()
         {
-            Email = userModel.Email,
-            Password = userModel.Password
+            Email = admin.Email,
+            Password = admin.Password
         };
         var credentials = _authManager.Login(loginModel);
 

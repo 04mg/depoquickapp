@@ -1,11 +1,14 @@
-namespace BusinessLogic;
+using BusinessLogic.Interfaces;
+
+namespace BusinessLogic.Domain;
 
 public class Booking
 {
+    private readonly IPriceCalculator _priceCalculator;
     private Tuple<DateOnly, DateOnly> _duration = new(new DateOnly(), new DateOnly());
-    public int Id { get; }
-    public int DepositId { get; }
-    public string Email { get; }
+    public int Id { get; set; }
+    public Deposit Deposit { get; }
+    public User Client { get; }
     public string Message { get; set; } = "";
     public BookingStage Stage { get; set; } = BookingStage.Pending;
 
@@ -20,7 +23,6 @@ public class Booking
         }
     }
 
-    
 
     private static void EnsureDateFromIsLesserThanDateTo(DateOnly dateFrom, DateOnly dateTo)
     {
@@ -38,31 +40,29 @@ public class Booking
         }
     }
 
-    private static void EnsureDepositExists(int depositId, DepositManager depositManager)
+    public double CalculatePrice()
     {
-        if (depositManager.Deposits.All(d => d.Id != depositId))
-        {
-            throw new ArgumentException("The deposit does not exist.");
-        }
+        return _priceCalculator.CalculatePrice(Deposit, Duration);
     }
 
-    private static void EnsureUserExists(string email, AuthManager authManager)
-    {
-        if (!authManager.Exists(email))
-        {
-            throw new ArgumentException("The user does not exist.");
-        }
-    }
-
-    public Booking(int id, int depositId, string email, DateOnly startDate, DateOnly endDate,
-        DepositManager depositManager, AuthManager authManager)
+    public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo, IPriceCalculator priceCalculator)
     {
         Id = id;
-        EnsureDepositExists(depositId, depositManager);
-        DepositId = depositId;
-        EnsureUserExists(email, authManager);
-        Email = email;
-        Duration = new Tuple<DateOnly, DateOnly>(startDate, endDate);
+        Deposit = deposit;
+        Client = client;
+        Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
+        _priceCalculator = priceCalculator;
+    }
+
+    public void Approve()
+    {
+        Stage = BookingStage.Approved;
+    }
+
+    public void Reject(string message)
+    {
+        Stage = BookingStage.Rejected;
+        Message = message;
     }
 }
 
