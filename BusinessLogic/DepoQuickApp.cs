@@ -131,7 +131,8 @@ public class DepoQuickApp
         _depositManager.EnsureDepositExists(addBookingDto.DepositId, credentials);
         var deposit = _depositManager.GetAllDeposits(credentials).First(d => d.Id == addBookingDto.DepositId);
         var user = _authManager.GetUserByEmail(addBookingDto.Email, credentials);
-        var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo);
+        var priceCalculator = new PriceCalculator();
+        var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo, priceCalculator);
         _bookingManager.Add(booking);
     }
 
