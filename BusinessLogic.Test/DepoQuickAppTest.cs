@@ -268,7 +268,7 @@ public class DepoQuickAppTest
         var exception = Assert.ThrowsException<ArgumentException>(() => { _app.AddBooking(wrongBookingDto, _credentials); });
 
         // Assert
-        Assert.AreEqual("User not found.", exception.Message);
+        Assert.AreEqual("User does not exist.", exception.Message);
     }
     
     [TestMethod]
