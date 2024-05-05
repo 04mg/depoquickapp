@@ -5,7 +5,7 @@ namespace BusinessLogic.Managers;
 
 public class PromotionManager
 {
-    public List<Promotion> Promotions { get; private set; }
+    private List<Promotion> Promotions { get; set; }
 
     public PromotionManager()
     {
