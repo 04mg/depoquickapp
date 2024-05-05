@@ -183,4 +183,19 @@ public class PromotionManagerTest
         // Assert
         Assert.IsFalse(exists);
     }
+    
+    [TestMethod]
+    public void TestCantGetAllPromotionsIfNotAdministrator()
+    {
+        // Arrange
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
+        _promotionManager.Add(promotion, _adminCredentials);
+        
+        // Act
+        var exception =
+            Assert.ThrowsException<UnauthorizedAccessException>(() => _promotionManager.GetAllPromotions(_clientCredentials));
+
+        // Assert
+        Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
+    }
 }

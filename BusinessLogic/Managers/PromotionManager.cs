@@ -65,4 +65,10 @@ public class PromotionManager
     }
 
     private int NextPromotionId => Promotions.Count > 0 ? Promotions.Max(p => p.Id) + 1 : 1;
+
+    public List<Promotion> GetAllPromotions(Credentials credentials)
+    {
+        EnsureUserIsAdmin(credentials);
+        return Promotions;
+    }
 }
