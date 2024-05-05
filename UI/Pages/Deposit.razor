@@ -3,6 +3,7 @@
 @using BusinessLogic
 @using BusinessLogic.DTOs
 @using UI.Data
+@using UI.Pages.Components
 @inject AuthController Auth
 @inject DepositController DepositController
 @inject PromotionController PromotionController
@@ -87,33 +88,5 @@
     </article>
     <div class="small-space"></div>
     <h6 class="vertical-margin">Book now</h6>
-    <article>
-        <div class="grid">
-            <div class="s12 m6 padding">
-                <h6 class="small">Select the dates you want to book the deposit for:</h6>
-                <div class="small-space"></div>
-                <div class="field label suffix border">
-                    <input type="date">
-                    <label>From</label>
-                    <i>calendar_today</i>
-                </div>
-                <div class="field label suffix border">
-                    <input type="date">
-                    <label>To</label>
-                    <i>event_upcoming</i>
-                </div>
-            </div>
-            <div class="s12 m6 padding secondary center-align middle-align">
-                <div>
-                    <p class="small-text bold no-margin">Final price:</p>
-                    <h1 class="bold no-margin no-padding">$200</h1>
-                </div>
-            </div>
-            <div class="s12 right-align">
-                <button class="no-margin">
-                    Book now
-                </button>
-            </div>
-        </div>
-    </article>
+    <DepositBooking />
 </main>
