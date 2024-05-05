@@ -17,13 +17,6 @@
         InvokeAsync(StateHasChanged);
     }
 
-    private void ClearNotification()
-    {
-        _message = string.Empty;
-        _type = string.Empty;
-        InvokeAsync(StateHasChanged);
-    }
-
 }
 
 @if (_message != string.Empty)
@@ -31,7 +24,7 @@
     <div
         class="medium-padding @_type absolute bottom"
         style="z-index: 1000; width: 100%; cursor: pointer;"
-        @onclick="ClearNotification">
+        @onclick="NotificationService.Clear">
         @_message
     </div>
 }

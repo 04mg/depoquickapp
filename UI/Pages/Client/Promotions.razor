@@ -38,8 +38,6 @@
 
 }
 
-<title>Promotions</title>
-
 @if (!Auth.IsAdmin)
 {
     <Forbidden/>
@@ -49,8 +47,9 @@ else
     <main class="responsive">
         <h6 class="vertical-margin">
             Promotions
-            <button class="square round extra absolute right no-margin" data-ui="#add-deposit">
+            <button class="extend square round no-margin absolute right" data-ui="#add-promotion">
                 <i>add</i>
+                <span>Add</span>
             </button>
             <div class="medium-space"></div>
         </h6>
@@ -77,7 +76,7 @@ else
 
     <div class="medium-space"></div>
     <div class="overlay blur"></div>
-    <dialog class="medium-width no-elevate" id="add-deposit">
+    <dialog class="medium-width no-elevate" id="add-promotion">
         <div class="padding center-align">
             <i>sell</i>
             <h6 class="center-align">Add new promotion</h6>
@@ -101,7 +100,7 @@ else
             <i>event_upcoming</i>
         </div>
         <nav class="right-align no-space no-margin">
-            <button class="transparent link" data-ui="#add-deposit">Cancel</button>
+            <button class="transparent link" data-ui="#add-promotion">Cancel</button>
             <button class="transparent link" @onclick="AddPromotion">Confirm</button>
         </nav>
     </dialog>

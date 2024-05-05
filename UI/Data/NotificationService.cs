@@ -4,8 +4,33 @@ public class NotificationService
 {
     private const string ErrorType = "error";
     private const string MessageType = "primary";
+    private const int Delay = 3000;
+    private int _currentMessage;
     public event Action<string, string>? OnNotify;
 
-    public void ShowError(string message) => OnNotify?.Invoke(message, ErrorType);
-    public void ShowMessage(string message) => OnNotify?.Invoke(message, MessageType);
+    private void ClearAfterDelay()
+    {
+        var message = ++_currentMessage;
+        Task.Delay(Delay).ContinueWith(_ =>
+        {
+            if (_currentMessage == message)
+            {
+                Clear();
+            }
+        });
+    }
+
+    public void ShowError(string message)
+    {
+        OnNotify?.Invoke(message, ErrorType);
+        ClearAfterDelay();
+    }
+
+    public void ShowMessage(string message)
+    {
+        OnNotify?.Invoke(message, MessageType);
+        ClearAfterDelay();
+    }
+
+    public void Clear() => OnNotify?.Invoke(string.Empty, string.Empty);
 }
