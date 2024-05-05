@@ -1,21 +1,15 @@
+using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
+using BusinessLogic.Managers;
 
 namespace BusinessLogic;
 
 public class DepoQuickApp
 {
-    private AuthManager _authManager;
-    private PromotionManager _promotionManager;
-    private DepositManager _depositManager;
-    private BookingManager _bookingManager;
-
-    public DepoQuickApp()
-    {
-        _authManager = new AuthManager();
-        _promotionManager = new PromotionManager();
-        _depositManager = new DepositManager();
-        _bookingManager = new BookingManager();
-    }
+    private readonly AuthManager _authManager = new();
+    private readonly PromotionManager _promotionManager = new();
+    private readonly DepositManager _depositManager = new();
+    private readonly BookingManager _bookingManager = new();
 
     public void RegisterUser(RegisterDto registerDto)
     {
@@ -57,28 +51,13 @@ public class DepoQuickApp
 
     public void DeletePromotion(int i, Credentials credentials)
     {
-        EnsureThereAreNoDepositsWithThisPromotion(i, credentials);
+        _depositManager.EnsureThereAreNoDepositsWithThisPromotion(i, credentials);
         _promotionManager.Delete(i, credentials);
     }
 
-    private void EnsureThereAreNoDepositsWithThisPromotion(int i, Credentials credentials)
+    public List<PromotionDto> ListAllPromotions(Credentials credentials)
     {
-        var deposits = ListAllDeposits(credentials);
-        foreach (var deposit in deposits)
-        {
-            EnsureThatPromotionNotExists(i, deposit.PromotionList);
-        }
-    }
-
-    private static void EnsureThatPromotionNotExists(int id, List<int> promotionList)
-    {
-        if (promotionList.Contains(id))
-            throw new ArgumentException("Cant delete promotion, it is included in deposits.");
-    }
-
-    public List<ModifyPromotionDto> ListAllPromotions(Credentials credentials)
-    {
-        return _promotionManager.Promotions.Select(p => new ModifyPromotionDto()
+        return _promotionManager.GetAllPromotions(credentials).Select(p => new PromotionDto()
         {
             Id = p.Id,
             Label = p.Label,
@@ -88,14 +67,14 @@ public class DepoQuickApp
         }).ToList();
     }
 
-    public void ModifyPromotion(int id, ModifyPromotionDto modifyPromotionDto, Credentials credentials)
+    public void ModifyPromotion(int id, PromotionDto promotionDto, Credentials credentials)
     {
         var promotion = new Promotion(
             id,
-            modifyPromotionDto.Label,
-            modifyPromotionDto.Discount,
-            modifyPromotionDto.DateFrom,
-            modifyPromotionDto.DateTo);
+            promotionDto.Label,
+            promotionDto.Discount,
+            promotionDto.DateFrom,
+            promotionDto.DateTo);
         _promotionManager.Modify(id, promotion, credentials);
     }
 
@@ -108,7 +87,7 @@ public class DepoQuickApp
 
     public void DeleteDeposit(int id, Credentials credentials)
     {
-        EnsureThereAreNoBookingsWithThisDeposit(id, credentials);
+        _bookingManager.EnsureThereAreNoBookingsWithThisDeposit(id);
         _depositManager.Delete(id, credentials);
     }
 
@@ -117,24 +96,16 @@ public class DepoQuickApp
         var promotions = new List<Promotion>();
         foreach (var promotion in depositDto.PromotionList)
         {
-            EnsurePromotionExists(promotion);
+            _promotionManager.EnsurePromotionExists(promotion);
             promotions.Add(_promotionManager.GetPromotionById(promotion));
         }
 
         return promotions;
     }
 
-    private void EnsurePromotionExists(int id)
+    public List<DepositDto> ListAllDeposits(Credentials credentials)
     {
-        if (!_promotionManager.Promotions.Any(p => p.Id == id))
-        {
-            throw new ArgumentException("Promotion not found.");
-        }
-    }
-
-    public List<ListDepositDto> ListAllDeposits(Credentials credentials)
-    {
-        return _depositManager.GetAllDeposits(credentials).Select(d => new ListDepositDto()
+        return _depositManager.GetAllDeposits(credentials).Select(d => new DepositDto()
         {
             Id = d.Id,
             Area = d.Area,
@@ -144,10 +115,10 @@ public class DepoQuickApp
         }).ToList();
     }
 
-    public ListDepositDto GetDeposit(int id, Credentials credentials)
+    public DepositDto GetDeposit(int id, Credentials credentials)
     {
         var deposit = _depositManager.GetDepositById(id);
-        return new ListDepositDto()
+        return new DepositDto()
         {
             Id = deposit.Id,
             Area = deposit.Area,
@@ -159,33 +130,25 @@ public class DepoQuickApp
 
     public void AddBooking(AddBookingDto addBookingDto, Credentials credentials)
     {
-        EnsureUserExists(addBookingDto.Email);
-        EnsureDepositExists(addBookingDto.DepositId, credentials);
-        var deposit = _depositManager.GetAllDeposits(credentials).First(d => d.Id == addBookingDto.DepositId);
+        _depositManager.EnsureDepositExists(addBookingDto.DepositId, credentials);
+        var deposit = _depositManager.GetDepositById(addBookingDto.DepositId);
         var user = _authManager.GetUserByEmail(addBookingDto.Email, credentials);
-        var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo);
+        var priceCalculator = new PriceCalculator();
+        var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo, priceCalculator);
         _bookingManager.Add(booking);
     }
 
-    private void EnsureDepositExists(int depositId, Credentials credentials)
+    public double CalculateBookingPrice(AddBookingDto addBookingDto, Credentials credentials)
     {
-        if (!_depositManager.GetAllDeposits(credentials).Any(d => d.Id == depositId))
-        {
-            throw new ArgumentException("Deposit not found.");
-        }
+        var priceCalculator = new PriceCalculator();
+        var deposit = _depositManager.GetDepositById(addBookingDto.DepositId);
+        return priceCalculator.CalculatePrice(deposit,
+            new Tuple<DateOnly, DateOnly>(addBookingDto.DateFrom, addBookingDto.DateTo));
     }
 
-    private void EnsureUserExists(string email)
+    public List<BookingDto> ListAllBookings(Credentials credentials)
     {
-        if (!_authManager.Exists(email))
-        {
-            throw new ArgumentException("User not found.");
-        }
-    }
-
-    public List<ListBookingDto> ListAllBookings(Credentials credentials)
-    {
-        return _bookingManager.GetAllBookings(credentials).Select(b => new ListBookingDto()
+        return _bookingManager.GetAllBookings(credentials).Select(b => new BookingDto()
         {
             Id = b.Id,
             DepositId = b.Deposit.Id,
@@ -205,19 +168,5 @@ public class DepoQuickApp
     public void RejectBooking(int id, string message, Credentials credentials)
     {
         _bookingManager.Reject(id, credentials, message);
-    }
-
-    private void EnsureThereAreNoBookingsWithThisDeposit(int id, Credentials credentials)
-    {
-        foreach (var booking in _bookingManager.GetAllBookings(credentials))
-        {
-            EnsureThatDepositNotExists(id, booking.Deposit.Id);
-        }
-    }
-
-    private static void EnsureThatDepositNotExists(int id, int depositId)
-    {
-        if (depositId == id)
-            throw new ArgumentException("Cant delete deposit, it is included in bookings.");
     }
 }

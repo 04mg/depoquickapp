@@ -1,3 +1,7 @@
+using BusinessLogic.Domain;
+using BusinessLogic.DTOs;
+using BusinessLogic.Managers;
+
 namespace BusinessLogic.Test;
 
 [TestClass]
@@ -52,7 +56,7 @@ public class BookingManagerTest
     {
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
 
         // Act
         _bookingManager.Add(booking);
@@ -66,7 +70,7 @@ public class BookingManagerTest
     {
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
 
         // Act
@@ -81,7 +85,7 @@ public class BookingManagerTest
     {
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
 
         // Act
@@ -96,7 +100,7 @@ public class BookingManagerTest
     {
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
 
         // Act
@@ -111,9 +115,9 @@ public class BookingManagerTest
     {
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         var otherBooking = new Booking(1, _deposit!, _otherClient!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
         _bookingManager.Add(otherBooking);
 
@@ -129,7 +133,7 @@ public class BookingManagerTest
     {
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
 
         // Act
@@ -144,7 +148,7 @@ public class BookingManagerTest
     {
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
 
         // Act
@@ -159,7 +163,7 @@ public class BookingManagerTest
     {
         //Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         const string message = "example";
         _bookingManager.Add(booking);
 
@@ -175,9 +179,9 @@ public class BookingManagerTest
     {
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         var repeatedBooking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
 
         // Act
@@ -193,7 +197,7 @@ public class BookingManagerTest
     {
         // Arrange
         var booking = new Booking(1, _deposit!, _otherClient!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
 
         // Act
@@ -209,7 +213,7 @@ public class BookingManagerTest
     {
         // Arrange
         var booking = new Booking(1, _deposit!, _otherClient!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
 
         // Act
@@ -225,7 +229,7 @@ public class BookingManagerTest
     {
         // Arrange
         var booking = new Booking(1, _deposit!, _otherClient!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
 
         // Act
@@ -241,7 +245,7 @@ public class BookingManagerTest
     {
         //Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
 
         //Act
@@ -255,7 +259,7 @@ public class BookingManagerTest
     {
         //Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         _bookingManager.Add(booking);
 
         //Act

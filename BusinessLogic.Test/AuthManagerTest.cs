@@ -1,4 +1,6 @@
-using BusinessLogic.Exceptions;
+using BusinessLogic.Domain;
+using BusinessLogic.DTOs;
+using BusinessLogic.Managers;
 
 namespace BusinessLogic.Test;
 
@@ -53,7 +55,7 @@ public class AuthManagerTest
         credManager.Register(_client, Password);
 
         // Act & Assert
-        Assert.ThrowsException<UserAlreadyExistsException>(() => { credManager.Register(otherClient, "OtherP@ssw0rd"); });
+        Assert.ThrowsException<ArgumentException>(() => { credManager.Register(otherClient, "OtherP@ssw0rd"); });
     }
 
     [TestMethod]

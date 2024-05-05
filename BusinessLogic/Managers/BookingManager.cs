@@ -1,4 +1,7 @@
-namespace BusinessLogic;
+using BusinessLogic.Domain;
+using BusinessLogic.DTOs;
+
+namespace BusinessLogic.Managers;
 
 public class BookingManager
 {
@@ -68,6 +71,14 @@ public class BookingManager
             {
                 throw new UnauthorizedAccessException("You are not authorized to perform this action.");
             }
+        }
+    }
+    
+    public void EnsureThereAreNoBookingsWithThisDeposit(int id)
+    {
+        if (Bookings.Any(booking => booking.Deposit.Id == id))
+        {
+            throw new ArgumentException("There are existing bookings for this deposit.");
         }
     }
 

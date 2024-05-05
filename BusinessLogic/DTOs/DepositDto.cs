@@ -1,6 +1,6 @@
 namespace BusinessLogic.DTOs;
 
-public struct ListDepositDto
+public struct DepositDto
 {
     public int Id { get; set; }
     public string Area { get; set; }
