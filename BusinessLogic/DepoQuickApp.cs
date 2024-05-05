@@ -94,19 +94,11 @@ public class DepoQuickApp
         var promotions = new List<Promotion>();
         foreach (var promotion in depositDto.PromotionList)
         {
-            EnsurePromotionExists(promotion);
+            _promotionManager.EnsurePromotionExists(promotion);
             promotions.Add(_promotionManager.GetPromotionById(promotion));
         }
 
         return promotions;
-    }
-
-    private void EnsurePromotionExists(int id)
-    {
-        if (!_promotionManager.Promotions.Any(p => p.Id == id))
-        {
-            throw new ArgumentException("Promotion not found.");
-        }
     }
 
     public List<ListDepositDto> ListAllDeposits(Credentials credentials)
