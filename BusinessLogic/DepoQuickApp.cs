@@ -136,6 +136,14 @@ public class DepoQuickApp
         _bookingManager.Add(booking);
     }
 
+    public double CalculateBookingPrice(AddBookingDto addBookingDto, Credentials credentials)
+    {
+        var priceCalculator = new PriceCalculator();
+        var deposit = _depositManager.GetAllDeposits(credentials).First(d => d.Id == addBookingDto.DepositId);
+        return priceCalculator.CalculatePrice(deposit,
+            new Tuple<DateOnly, DateOnly>(addBookingDto.DateFrom, addBookingDto.DateTo));
+    }
+
     public List<BookingDto> ListAllBookings(Credentials credentials)
     {
         return _bookingManager.GetAllBookings(credentials).Select(b => new BookingDto()

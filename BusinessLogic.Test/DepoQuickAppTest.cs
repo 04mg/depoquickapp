@@ -328,4 +328,20 @@ public class DepoQuickAppTest
         Assert.AreEqual(_addDepositDto.PromotionList[0], deposit.PromotionList[0]);
         Assert.AreEqual(_addDepositDto.PromotionList.Count, deposit.PromotionList.Count);
     }
+    
+    [TestMethod]
+    public void TestCanCalculateBookingPrice()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+
+        // Act
+        var price = _app.CalculateBookingPrice(_addBookingDto, _credentials);
+
+        // Assert
+        Assert.AreEqual(63, price);
+    }
 }
