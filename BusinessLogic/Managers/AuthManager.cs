@@ -1,7 +1,7 @@
-﻿using BusinessLogic.Exceptions;
+﻿using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Managers;
 
 public class AuthManager
 {
@@ -41,7 +41,7 @@ public class AuthManager
     {
         if (UsersByEmail.ContainsKey(email))
         {
-            throw new UserAlreadyExistsException("User already exists.");
+            throw new ArgumentException("User already exists.");
         }
     }
 

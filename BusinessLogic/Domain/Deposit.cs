@@ -1,4 +1,4 @@
-namespace BusinessLogic;
+namespace BusinessLogic.Domain;
 
 public class Deposit
 {

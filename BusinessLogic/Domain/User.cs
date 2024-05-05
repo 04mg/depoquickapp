@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Domain;
 
 public class User
 {
