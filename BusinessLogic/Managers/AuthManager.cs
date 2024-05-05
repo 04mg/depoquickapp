@@ -1,7 +1,8 @@
-﻿using BusinessLogic.Exceptions;
+﻿using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
+using BusinessLogic.Exceptions;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Managers;
 
 public class AuthManager
 {
