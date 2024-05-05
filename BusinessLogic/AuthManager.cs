@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Exceptions;
+using BusinessLogic.DTOs;
 
 namespace BusinessLogic;
 

@@ -1,12 +1,12 @@
-namespace BusinessLogic;
+namespace BusinessLogic.DTOs;
 
 public struct RegisterDto
 {
-    public string NameSurname { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string PasswordConfirmation { get; set; }
-    public string Rank { get; set; }
+    public string NameSurname { init; get; }
+    public string Email { init; get; }
+    public string Password { init; get; }
+    public string PasswordConfirmation { init; get; }
+    public string Rank { init; get; }
 
     public RegisterDto(string nameSurname, string email, string password, string passwordConfirmation, string rank = "Client")
     {

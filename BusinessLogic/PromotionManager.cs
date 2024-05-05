@@ -1,3 +1,5 @@
+using BusinessLogic.DTOs;
+
 namespace BusinessLogic;
 
 public class PromotionManager
@@ -17,7 +19,7 @@ public class PromotionManager
         }
     }
 
-    private void EnsurePromotionExists(int id)
+    public void EnsurePromotionExists(int id)
     {
         if (Promotions.All(p => p.Id != id))
         {

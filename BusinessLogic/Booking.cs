@@ -2,6 +2,7 @@ namespace BusinessLogic;
 
 public class Booking
 {
+    private readonly IPriceCalculator _priceCalculator;
     private Tuple<DateOnly, DateOnly> _duration = new(new DateOnly(), new DateOnly());
     public int Id { get; set; }
     public Deposit Deposit { get; }
@@ -37,24 +38,25 @@ public class Booking
         }
     }
 
-    public double CalculatePrice(IPriceCalculator priceCalculator)
+    public double CalculatePrice()
     {
-        return priceCalculator.CalculatePrice(Deposit, Duration);
+        return _priceCalculator.CalculatePrice(Deposit, Duration);
     }
 
-    public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo)
+    public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo, IPriceCalculator priceCalculator)
     {
         Id = id;
         Deposit = deposit;
         Client = client;
         Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
+        _priceCalculator = priceCalculator;
     }
 
     public void Approve()
     {
         Stage = BookingStage.Approved;
     }
-    
+
     public void Reject(string message)
     {
         Stage = BookingStage.Rejected;

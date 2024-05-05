@@ -1,3 +1,4 @@
+using BusinessLogic.DTOs;
 using BusinessLogic.Exceptions;
 
 namespace BusinessLogic.Test;

@@ -1,3 +1,5 @@
+using BusinessLogic.DTOs;
+
 namespace BusinessLogic;
 
 public class DepositManager
@@ -8,7 +10,7 @@ public class DepositManager
     }
 
     private List<Deposit> Deposits { get; set; }
-    
+
     private void EnsureDepositExists(int id)
     {
         if (Deposits.All(d => d.Id != id))
@@ -16,7 +18,7 @@ public class DepositManager
             throw new ArgumentException("Deposit not found");
         }
     }
-    
+
     private static void EnsureUserIsAdmin(Credentials credentials)
     {
         if (credentials.Rank != "Administrator")
@@ -24,7 +26,7 @@ public class DepositManager
             throw new UnauthorizedAccessException("Only administrators can manage deposits.");
         }
     }
-    
+
     public Deposit GetDepositById(int id)
     {
         return Deposits.First(d => d.Id == id);
@@ -41,7 +43,7 @@ public class DepositManager
     {
         EnsureDepositExists(id);
         EnsureUserIsAdmin(credentials);
-        
+
         var deposit = GetDepositById(id);
         Deposits.Remove(deposit);
     }
@@ -52,5 +54,23 @@ public class DepositManager
     {
         EnsureUserIsAdmin(credentials);
         return Deposits;
+    }
+
+    public void EnsureThereAreNoDepositsWithThisPromotion(int id, Credentials credentials)
+    {
+        EnsureUserIsAdmin(credentials);
+        if (Deposits.Any(d => d.Promotions.Any(p => p.Id == id)))
+        {
+            throw new ArgumentException("There are existing deposits for this promotion.");
+        }
+    }
+    
+    public void EnsureDepositExists(int id, Credentials credentials)
+    {
+        EnsureUserIsAdmin(credentials);
+        if (Deposits.All(d => d.Id != id))
+        {
+            throw new ArgumentException("Deposit not found.");
+        }
     }
 }
