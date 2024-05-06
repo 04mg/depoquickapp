@@ -344,4 +344,25 @@ public class DepoQuickAppTest
         // Assert
         Assert.AreEqual(63, price);
     }
+    
+    [TestMethod]
+    public void TestCanGetBookingById()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddBooking(_addBookingDto, _credentials);
+        
+        // Act
+        var booking = _app.GetBooking(1, credentials);
+        
+        // Assert
+        Assert.IsNotNull(booking);
+        Assert.AreEqual(_addBookingDto.DepositId, booking.DepositId);
+        Assert.AreEqual(_addBookingDto.Email, booking.Email);
+        Assert.AreEqual(_addBookingDto.DateFrom, booking.DateFrom);
+        Assert.AreEqual(_addBookingDto.DateTo, booking.DateTo);
+    }
 }

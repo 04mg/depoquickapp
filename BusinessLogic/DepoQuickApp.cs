@@ -66,7 +66,7 @@ public class DepoQuickApp
             DateTo = p.Validity.Item2
         }).ToList();
     }
-
+    
     public void ModifyPromotion(int id, PromotionDto promotionDto, Credentials credentials)
     {
         var promotion = new Promotion(
@@ -158,6 +158,21 @@ public class DepoQuickApp
             Stage = b.Stage.ToString(),
             Message = b.Message
         }).ToList();
+    }
+    
+    public BookingDto GetBooking(int id, Credentials credentials)
+    {
+        var booking = _bookingManager.GetBookingById(id);
+        return new BookingDto()
+        {
+            Id = booking.Id,
+            DepositId = booking.Deposit.Id,
+            Email = booking.Client.Email,
+            DateFrom = booking.Duration.Item1,
+            DateTo = booking.Duration.Item2,
+            Stage = booking.Stage.ToString(),
+            Message = booking.Message
+        };
     }
 
     public void ApproveBooking(int id, Credentials credentials)
