@@ -365,4 +365,22 @@ public class DepoQuickAppTest
         Assert.AreEqual(_addBookingDto.DateFrom, booking.DateFrom);
         Assert.AreEqual(_addBookingDto.DateTo, booking.DateTo);
     }
+
+    [TestMethod]
+    public void TestCanListBookingsByEmail()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddBooking(_addBookingDto, _credentials);
+        
+        // Act
+        var bookings = _app.ListAllBookingsByEmail(credentials.Email, credentials);
+        
+        // Assert
+        Assert.AreEqual(1, bookings.Count);
+        Assert.AreEqual(_addBookingDto.DepositId, bookings[0].DepositId);
+    }
 }

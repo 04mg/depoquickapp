@@ -160,6 +160,20 @@ public class DepoQuickApp
         }).ToList();
     }
     
+    public List<BookingDto> ListAllBookingsByEmail(string email, Credentials credentials)
+    {
+        return _bookingManager.GetBookingsByEmail(email, credentials).Select(b => new BookingDto()
+        {
+            Id = b.Id,
+            DepositId = b.Deposit.Id,
+            Email = b.Client.Email,
+            DateFrom = b.Duration.Item1,
+            DateTo = b.Duration.Item2,
+            Stage = b.Stage.ToString(),
+            Message = b.Message
+        }).ToList();
+    }
+    
     public BookingDto GetBooking(int id, Credentials credentials)
     {
         var booking = _bookingManager.GetBookingById(id);
