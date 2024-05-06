@@ -119,7 +119,7 @@ public class DepositManagerTest
     }
 
     [TestMethod]
-    public void TestCantGetAllDepositsIfNotAdministrator()
+    public void TestCanGetAllDeposits()
     {
         // Arrange
         var promotionList = new List<Promotion>() { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
@@ -127,10 +127,15 @@ public class DepositManagerTest
         _depositManager.Add(deposit, _adminCredentials);
 
         // Act
-        var exception =
-            Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.GetAllDeposits(_clientCredentials));
+        var deposits = _depositManager.GetAllDeposits(_clientCredentials);
 
         // Assert
-        Assert.AreEqual("Only administrators can manage deposits.", exception.Message);
+        Assert.IsNotNull(deposits);
+        Assert.AreEqual(1, deposits.Count);
+        Assert.AreEqual(1, deposits[0].Id);
+        Assert.AreEqual(Area, deposits[0].Area);
+        Assert.AreEqual(Size, deposits[0].Size);
+        Assert.AreEqual(ClimateControl, deposits[0].ClimateControl);
+        Assert.AreEqual(promotionList, deposits[0].Promotions);
     }
 }
