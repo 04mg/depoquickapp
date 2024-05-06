@@ -70,12 +70,16 @@
         <h6 class="small padding">
             Deposit ID:&nbsp;
             <a href="/Deposit/@BookingDto.DepositId">
-                <i>link</i>@BookingDto.DepositId
+                <i>link</i>
+                <b>@BookingDto.DepositId</b>
             </a>
         </h6>
         <div class="divider"></div>
-        <h6 class="small padding">Email:&nbsp; <b>@BookingDto.Email</b></h6>
-        <div class="divider"></div>
+        @if (Auth.IsAdmin)
+        {
+            <h6 class="small padding">Email:&nbsp; <b>@BookingDto.Email</b></h6>
+            <div class="divider"></div>
+        }
         <h6 class="small padding">From:&nbsp; <b>@BookingDto.DateFrom</b></h6>
         <div class="divider"></div>
         <h6 class="small padding">To:&nbsp; <b>@BookingDto.DateTo</b></h6>
@@ -89,7 +93,7 @@
     </article>
 </main>
 
-@if (Auth.IsAdmin)
+@if (Auth.IsAdmin && BookingDto.Stage == "Pending")
 {
     <div class="medium-space"></div>
     <div class="overlay blur"></div>
