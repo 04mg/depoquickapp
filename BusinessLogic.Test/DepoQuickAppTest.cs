@@ -1,3 +1,5 @@
+using BusinessLogic.DTOs;
+
 namespace BusinessLogic.Test;
 
 [TestClass]
@@ -8,7 +10,7 @@ public class DepoQuickAppTest
     private LoginDto _loginDto;
     private Credentials _credentials;
     private AddPromotionDto _addPromotionDto;
-    private ModifyPromotionDto _modifyPromotionDto;
+    private PromotionDto _promotionDto;
     private AddDepositDto _addDepositDto;
     private AddBookingDto _addBookingDto;
 
@@ -35,7 +37,7 @@ public class DepoQuickAppTest
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
         };
-        _modifyPromotionDto = new ModifyPromotionDto
+        _promotionDto = new PromotionDto
         {
             Id = 1,
             Label = "Test Promotion", 
@@ -110,14 +112,14 @@ public class DepoQuickAppTest
         _app.AddPromotion(_addPromotionDto, credentials);
 
         // Act
-        _app.ModifyPromotion(1, _modifyPromotionDto, credentials);
+        _app.ModifyPromotion(1, _promotionDto, credentials);
         var promotion = _app.ListAllPromotions(_credentials).First(p => p.Id == 1);
 
         // Assert
-        Assert.AreEqual(_modifyPromotionDto.Label, promotion.Label);
-        Assert.AreEqual(_modifyPromotionDto.Discount, promotion.Discount);
-        Assert.AreEqual(_modifyPromotionDto.DateFrom, promotion.DateFrom);
-        Assert.AreEqual(_modifyPromotionDto.DateTo, promotion.DateTo);
+        Assert.AreEqual(_promotionDto.Label, promotion.Label);
+        Assert.AreEqual(_promotionDto.Discount, promotion.Discount);
+        Assert.AreEqual(_promotionDto.DateFrom, promotion.DateFrom);
+        Assert.AreEqual(_promotionDto.DateTo, promotion.DateTo);
     }
     
     [TestMethod]
@@ -229,7 +231,7 @@ public class DepoQuickAppTest
         var exception = Assert.ThrowsException<ArgumentException>(() => _app.DeleteDeposit(1, credentials));
         
         // Assert
-        Assert.AreEqual("Cant delete deposit, it is included in bookings.", exception.Message);
+        Assert.AreEqual("There are existing bookings for this deposit.", exception.Message);
     }
 
     [TestMethod]
@@ -245,7 +247,7 @@ public class DepoQuickAppTest
         var exception = Assert.ThrowsException<ArgumentException>(() => _app.DeletePromotion(1, credentials));
         
         // Assert
-        Assert.AreEqual("Cant delete promotion, it is included in deposits.", exception.Message);
+        Assert.AreEqual("There are existing deposits for this promotion.", exception.Message);
     }
 
     [TestMethod]
@@ -268,7 +270,7 @@ public class DepoQuickAppTest
         var exception = Assert.ThrowsException<ArgumentException>(() => { _app.AddBooking(wrongBookingDto, _credentials); });
 
         // Assert
-        Assert.AreEqual("User not found.", exception.Message);
+        Assert.AreEqual("User does not exist.", exception.Message);
     }
     
     [TestMethod]
@@ -305,5 +307,80 @@ public class DepoQuickAppTest
         
         // Assert
         Assert.IsTrue(exception.Message.Contains("Promotion not found."));
+    }
+    
+    [TestMethod]
+    public void TestCanGetDepositById()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+
+        // Act
+        var deposit = _app.GetDeposit(1, credentials);
+
+        // Assert
+        Assert.AreEqual(_addDepositDto.Area, deposit.Area);
+        Assert.AreEqual(_addDepositDto.Size, deposit.Size);
+        Assert.AreEqual(_addDepositDto.ClimateControl, deposit.ClimateControl);
+        Assert.AreEqual(_addDepositDto.PromotionList[0], deposit.PromotionList[0]);
+        Assert.AreEqual(_addDepositDto.PromotionList.Count, deposit.PromotionList.Count);
+    }
+    
+    [TestMethod]
+    public void TestCanCalculateBookingPrice()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+
+        // Act
+        var price = _app.CalculateBookingPrice(_addBookingDto, _credentials);
+
+        // Assert
+        Assert.AreEqual(63, price);
+    }
+    
+    [TestMethod]
+    public void TestCanGetBookingById()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddBooking(_addBookingDto, _credentials);
+        
+        // Act
+        var booking = _app.GetBooking(1, credentials);
+        
+        // Assert
+        Assert.IsNotNull(booking);
+        Assert.AreEqual(_addBookingDto.DepositId, booking.DepositId);
+        Assert.AreEqual(_addBookingDto.Email, booking.Email);
+        Assert.AreEqual(_addBookingDto.DateFrom, booking.DateFrom);
+        Assert.AreEqual(_addBookingDto.DateTo, booking.DateTo);
+    }
+
+    [TestMethod]
+    public void TestCanListBookingsByEmail()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddBooking(_addBookingDto, _credentials);
+        
+        // Act
+        var bookings = _app.ListAllBookingsByEmail(credentials.Email, credentials);
+        
+        // Assert
+        Assert.AreEqual(1, bookings.Count);
+        Assert.AreEqual(_addBookingDto.DepositId, bookings[0].DepositId);
     }
 }

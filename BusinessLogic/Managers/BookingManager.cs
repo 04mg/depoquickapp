@@ -1,4 +1,7 @@
-namespace BusinessLogic;
+using BusinessLogic.Domain;
+using BusinessLogic.DTOs;
+
+namespace BusinessLogic.Managers;
 
 public class BookingManager
 {
@@ -70,6 +73,14 @@ public class BookingManager
             }
         }
     }
+    
+    public void EnsureThereAreNoBookingsWithThisDeposit(int id)
+    {
+        if (Bookings.Any(booking => booking.Deposit.Id == id))
+        {
+            throw new ArgumentException("There are existing bookings for this deposit.");
+        }
+    }
 
     public List<Booking> GetAllBookings(Credentials credentials)
     {
@@ -91,7 +102,7 @@ public class BookingManager
         booking.Reject(message);
     }
 
-    private Booking GetBookingById(int id)
+    public Booking GetBookingById(int id)
     {
         EnsureBookingExists(id);
         return Bookings.First(b => b.Id == id);

@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Domain;
 
 public class User
 {
@@ -61,7 +61,7 @@ public class User
         }
     }
 
-    public UserRank Rank { get; }
+    public UserRank Rank { get; set; }
 
     public User(string nameSurname, string email, string password, string rank = "Client")
     {

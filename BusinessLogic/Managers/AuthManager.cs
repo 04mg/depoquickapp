@@ -1,6 +1,7 @@
-﻿using BusinessLogic.Exceptions;
+﻿using BusinessLogic.Domain;
+using BusinessLogic.DTOs;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Managers;
 
 public class AuthManager
 {
@@ -40,7 +41,7 @@ public class AuthManager
     {
         if (UsersByEmail.ContainsKey(email))
         {
-            throw new UserAlreadyExistsException("User already exists.");
+            throw new ArgumentException("User already exists.");
         }
     }
 
@@ -76,11 +77,19 @@ public class AuthManager
 
     public Credentials Register(User user, string passwordConfirmation)
     {
+        SetRankAsAdminIfFirstUser(user);
         ValidateRegistration(user, passwordConfirmation);
-
         UsersByEmail.Add(user.Email, user);
 
-        return new Credentials(user.Email, user.Rank.ToString());
+        return new Credentials{Email = user.Email, Rank = user.Rank.ToString()};
+    }
+
+    private void SetRankAsAdminIfFirstUser(User user)
+    {
+        if (UsersByEmail.Count == 0)
+        {
+            user.Rank = UserRank.Administrator;
+        }
     }
 
     public Credentials Login(LoginDto loginDto)
@@ -88,7 +97,7 @@ public class AuthManager
         ValidateLogin(loginDto.Email, loginDto.Password);
 
         var userRank = UsersByEmail[loginDto.Email].Rank;
-        var credentials = new Credentials(loginDto.Email, userRank.ToString());
+        var credentials = new Credentials { Email = loginDto.Email, Rank = userRank.ToString() };
         return credentials;
     }
 
@@ -98,7 +107,7 @@ public class AuthManager
         {
             throw new ArgumentException("User does not exist.");
         }
-        
+
         EnsureUserIsAdminOrSameUser(email, credentials);
         return UsersByEmail[email];
     }

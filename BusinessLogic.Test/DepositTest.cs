@@ -1,3 +1,7 @@
+using BusinessLogic.Domain;
+using BusinessLogic.DTOs;
+using BusinessLogic.Managers;
+
 namespace BusinessLogic.Test;
 
 [TestClass]
@@ -37,7 +41,7 @@ public class DepositTest
 
         _promotionManager.Add(promotion1, credentials);
         _promotionManager.Add(promotion2, credentials);
-        _promotionList = new List<Promotion>() { _promotionManager.Promotions[0], _promotionManager.Promotions[1] };
+        _promotionList = new List<Promotion>() { _promotionManager.GetAllPromotions(credentials)[0], _promotionManager.GetAllPromotions(credentials)[1] };
     }
 
     [TestMethod]

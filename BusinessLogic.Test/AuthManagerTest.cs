@@ -1,4 +1,6 @@
-using BusinessLogic.Exceptions;
+using BusinessLogic.Domain;
+using BusinessLogic.DTOs;
+using BusinessLogic.Managers;
 
 namespace BusinessLogic.Test;
 
@@ -53,7 +55,7 @@ public class AuthManagerTest
         credManager.Register(_client, Password);
 
         // Act & Assert
-        Assert.ThrowsException<UserAlreadyExistsException>(() => { credManager.Register(otherClient, "OtherP@ssw0rd"); });
+        Assert.ThrowsException<ArgumentException>(() => { credManager.Register(otherClient, "OtherP@ssw0rd"); });
     }
 
     [TestMethod]
@@ -185,5 +187,23 @@ public class AuthManagerTest
 
         // Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestFirstUserIsAdmin()
+    {
+        // Arrange
+        var credManager = new AuthManager();
+        var admin = new User(
+            NameSurname,
+            Email,
+            Password
+            );
+
+        // Act
+        var credentials = credManager.Register(admin, Password);
+
+        // Assert
+        Assert.AreEqual("Administrator", credentials.Rank);
     }
 }
