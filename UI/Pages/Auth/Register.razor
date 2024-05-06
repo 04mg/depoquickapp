@@ -31,7 +31,7 @@
 <PageTitle>Register</PageTitle>
 
 <main class="responsive middle-align center-align">
-    <div class="grid large-width">
+    <form class="grid large-width" @onsubmit="ConfirmRegister">
         <div class="s12">
             <i class="extra">person_add</i>
             <h5 class="center-align">Create new user</h5>
@@ -40,32 +40,32 @@
         <div class="s12">
             <div class="field label prefix border left-align">
                 <i>person</i>
-                <input type="text" @bind="_registerDto.NameSurname">
+                <input type="text" @bind="_registerDto.NameSurname" required>
                 <label>Name and Surname</label>
             </div>
         </div>
         <div class="s12">
             <div class="field label prefix border left-align">
                 <i>mail</i>
-                <input type="email" @bind="_registerDto.Email">
+                <input type="email" @bind="_registerDto.Email" required>
                 <label>Email</label>
             </div>
         </div>
         <div class="s12">
             <div class="field label prefix border left-align">
                 <i>key</i>
-                <input type="password" @bind="_registerDto.Password">
+                <input type="password" @bind="_registerDto.Password" required>
                 <label>Password</label>
             </div>
         </div>
         <div class="s12">
             <div class="field label border left-align">
-                <input type="password" @bind="_registerDto.PasswordConfirmation">
+                <input type="password" @bind="_registerDto.PasswordConfirmation" required>
                 <label>Confirm password</label>
             </div>
         </div>
         <div class="s12">
-            <button class="responsive small-elevate small-round large no-margin" @onclick="ConfirmRegister">Register</button>
+            <button type="submit" class="responsive small-elevate small-round large no-margin">Register</button>
         </div>
-    </div>
+    </form>
 </main>

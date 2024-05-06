@@ -36,16 +36,28 @@
         }
     }
 
+    private void ChangeDate(ChangeEventArgs e, Action<DateOnly> setDate)
+    {
+        try
+        {
+            var date = DateOnly.Parse(e.Value?.ToString() ?? string.Empty);
+            setDate(date);
+            CalculatePrice();
+        }
+        catch (FormatException)
+        {
+            NotificationService.ShowError("Invalid date format.");
+        }
+    }
+
     private void ChangeDateFrom(ChangeEventArgs e)
     {
-        _addBookingDto.DateFrom = DateOnly.Parse(e.Value?.ToString() ?? string.Empty);
-        CalculatePrice();
+        ChangeDate(e, date => _addBookingDto.DateFrom = date);
     }
 
     private void ChangeDateTo(ChangeEventArgs e)
     {
-        _addBookingDto.DateTo = DateOnly.Parse(e.Value?.ToString() ?? string.Empty);
-        CalculatePrice();
+        ChangeDate(e, date => _addBookingDto.DateTo = date);
     }
 
 }

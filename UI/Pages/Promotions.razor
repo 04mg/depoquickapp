@@ -7,6 +7,7 @@
 @inject NotificationService NotificationService
 
 @code {
+
     private AddPromotionDto _addPromotionDto = new AddPromotionDto()
     {
         DateFrom = DateOnly.FromDateTime(DateTime.Today),
@@ -77,31 +78,33 @@ else
     <div class="medium-space"></div>
     <div class="overlay blur"></div>
     <dialog class="medium-width no-elevate" id="add-promotion">
-        <div class="padding center-align">
-            <i>sell</i>
-            <h6 class="center-align">Add new promotion</h6>
-        </div>
-        <div class="field label border">
-            <input type="text" @bind="_addPromotionDto.Label">
-            <label>Label</label>
-        </div>
-        <div class="field label border">
-            <input type="number" @bind="_addPromotionDto.Discount">
-            <label>Discount (%)</label>
-        </div>
-        <div class="field label suffix border">
-            <input type="date" @bind="_addPromotionDto.DateFrom">
-            <label>From</label>
-            <i>calendar_today</i>
-        </div>
-        <div class="field label suffix border">
-            <input type="date" @bind="_addPromotionDto.DateTo">
-            <label>To</label>
-            <i>event_upcoming</i>
-        </div>
-        <nav class="right-align no-space no-margin">
-            <button class="transparent link" data-ui="#add-promotion">Cancel</button>
-            <button class="transparent link" @onclick="AddPromotion">Confirm</button>
-        </nav>
+        <form @onsubmit="AddPromotion">
+            <div class="padding center-align">
+                <i>sell</i>
+                <h6 class="center-align">Add new promotion</h6>
+            </div>
+            <div class="field label border">
+                <input type="text" @bind="_addPromotionDto.Label" required>
+                <label>Label</label>
+            </div>
+            <div class="field label border">
+                <input type="number" @bind="_addPromotionDto.Discount">
+                <label>Discount (%)</label>
+            </div>
+            <div class="field label suffix border">
+                <input type="date" @bind="_addPromotionDto.DateFrom">
+                <label>From</label>
+                <i>calendar_today</i>
+            </div>
+            <div class="field label suffix border">
+                <input type="date" @bind="_addPromotionDto.DateTo">
+                <label>To</label>
+                <i>event_upcoming</i>
+            </div>
+            <nav class="right-align no-space no-margin">
+                <button class="transparent link" data-ui="#add-promotion">Cancel</button>
+                <button type="submit" class="transparent link">Confirm</button>
+            </nav>
+        </form>
     </dialog>
 }
