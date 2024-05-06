@@ -53,7 +53,6 @@ public class DepositManager
 
     public List<Deposit> GetAllDeposits(Credentials credentials)
     {
-        EnsureUserIsAdmin(credentials);
         return Deposits;
     }
 
