@@ -25,7 +25,7 @@
         BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
         StateHasChanged();
     }
-    
+
     private void ApproveBooking()
     {
         BookingController.ApproveBooking(Id, Auth.CurrentCredentials);
@@ -33,7 +33,7 @@
         NotificationService.ShowMessage("Booking approved successfully.");
         StateHasChanged();
     }
-    
+
     private void RejectBooking()
     {
         BookingController.RejectBooking(Id, _message, Auth.CurrentCredentials);
@@ -41,6 +41,7 @@
         NotificationService.ShowMessage("Booking rejected successfully.");
         StateHasChanged();
     }
+
 }
 
 <main class="responsive">
@@ -66,7 +67,12 @@
         }
     </h6>
     <article>
-        <h6 class="small padding">Deposit ID:&nbsp;<a href="/Deposit/@BookingDto.DepositId"><i>link</i>@BookingDto.DepositId</a></h6>
+        <h6 class="small padding">
+            Deposit ID:&nbsp;
+            <a href="/Deposit/@BookingDto.DepositId">
+                <i>link</i>@BookingDto.DepositId
+            </a>
+        </h6>
         <div class="divider"></div>
         <h6 class="small padding">Email:&nbsp; <b>@BookingDto.Email</b></h6>
         <div class="divider"></div>
@@ -75,6 +81,11 @@
         <h6 class="small padding">To:&nbsp; <b>@BookingDto.DateTo</b></h6>
         <div class="divider"></div>
         <h6 class="small padding">Stage:&nbsp; <b>@BookingDto.Stage</b></h6>
+        @if (BookingDto.Stage == "Rejected")
+        {
+            <div class="divider"></div>
+            <h6 class="small padding">Message:&nbsp; <b>@BookingDto.Message</b></h6>
+        }
     </article>
 </main>
 
