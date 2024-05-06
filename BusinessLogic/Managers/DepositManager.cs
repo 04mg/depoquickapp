@@ -1,6 +1,7 @@
+using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 
-namespace BusinessLogic;
+namespace BusinessLogic.Managers;
 
 public class DepositManager
 {

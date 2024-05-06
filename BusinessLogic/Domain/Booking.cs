@@ -1,4 +1,6 @@
-namespace BusinessLogic;
+using BusinessLogic.Interfaces;
+
+namespace BusinessLogic.Domain;
 
 public class Booking
 {

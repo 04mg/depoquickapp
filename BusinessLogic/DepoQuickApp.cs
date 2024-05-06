@@ -1,4 +1,6 @@
+using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
+using BusinessLogic.Managers;
 
 namespace BusinessLogic;
 
@@ -55,7 +57,7 @@ public class DepoQuickApp
 
     public List<PromotionDto> ListAllPromotions(Credentials credentials)
     {
-        return _promotionManager.Promotions.Select(p => new PromotionDto()
+        return _promotionManager.GetAllPromotions(credentials).Select(p => new PromotionDto()
         {
             Id = p.Id,
             Label = p.Label,
