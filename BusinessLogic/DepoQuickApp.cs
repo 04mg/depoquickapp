@@ -130,7 +130,7 @@ public class DepoQuickApp
 
     public void AddBooking(AddBookingDto addBookingDto, Credentials credentials)
     {
-        _depositManager.EnsureDepositExists(addBookingDto.DepositId, credentials);
+        _depositManager.EnsureDepositExists(addBookingDto.DepositId);
         var deposit = _depositManager.GetDepositById(addBookingDto.DepositId);
         var user = _authManager.GetUserByEmail(addBookingDto.Email, credentials);
         var priceCalculator = new PriceCalculator();
