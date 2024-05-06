@@ -1,7 +1,7 @@
-namespace BusinessLogic;
+namespace BusinessLogic.DTOs;
 
-public readonly struct LoginDto
+public struct LoginDto
 {
-    public string Email { get; init; }
-    public string Password { get; init; }
+    public string Email { init; get; }
+    public string Password { init; get; }
 }

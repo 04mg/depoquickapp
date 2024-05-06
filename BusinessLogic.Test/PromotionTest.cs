@@ -1,3 +1,5 @@
+using BusinessLogic.Domain;
+
 namespace BusinessLogic.Test;
 
 [TestClass]
@@ -5,6 +7,8 @@ public class PromotionTest
 {
     private const string Label = "label";
     private const int Discount = 50;
+    private const int MaxDiscount = 70;
+    private const int MinDiscount = 5;
     private readonly DateOnly _today = DateOnly.FromDateTime(DateTime.Now);
     private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
 
@@ -64,10 +68,10 @@ public class PromotionTest
     }
 
     [TestMethod]
-    public void TestCantCreatePromotionWithDiscountsLesserThan5()
+    public void TestCantCreatePromotionWithDiscountsLesserThanMinDiscount()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, 4, _today, _tomorrow));
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, MinDiscount-1, _today, _tomorrow));
 
         // Assert
         Assert.AreEqual("Discount must be between 5% and 70%.", exception.Message);
@@ -75,10 +79,10 @@ public class PromotionTest
 
 
     [TestMethod]
-    public void TestCantCreatePromotionWithDiscountGreaterThan70()
+    public void TestCantCreatePromotionWithDiscountGreaterThanMaxDiscount()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, 71, _today, _tomorrow));
+        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, MaxDiscount+1, _today, _tomorrow));
 
         // Assert
         Assert.AreEqual("Discount must be between 5% and 70%.", exception.Message);
