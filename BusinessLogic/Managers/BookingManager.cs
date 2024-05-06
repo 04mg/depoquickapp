@@ -102,7 +102,7 @@ public class BookingManager
         booking.Reject(message);
     }
 
-    private Booking GetBookingById(int id)
+    public Booking GetBookingById(int id)
     {
         EnsureBookingExists(id);
         return Bookings.First(b => b.Id == id);
