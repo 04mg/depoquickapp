@@ -6,7 +6,7 @@ namespace BusinessLogic.Managers;
 
 public class AuthManager
 {
-    private Dictionary<string, User> UsersByEmail { set; get; } = new();
+    private Dictionary<string, User> UsersByEmail { get; } = new();
     private bool IsAdminRegistered { set; get; }
 
     public bool Exists(string email)

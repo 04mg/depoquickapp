@@ -17,7 +17,7 @@ public class UserTest
         var user = new User(NameSurname, Email, Password);
 
         // Assert
-        Assert.IsNotNull(user);
+        Assert.AreSame(NameSurname, user.NameSurname);
     }
 
     [TestMethod]

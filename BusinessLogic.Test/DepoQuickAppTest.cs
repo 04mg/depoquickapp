@@ -135,6 +135,7 @@ public class DepoQuickAppTest
         var deposit = _app.ListAllDeposits(_credentials)[0];
 
         // Assert
+        Assert.AreEqual(deposit.Id, 1);
         Assert.AreEqual(_addDepositDto.Area, deposit.Area);
         Assert.AreEqual(_addDepositDto.Size, deposit.Size);
         Assert.AreEqual(_addDepositDto.ClimateControl, deposit.ClimateControl);
