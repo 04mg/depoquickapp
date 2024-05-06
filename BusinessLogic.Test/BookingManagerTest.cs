@@ -152,7 +152,7 @@ public class BookingManagerTest
         _bookingManager.Add(booking);
 
         // Act
-        _bookingManager.Reject(1, _adminCredentials);
+        _bookingManager.Reject(1, _adminCredentials, "Message");
 
         // Assert
         Assert.AreEqual(BookingStage.Rejected, _bookingManager.GetAllBookings(_adminCredentials)[0].Stage);
@@ -287,5 +287,20 @@ public class BookingManagerTest
             _bookingManager.Reject(1, _adminCredentials, "message"));
         //Assert
         Assert.AreEqual("Booking not found.", exception.Message);  
+    }
+    
+    [TestMethod]
+    public void TestRejectMessageCannotBeEmpty()
+    {
+        //Arrange
+        var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
+        _bookingManager.Add(booking);
+
+        //Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+            _bookingManager.Reject(1, _adminCredentials, ""));
+        //Assert
+        Assert.AreEqual("Message cannot be empty.", exception.Message);  
     }
 }

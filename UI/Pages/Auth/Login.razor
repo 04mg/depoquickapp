@@ -1,0 +1,55 @@
+﻿@page "/login"
+@using BusinessLogic
+@using BusinessLogic.DTOs
+@using UI.Data
+@inject AuthController Auth
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+
+@code {
+
+    private LoginDto _loginDto;
+
+    private void ConfirmLogin()
+    {
+        try
+        {
+            Auth.LogIn(_loginDto);
+            NavigationManager.NavigateTo("/Deposits", forceLoad: true);
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+    }
+
+}
+
+<PageTitle>Login</PageTitle>
+
+<main class="responsive middle-align center-align">
+    <form class="grid large-width" @onsubmit="ConfirmLogin">
+        <div class="s12">
+            <i class="extra">person</i>
+            <h5 class="center-align">Welcome back</h5>
+            <div class="small-space"></div>
+        </div>
+        <div class="s12">
+            <div class="field label prefix border left-align">
+                <i>mail</i>
+                <input type="email" @bind="_loginDto.Email" required>
+                <label>Email</label>
+            </div>
+        </div>
+        <div class="s12">
+            <div class="field label prefix border left-align">
+                <i>key</i>
+                <input type="password" @bind="_loginDto.Password" required>
+                <label>Password</label>
+            </div>
+        </div>
+        <div class="s12">
+            <button type="submit" class="responsive small-elevate small-round large no-margin">Login</button>
+        </div>
+    </form>
+</main>

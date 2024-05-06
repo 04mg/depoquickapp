@@ -12,11 +12,11 @@ public class DepositManager
 
     private List<Deposit> Deposits { get; set; }
 
-    private void EnsureDepositExists(int id)
+    public void EnsureDepositExists(int id)
     {
         if (Deposits.All(d => d.Id != id))
         {
-            throw new ArgumentException("Deposit not found");
+            throw new ArgumentException("Deposit not found.");
         }
     }
 
@@ -53,7 +53,6 @@ public class DepositManager
 
     public List<Deposit> GetAllDeposits(Credentials credentials)
     {
-        EnsureUserIsAdmin(credentials);
         return Deposits;
     }
 
@@ -63,15 +62,6 @@ public class DepositManager
         if (Deposits.Any(d => d.Promotions.Any(p => p.Id == id)))
         {
             throw new ArgumentException("There are existing deposits for this promotion.");
-        }
-    }
-    
-    public void EnsureDepositExists(int id, Credentials credentials)
-    {
-        EnsureUserIsAdmin(credentials);
-        if (Deposits.All(d => d.Id != id))
-        {
-            throw new ArgumentException("Deposit not found.");
         }
     }
 }

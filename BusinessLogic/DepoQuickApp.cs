@@ -57,7 +57,7 @@ public class DepoQuickApp
 
     public List<PromotionDto> ListAllPromotions(Credentials credentials)
     {
-        return _promotionManager.Promotions.Select(p => new PromotionDto()
+        return _promotionManager.GetAllPromotions(credentials).Select(p => new PromotionDto()
         {
             Id = p.Id,
             Label = p.Label,
@@ -66,7 +66,7 @@ public class DepoQuickApp
             DateTo = p.Validity.Item2
         }).ToList();
     }
-
+    
     public void ModifyPromotion(int id, PromotionDto promotionDto, Credentials credentials)
     {
         var promotion = new Promotion(
@@ -130,7 +130,7 @@ public class DepoQuickApp
 
     public void AddBooking(AddBookingDto addBookingDto, Credentials credentials)
     {
-        _depositManager.EnsureDepositExists(addBookingDto.DepositId, credentials);
+        _depositManager.EnsureDepositExists(addBookingDto.DepositId);
         var deposit = _depositManager.GetDepositById(addBookingDto.DepositId);
         var user = _authManager.GetUserByEmail(addBookingDto.Email, credentials);
         var priceCalculator = new PriceCalculator();
@@ -158,6 +158,35 @@ public class DepoQuickApp
             Stage = b.Stage.ToString(),
             Message = b.Message
         }).ToList();
+    }
+    
+    public List<BookingDto> ListAllBookingsByEmail(string email, Credentials credentials)
+    {
+        return _bookingManager.GetBookingsByEmail(email, credentials).Select(b => new BookingDto()
+        {
+            Id = b.Id,
+            DepositId = b.Deposit.Id,
+            Email = b.Client.Email,
+            DateFrom = b.Duration.Item1,
+            DateTo = b.Duration.Item2,
+            Stage = b.Stage.ToString(),
+            Message = b.Message
+        }).ToList();
+    }
+    
+    public BookingDto GetBooking(int id, Credentials credentials)
+    {
+        var booking = _bookingManager.GetBookingById(id);
+        return new BookingDto()
+        {
+            Id = booking.Id,
+            DepositId = booking.Deposit.Id,
+            Email = booking.Client.Email,
+            DateFrom = booking.Duration.Item1,
+            DateTo = booking.Duration.Item2,
+            Stage = booking.Stage.ToString(),
+            Message = booking.Message
+        };
     }
 
     public void ApproveBooking(int id, Credentials credentials)

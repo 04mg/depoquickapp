@@ -1,0 +1,100 @@
+@using BusinessLogic.DTOs
+@using UI.Data
+@inject AuthController Auth
+@inject BookingController BookingController
+@inject NotificationService NotificationService
+
+@code {
+
+    private AddBookingDto _addBookingDto = new();
+
+    [Parameter] public int DepositId { get; set; }
+
+    private double BookingPrice { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        _addBookingDto.DepositId = DepositId;
+        _addBookingDto.Email = Auth.CurrentCredentials.Email;
+    }
+
+    private void CalculatePrice()
+    {
+        BookingPrice = BookingController.CalculateBookingPrice(_addBookingDto, Auth.CurrentCredentials);
+    }
+
+    private void AddBooking()
+    {
+        try
+        {
+            BookingController.AddBooking(_addBookingDto, Auth.CurrentCredentials);
+            NotificationService.ShowMessage($"Booked deposit with ID: {DepositId} from {_addBookingDto.DateFrom} to {_addBookingDto.DateTo}");
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+    }
+
+    private void ChangeDate(ChangeEventArgs e, Action<DateOnly> setDate)
+    {
+        try
+        {
+            var date = DateOnly.Parse(e.Value?.ToString() ?? string.Empty);
+            setDate(date);
+            CalculatePrice();
+        }
+        catch (FormatException)
+        {
+            NotificationService.ShowError("Invalid date format.");
+        }
+    }
+
+    private void ChangeDateFrom(ChangeEventArgs e)
+    {
+        ChangeDate(e, date => _addBookingDto.DateFrom = date);
+    }
+
+    private void ChangeDateTo(ChangeEventArgs e)
+    {
+        ChangeDate(e, date => _addBookingDto.DateTo = date);
+    }
+
+}
+
+<article>
+    <div class="grid">
+        <div class="s12 m6 padding">
+            <h6 class="small">Select the dates you want to book the deposit for:</h6>
+            <div class="small-space"></div>
+            <div class="field label suffix border">
+                <input type="date" @onchange="ChangeDateFrom">
+                <label>From</label>
+                <i>calendar_today</i>
+            </div>
+            <div class="field label suffix border">
+                <input type="date" @onchange="ChangeDateTo">
+                <label>To</label>
+                <i>event_upcoming</i>
+            </div>
+        </div>
+        <div class="s12 m6 padding secondary center-align middle-align">
+            <div>
+                <p class="small-text bold no-margin">Final price:</p>
+                @if (BookingPrice > 0)
+                {
+                    <h1 class="bold no-margin no-padding center-align">@BookingPrice$</h1>
+                }
+                else
+                {
+                    <h1 class="bold no-margin no-padding center-align">-</h1>
+                }
+            </div>
+        </div>
+        <div class="s12 right-align">
+            <button class="no-margin" @onclick="AddBooking">
+                Book now
+            </button>
+        </div>
+    </div>
+</article>

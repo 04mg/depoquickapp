@@ -97,12 +97,21 @@ public class BookingManager
     
     public void Reject(int id, Credentials credentials, string message = "")
     {
+        EnsureMessageIsNotEmpty(message);
         EnsureUserIsAdministrator(credentials);
         var booking = GetBookingById(id);
         booking.Reject(message);
     }
 
-    private Booking GetBookingById(int id)
+    private void EnsureMessageIsNotEmpty(string message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            throw new ArgumentException("Message cannot be empty.");
+        }
+    }
+
+    public Booking GetBookingById(int id)
     {
         EnsureBookingExists(id);
         return Bookings.First(b => b.Id == id);

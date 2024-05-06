@@ -1,0 +1,91 @@
+@page "/Deposit/{Id:int}"
+@inherits AuthEnforce
+@using BusinessLogic.DTOs
+@using UI.Data
+@using UI.Pages.Components
+@inject AuthController Auth
+@inject DepositController DepositController
+@inject PromotionController PromotionController
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
+
+@code {
+    private DepositDto DepositDto { get; set; }
+    private List<AddPromotionDto> Promotions { get; set; } = new();
+
+    private int? _id;
+
+    [Parameter]
+    public int Id
+    {
+        get => _id ?? throw new NullReferenceException();
+        set => _id = value;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+        DepositDto = DepositController.GetDeposit(Id, Auth.CurrentCredentials);
+        Promotions = DepositDto.PromotionList.Select(p => PromotionController.GetPromotion(p)).ToList();
+        StateHasChanged();
+    }
+
+    private void DeleteDeposit()
+    {
+        try
+        {
+            DepositController.DeleteDeposit(Id, Auth.CurrentCredentials);
+            NotificationService.ShowMessage($"Deposit with ID: {Id} deleted successfully.");
+            NavigationManager.NavigateTo("/Deposits");
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+    }
+
+}
+
+<main class="responsive">
+    <NavLink class="extra transparent vertical-margin left-align" href="/Deposits">
+        <i>arrow_back</i>
+    </NavLink>
+    <h6 class="vertical-margin">
+        Deposit
+        <span class="circle primary center-align middle-align left-margin">@Id</span>
+        @if (Auth.IsAdmin)
+        {
+            <button class="extend square round error no-margin absolute right" @onclick="DeleteDeposit">
+                <i>delete</i>
+                <span>Delete</span>
+            </button>
+            <div class="medium-space"></div>
+        }
+    </h6>
+    <article>
+        <h6 class="small padding">Area:&nbsp; <b>@DepositDto.Area</b></h6>
+        <div class="divider"></div>
+        <h6 class="small padding">Size:&nbsp; <b>@DepositDto.Size</b></h6>
+        <div class="divider"></div>
+        <h6 class="small padding">Climate Control:&nbsp; <b>@(DepositDto.ClimateControl ? "Yes" : "No")</b></h6>
+        <div class="divider"></div>
+        @if (Promotions.Count == 0)
+        {
+            <h6 class="small padding">There are no available promotions for this deposit</h6>
+        }
+        else
+        {
+            <h6 class="small padding">There are the following promotions available for this deposit:</h6>
+            @foreach (var promotion in Promotions)
+            {
+                <div class="button no-wave margin">
+                    @promotion.Label
+                    <div class="badge none">-@promotion.Discount%</div>
+                </div>
+            }
+        }
+    </article>
+    <div class="small-space"></div>
+    <h6 class="vertical-margin">Book now</h6>
+    <DepositBooking DepositId="@Id" />
+</main>
