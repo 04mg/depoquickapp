@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using BusinessLogic.Enums;
 
 namespace BusinessLogic.Domain;
 
@@ -163,10 +164,4 @@ public class User
             throw new ArgumentException("Email format is invalid, length must be lesser or equal to 254.");
         }
     }
-}
-
-public enum UserRank
-{
-    Client,
-    Administrator
 }

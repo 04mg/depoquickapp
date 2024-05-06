@@ -1,5 +1,6 @@
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
+using BusinessLogic.Enums;
 using BusinessLogic.Managers;
 
 namespace BusinessLogic.Test;
