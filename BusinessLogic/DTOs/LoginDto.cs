@@ -2,6 +2,6 @@ namespace BusinessLogic.DTOs;
 
 public struct LoginDto
 {
-    public string Email { init; get; }
-    public string Password { init; get; }
+    public string Email { set; get; }
+    public string Password { set; get; }
 }

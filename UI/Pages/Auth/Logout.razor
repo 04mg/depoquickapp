@@ -1,0 +1,15 @@
+@page "/Logout"
+@using UI.Data
+@inject AuthController Auth
+@inject NavigationManager NavigationManager
+
+@code {
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        Auth.LogOut();
+        NavigationManager.NavigateTo("/Login", forceLoad: true);
+    }
+
+}
