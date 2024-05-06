@@ -63,19 +63,19 @@
         }
     </h6>
     <article>
-        <h6 class="small tiny-padding">Area:&nbsp; <b>@DepositDto.Area</b></h6>
+        <h6 class="small padding">Area:&nbsp; <b>@DepositDto.Area</b></h6>
         <div class="divider"></div>
-        <h6 class="small tiny-padding">Size:&nbsp; <b>@DepositDto.Size</b></h6>
+        <h6 class="small padding">Size:&nbsp; <b>@DepositDto.Size</b></h6>
         <div class="divider"></div>
-        <h6 class="small tiny-padding">Climate Control:&nbsp; <b>@(DepositDto.ClimateControl ? "Yes" : "No")</b></h6>
+        <h6 class="small padding">Climate Control:&nbsp; <b>@(DepositDto.ClimateControl ? "Yes" : "No")</b></h6>
         <div class="divider"></div>
         @if (Promotions.Count == 0)
         {
-            <h6 class="small tiny-padding">There are no available promotions for this deposit</h6>
+            <h6 class="small padding">There are no available promotions for this deposit</h6>
         }
         else
         {
-            <h6 class="small tiny-padding">There are the following promotions available for this deposit:</h6>
+            <h6 class="small padding">There are the following promotions available for this deposit:</h6>
             @foreach (var promotion in Promotions)
             {
                 <div class="button no-wave margin">

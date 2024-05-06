@@ -7,12 +7,15 @@
 
 @code {
     private List<BookingDto> BookingsDto { get; set; } = new();
-    
+
     protected override void OnAfterRender(bool firstRender)
     {
-        BookingsDto = BookingController.ListAllBookings(Auth.CurrentCredentials);
+        BookingsDto = Auth.IsAdmin
+            ? BookingController.ListAllBookings(Auth.CurrentCredentials)
+            : BookingController.ListAllBookingsByEmail(Auth.CurrentCredentials);
         StateHasChanged();
     }
+
 }
 
 <main class="responsive">
@@ -29,7 +32,7 @@
         {
             @foreach (var booking in BookingsDto)
             {
-                <a class="row padding surface-container wave scroll">
+                <a class="row padding surface-container wave scroll" href="/Booking/@booking.Id">
                     <div class="row max">
                         <div class="button circle">@booking.Id</div>
                     </div>

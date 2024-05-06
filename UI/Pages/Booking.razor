@@ -1,0 +1,99 @@
+@page "/Booking/{Id:int}"
+@inherits AuthEnforce
+@using BusinessLogic.DTOs
+@using UI.Data
+@inject AuthController Auth
+@inject BookingController BookingController
+@inject NotificationService NotificationService
+
+@code {
+    private BookingDto BookingDto { get; set; } = new();
+    private string _message = string.Empty;
+
+    private int? _id;
+
+    [Parameter]
+    public int Id
+    {
+        get => _id ?? throw new NullReferenceException();
+        set => _id = value;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+        BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
+        StateHasChanged();
+    }
+    
+    private void ApproveBooking()
+    {
+        BookingController.ApproveBooking(Id, Auth.CurrentCredentials);
+        BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
+        NotificationService.ShowMessage("Booking approved successfully.");
+        StateHasChanged();
+    }
+    
+    private void RejectBooking()
+    {
+        BookingController.RejectBooking(Id, _message, Auth.CurrentCredentials);
+        BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
+        NotificationService.ShowMessage("Booking rejected successfully.");
+        StateHasChanged();
+    }
+}
+
+<main class="responsive">
+    <NavLink class="extra transparent vertical-margin left-align" href="/Bookings">
+        <i>arrow_back</i>
+    </NavLink>
+    <h6 class="vertical-margin">
+        Booking
+        <span class="circle primary center-align middle-align left-margin">@Id</span>
+        @if (Auth.IsAdmin && BookingDto.Stage == "Pending")
+        {
+            <div class="absolute right">
+                <button class="extend square round primary no-margin" @onclick="ApproveBooking">
+                    <i>done</i>
+                    <span>Approve</span>
+                </button>
+                <button class="extend square round error no-margin" data-ui="#reject-booking">
+                    <i>close</i>
+                    <span>Reject</span>
+                </button>
+            </div>
+            <div class="medium-space"></div>
+        }
+    </h6>
+    <article>
+        <h6 class="small padding">Deposit ID:&nbsp;<a href="/Deposit/@BookingDto.DepositId"><i>link</i>@BookingDto.DepositId</a></h6>
+        <div class="divider"></div>
+        <h6 class="small padding">Email:&nbsp; <b>@BookingDto.Email</b></h6>
+        <div class="divider"></div>
+        <h6 class="small padding">From:&nbsp; <b>@BookingDto.DateFrom</b></h6>
+        <div class="divider"></div>
+        <h6 class="small padding">To:&nbsp; <b>@BookingDto.DateTo</b></h6>
+        <div class="divider"></div>
+        <h6 class="small padding">Stage:&nbsp; <b>@BookingDto.Stage</b></h6>
+    </article>
+</main>
+
+@if (Auth.IsAdmin)
+{
+    <div class="medium-space"></div>
+    <div class="overlay blur"></div>
+    <dialog class="medium-width no-elevate" id="reject-booking">
+        <div class="padding center-align">
+            <i>book</i>
+            <h6 class="center-align">Reject booking</h6>
+        </div>
+        <div class="field label border">
+            <input type="text" @bind="_message">
+            <label>Message</label>
+        </div>
+        <nav class="right-align no-space no-margin">
+            <button class="transparent link" data-ui="#reject-booking">Cancel</button>
+            <button class="transparent link" @onclick="RejectBooking">Reject</button>
+        </nav>
+    </dialog>
+}
