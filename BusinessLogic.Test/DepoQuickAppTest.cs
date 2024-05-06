@@ -285,7 +285,7 @@ public class DepoQuickAppTest
         var exception = Assert.ThrowsException<ArgumentException>(() => { _app.AddBooking(_addBookingDto, _credentials); });
         
         // Assert
-        Assert.IsTrue(exception.Message.Contains("Deposit not found."));
+        Assert.AreEqual("Deposit not found.", exception.Message);
     }
     
     [TestMethod]

@@ -84,7 +84,7 @@ public class DepositManagerTest
         var exception = Assert.ThrowsException<ArgumentException>(() => _depositManager.Delete(1, _adminCredentials));
 
         // Assert
-        Assert.AreEqual("Deposit not found", exception.Message);
+        Assert.AreEqual("Deposit not found.", exception.Message);
     }
 
     [TestMethod]
