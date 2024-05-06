@@ -1,3 +1,5 @@
+using BusinessLogic.Enums;
+
 namespace BusinessLogic.Domain;
 
 public class Deposit
@@ -53,20 +55,4 @@ public class Deposit
             throw new ArgumentException("Size is invalid.");
         }
     }
-}
-
-public enum Area
-{
-    A,
-    B,
-    C,
-    D,
-    E
-}
-
-public enum Size
-{
-    Small,
-    Medium,
-    Large
 }

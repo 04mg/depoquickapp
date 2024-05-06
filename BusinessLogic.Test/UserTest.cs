@@ -1,4 +1,5 @@
 using BusinessLogic.Domain;
+using BusinessLogic.Enums;
 
 namespace BusinessLogic.Test;
 

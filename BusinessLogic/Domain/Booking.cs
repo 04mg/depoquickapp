@@ -1,3 +1,4 @@
+using BusinessLogic.Enums;
 using BusinessLogic.Interfaces;
 
 namespace BusinessLogic.Domain;
@@ -64,11 +65,4 @@ public class Booking
         Stage = BookingStage.Rejected;
         Message = message;
     }
-}
-
-public enum BookingStage
-{
-    Approved,
-    Pending,
-    Rejected
 }
