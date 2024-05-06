@@ -6,17 +6,13 @@
 
 @code {
 
-    private AddBookingDto _addBookingDto = new AddBookingDto()
-    {
-        DateFrom = DateOnly.FromDateTime(DateTime.Now),
-        DateTo = DateOnly.FromDateTime(DateTime.Now)
-    };
+    private AddBookingDto _addBookingDto = new();
 
     [Parameter] public int DepositId { get; set; }
 
     private double BookingPrice { get; set; }
 
-    protected override void OnInitialized()
+    protected override void OnAfterRender(bool firstRender)
     {
         _addBookingDto.DepositId = DepositId;
         _addBookingDto.Email = Auth.CurrentCredentials.Email;

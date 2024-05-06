@@ -16,4 +16,6 @@ public class BookingController
 
     public double CalculateBookingPrice(AddBookingDto dto, Credentials credentials) =>
         _app.CalculateBookingPrice(dto, credentials);
+
+    public List<BookingDto> ListAllBookings(Credentials credentials) => _app.ListAllBookings(credentials);
 }
