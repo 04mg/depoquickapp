@@ -5,6 +5,7 @@
 @inject AuthController Auth
 @inject BookingController BookingController
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
 
 @code {
     private BookingDto BookingDto { get; set; } = new();
@@ -22,7 +23,16 @@
     protected override void OnAfterRender(bool firstRender)
     {
         if (!firstRender) return;
-        BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
+        try
+        {
+            BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+            NavigationManager.NavigateTo("/Bookings");
+        }
+
         StateHasChanged();
     }
 
