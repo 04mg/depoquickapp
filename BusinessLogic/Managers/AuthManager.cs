@@ -103,7 +103,7 @@ public class AuthManager
 
     private static void EnsureUserIsAdminOrSameUser(string requestedEmail, Credentials credentials)
     {
-        if (credentials.Rank != "Administrator" || credentials.Email != requestedEmail)
+        if (credentials.Rank != "Administrator" && credentials.Email != requestedEmail)
         {
             throw new UnauthorizedAccessException("You are not authorized to perform this action.");
         }

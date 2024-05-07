@@ -106,7 +106,7 @@ public class DepoQuickApp
 
     public List<DepositDto> ListAllDeposits(Credentials credentials)
     {
-        return _depositManager.GetAllDeposits(credentials).Select(d => new DepositDto()
+        return _depositManager.GetAllDeposits().Select(d => new DepositDto()
         {
             Id = d.Id,
             Area = d.Area,

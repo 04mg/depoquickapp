@@ -5,7 +5,7 @@ namespace BusinessLogic.Managers;
 
 public class DepositManager
 {
-    private List<Deposit> Deposits { get; set; } = new();
+    private List<Deposit> Deposits { get; } = new();
 
     public void EnsureDepositExists(int id)
     {
@@ -46,7 +46,7 @@ public class DepositManager
 
     private int NextDepositId => Deposits.Count > 0 ? Deposits.Max(d => d.Id) + 1 : 1;
 
-    public List<Deposit> GetAllDeposits(Credentials credentials)
+    public List<Deposit> GetAllDeposits()
     {
         return Deposits;
     }
