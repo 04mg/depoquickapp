@@ -1,3 +1,6 @@
+using BusinessLogic.Calculators;
+using BusinessLogic.Domain;
+
 namespace BusinessLogic.Test;
 
 [TestClass]
@@ -108,7 +111,7 @@ public class PriceCalculatorTest
             new Tuple<DateOnly, DateOnly>(_today, _today.AddDays(durationInDays)));
         Assert.AreEqual(expectedPrice, price);
     }
-    
+
     [TestMethod]
     [DataRow(50, 51, "Small", 1)]
     [DataRow(50, 46, "Medium", 7)]

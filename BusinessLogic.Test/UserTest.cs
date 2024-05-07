@@ -1,3 +1,6 @@
+using BusinessLogic.Domain;
+using BusinessLogic.Enums;
+
 namespace BusinessLogic.Test;
 
 [TestClass]
@@ -14,7 +17,7 @@ public class UserTest
         var user = new User(NameSurname, Email, Password);
 
         // Assert
-        Assert.IsNotNull(user);
+        Assert.AreSame(NameSurname, user.NameSurname);
     }
 
     [TestMethod]

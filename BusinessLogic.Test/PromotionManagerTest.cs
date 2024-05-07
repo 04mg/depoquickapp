@@ -1,3 +1,7 @@
+using BusinessLogic.Domain;
+using BusinessLogic.DTOs;
+using BusinessLogic.Managers;
+
 namespace BusinessLogic.Test;
 
 [TestClass]
@@ -7,14 +11,19 @@ public class PromotionManagerTest
     private const int Discount = 50;
     private readonly DateOnly _today = DateOnly.FromDateTime(DateTime.Now);
     private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
-    private PromotionManager _promotionManager = new();
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
+    private PromotionManager _promotionManager = new();
 
     [TestInitialize]
     public void Initialize()
     {
         _promotionManager = new PromotionManager();
+        RegisterUsers();
+    }
+
+    private void RegisterUsers()
+    {
         var authManager = new AuthManager();
 
         const string passwordConfirmation = "12345678@mE";
@@ -31,10 +40,8 @@ public class PromotionManagerTest
         );
         authManager.Register(admin, passwordConfirmation);
         authManager.Register(client, passwordConfirmation);
-        _adminCredentials = authManager.Login(new LoginDto()
-            { Email = admin.Email, Password = admin.Password });
-        _clientCredentials = authManager.Login(new LoginDto()
-            { Email = client.Email, Password = client.Password });
+        _adminCredentials = authManager.Login(new LoginDto { Email = admin.Email, Password = admin.Password });
+        _clientCredentials = authManager.Login(new LoginDto { Email = client.Email, Password = client.Password });
     }
 
     [TestMethod]
@@ -47,7 +54,7 @@ public class PromotionManagerTest
         _promotionManager.Add(promotion, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(1, _promotionManager.Promotions.Count);
+        Assert.AreEqual(1, _promotionManager.GetAllPromotions(_adminCredentials).Count);
     }
 
     [TestMethod]
@@ -61,7 +68,7 @@ public class PromotionManagerTest
         _promotionManager.Delete(1, _adminCredentials);
 
         // Assert
-        Assert.IsFalse(_promotionManager.Promotions.Contains(promotion));
+        Assert.IsFalse(_promotionManager.GetAllPromotions(_adminCredentials).Contains(promotion));
     }
 
     [TestMethod]
@@ -77,7 +84,7 @@ public class PromotionManagerTest
         _promotionManager.Modify(1, modifiedPromotion, _adminCredentials);
 
         // Assert
-        Assert.IsFalse(_promotionManager.Promotions.Contains(modifiedPromotion));
+        Assert.IsFalse(_promotionManager.GetAllPromotions(_adminCredentials).Contains(modifiedPromotion));
     }
 
     [TestMethod]
@@ -178,5 +185,21 @@ public class PromotionManagerTest
 
         // Assert
         Assert.IsFalse(exists);
+    }
+
+    [TestMethod]
+    public void TestCantGetAllPromotionsIfNotAdministrator()
+    {
+        // Arrange
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
+        _promotionManager.Add(promotion, _adminCredentials);
+
+        // Act
+        var exception =
+            Assert.ThrowsException<UnauthorizedAccessException>(() =>
+                _promotionManager.GetAllPromotions(_clientCredentials));
+
+        // Assert
+        Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
     }
 }
