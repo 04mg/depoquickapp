@@ -19,6 +19,7 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
+        if (!Auth.IsAdmin) return;
         PromotionsDto = PromotionController.ListAllPromotions(Auth.CurrentCredentials);
         StateHasChanged();
     }
