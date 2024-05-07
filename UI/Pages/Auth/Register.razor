@@ -7,7 +7,8 @@
 
 @code {
 
-    private RegisterDto _registerDto = new RegisterDto { Rank = "Client" };
+    private RegisterDto _registerDto = new() { Rank = "Client" };
+
     private void ConfirmRegister()
     {
         try

@@ -13,10 +13,7 @@ public class NotificationService
         var message = ++_currentMessage;
         Task.Delay(Delay).ContinueWith(_ =>
         {
-            if (_currentMessage == message)
-            {
-                Clear();
-            }
+            if (_currentMessage == message) Clear();
         });
     }
 
@@ -32,5 +29,8 @@ public class NotificationService
         ClearAfterDelay();
     }
 
-    public void Clear() => OnNotify?.Invoke(string.Empty, string.Empty);
+    public void Clear()
+    {
+        OnNotify?.Invoke(string.Empty, string.Empty);
+    }
 }

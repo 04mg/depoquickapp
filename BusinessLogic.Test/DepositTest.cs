@@ -10,8 +10,8 @@ public class DepositTest
     private const string Area = "A";
     private const string Size = "Small";
     private const bool ClimateControl = true;
-    private AuthManager _authManager = new();
     private readonly PromotionManager _promotionManager = new();
+    private AuthManager _authManager = new();
     private List<Promotion> _promotionList = new();
 
     [TestInitialize]
@@ -34,7 +34,7 @@ public class DepositTest
 
         _authManager.Register(admin, passwordConfirmation);
 
-        var loginModel = new LoginDto()
+        var loginModel = new LoginDto
         {
             Email = admin.Email,
             Password = admin.Password
@@ -51,7 +51,7 @@ public class DepositTest
         _promotionManager.Add(promotion1, credentials);
         _promotionManager.Add(promotion2, credentials);
 
-        _promotionList = new List<Promotion>()
+        _promotionList = new List<Promotion>
             { _promotionManager.GetAllPromotions(credentials)[0], _promotionManager.GetAllPromotions(credentials)[1] };
     }
 

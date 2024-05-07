@@ -1,12 +1,23 @@
+using BusinessLogic.Calculators;
 using BusinessLogic.Enums;
-using BusinessLogic.Interfaces;
 
 namespace BusinessLogic.Domain;
 
 public class Booking
 {
-    private readonly IPriceCalculator _priceCalculator;
     private readonly Tuple<DateOnly, DateOnly> _duration = new(new DateOnly(), new DateOnly());
+    private readonly IPriceCalculator _priceCalculator;
+
+    public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo,
+        IPriceCalculator priceCalculator)
+    {
+        Id = id;
+        Deposit = deposit;
+        Client = client;
+        Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
+        _priceCalculator = priceCalculator;
+    }
+
     public int Id { get; set; }
     public Deposit Deposit { get; }
     public User Client { get; }
@@ -28,31 +39,18 @@ public class Booking
     private static void EnsureDateFromIsLesserThanDateTo(DateOnly dateFrom, DateOnly dateTo)
     {
         if (dateFrom > dateTo)
-        {
             throw new ArgumentException("The starting date of the booking must not be later than the ending date.");
-        }
     }
 
     private static void EnsureDateFromIsGreaterThanToday(DateOnly dateFrom)
     {
         if (dateFrom < DateOnly.FromDateTime(DateTime.Now))
-        {
             throw new ArgumentException("The starting date of the booking must not be earlier than today.");
-        }
     }
 
     public double CalculatePrice()
     {
         return _priceCalculator.CalculatePrice(Deposit, Duration);
-    }
-
-    public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo, IPriceCalculator priceCalculator)
-    {
-        Id = id;
-        Deposit = deposit;
-        Client = client;
-        Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
-        _priceCalculator = priceCalculator;
     }
 
     public void Approve()

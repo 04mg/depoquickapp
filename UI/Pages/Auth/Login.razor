@@ -1,5 +1,4 @@
 ﻿@page "/login"
-@using BusinessLogic
 @using BusinessLogic.DTOs
 @using UI.Data
 @inject AuthController Auth
@@ -15,7 +14,7 @@
         try
         {
             Auth.LogIn(_loginDto);
-            NavigationManager.NavigateTo("/Deposits", forceLoad: true);
+            NavigationManager.NavigateTo("/Deposits", true);
         }
         catch (ArgumentException e)
         {

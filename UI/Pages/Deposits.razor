@@ -1,15 +1,15 @@
 @page "/Deposits"
-@inherits AuthEnforce
 @using BusinessLogic.DTOs
 @using UI.Data
 @using UI.Pages.Components
+@inherits AuthEnforce
 @inject AuthController Auth
 @inject DepositController DepositController
 @inject NotificationService NotificationService
 
 @code {
 
-    private AddDepositDto _addDepositDto = new AddDepositDto()
+    private AddDepositDto _addDepositDto = new()
     {
         Area = "A",
         Size = "Small",

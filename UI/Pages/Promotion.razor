@@ -1,7 +1,7 @@
 @page "/Promotion/{Id:int}"
-@inherits AuthEnforce
 @using BusinessLogic.DTOs
 @using UI.Data
+@inherits AuthEnforce
 @inject AuthController Auth
 @inject NavigationManager NavigationManager
 @inject PromotionController PromotionController
@@ -34,6 +34,7 @@
             NotificationService.ShowError("Promotion was not found");
             NavigationManager.NavigateTo("/Promotions");
         }
+
         StateHasChanged();
     }
 
