@@ -5,12 +5,7 @@ namespace BusinessLogic.Managers;
 
 public class DepositManager
 {
-    public DepositManager()
-    {
-        Deposits = new List<Deposit>();
-    }
-
-    private List<Deposit> Deposits { get; set; }
+    private List<Deposit> Deposits { get; set; } = new();
 
     public void EnsureDepositExists(int id)
     {
