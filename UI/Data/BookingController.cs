@@ -19,7 +19,7 @@ public class BookingController
 
     public double CalculateBookingPrice(AddBookingDto dto, Credentials credentials)
     {
-        return _app.CalculateBookingPrice(dto, credentials);
+        return _app.CalculateBookingPrice(dto);
     }
 
     public List<BookingDto> ListAllBookings(Credentials credentials)
@@ -34,7 +34,7 @@ public class BookingController
 
     public BookingDto GetBooking(int id, Credentials credentials)
     {
-        return _app.GetBooking(id, credentials);
+        return _app.GetBooking(id);
     }
 
     public void ApproveBooking(int id, Credentials credentials)
