@@ -5,12 +5,7 @@ namespace BusinessLogic.Managers;
 
 public class PromotionManager
 {
-    private List<Promotion> Promotions { get; set; }
-
-    public PromotionManager()
-    {
-        Promotions = new List<Promotion>();
-    }
+    private List<Promotion> Promotions { get; set; } = new();
 
     private static void EnsureUserIsAdmin(Credentials credentials)
     {

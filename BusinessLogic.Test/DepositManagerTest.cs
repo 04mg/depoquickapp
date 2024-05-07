@@ -16,10 +16,15 @@ public class DepositManagerTest
     private Credentials _adminCredentials;
 
     [TestInitialize]
-    public void SetUp()
+    public void Initialize()
     {
-        _promotionManager = new PromotionManager();
         _depositManager = new DepositManager();
+        RegisterUsers();
+        CreatePromotion();
+    }
+
+    private void RegisterUsers()
+    {
         var authManager = new AuthManager();
 
         const string passwordConfirmation = "12345678@mE";
@@ -42,9 +47,15 @@ public class DepositManagerTest
             { Email = admin.Email, Password = admin.Password });
         _clientCredentials = authManager.Login(new LoginDto()
             { Email = client.Email, Password = client.Password });
+    }
+
+    private void CreatePromotion()
+    {
+        _promotionManager = new PromotionManager();
 
         var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+
         _promotionManager.Add(promotion, _adminCredentials);
     }
 

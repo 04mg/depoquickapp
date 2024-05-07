@@ -61,9 +61,9 @@ public class User
                 "NameSurname format is invalid, it should only contain letters and whitespaces.");
         }
     }
-
+    
     public UserRank Rank { get; set; }
-
+    
     public User(string nameSurname, string email, string password, string rank = "Client")
     {
         NameSurname = nameSurname;
