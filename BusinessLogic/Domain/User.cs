@@ -29,9 +29,10 @@ public class User
         get => _email;
         private set
         {
+            value = value.ToLower();
             EnsureEmailIsValidFormat(value);
             EnsureEmailHasValidLength(value);
-            _email = value;
+            _email = value; 
         }
     }
 
