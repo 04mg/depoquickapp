@@ -145,7 +145,7 @@ public class DepoQuickAppTest
 
         // Act
         _app.AddDeposit(_addDepositDto, credentials);
-        var deposit = _app.ListAllDeposits(_credentials)[0];
+        var deposit = _app.ListAllDeposits()[0];
 
         // Assert
         Assert.AreEqual(deposit.Id, 1);
@@ -167,7 +167,7 @@ public class DepoQuickAppTest
 
         // Act
         _app.DeleteDeposit(1, credentials);
-        var deposits = _app.ListAllDeposits(_credentials);
+        var deposits = _app.ListAllDeposits();
 
         // Assert
         Assert.AreEqual(0, deposits.Count);
@@ -342,7 +342,7 @@ public class DepoQuickAppTest
         _app.AddDeposit(_addDepositDto, credentials);
 
         // Act
-        var deposit = _app.GetDeposit(1, credentials);
+        var deposit = _app.GetDeposit(1);
 
         // Assert
         Assert.AreEqual(_addDepositDto.Area, deposit.Area);
@@ -362,7 +362,7 @@ public class DepoQuickAppTest
         _app.AddDeposit(_addDepositDto, credentials);
 
         // Act
-        var price = _app.CalculateBookingPrice(_addBookingDto, _credentials);
+        var price = _app.CalculateBookingPrice(_addBookingDto);
 
         // Assert
         Assert.AreEqual(63, price);
@@ -379,7 +379,7 @@ public class DepoQuickAppTest
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
-        var booking = _app.GetBooking(1, credentials);
+        var booking = _app.GetBooking(1);
 
         // Assert
         Assert.IsNotNull(booking);

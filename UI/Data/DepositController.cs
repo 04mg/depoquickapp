@@ -14,12 +14,12 @@ public class DepositController
 
     public List<DepositDto> ListAllDeposits(Credentials credentials)
     {
-        return _app.ListAllDeposits(credentials);
+        return _app.ListAllDeposits();
     }
 
     public DepositDto GetDeposit(int id, Credentials credentials)
     {
-        return _app.GetDeposit(id, credentials);
+        return _app.GetDeposit(id);
     }
 
     public void AddDeposit(AddDepositDto deposit, Credentials credentials)

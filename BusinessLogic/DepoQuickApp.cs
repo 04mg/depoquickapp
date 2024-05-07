@@ -38,9 +38,9 @@ public class DepoQuickApp
         _promotionManager.Add(promotion, credentials);
     }
 
-    public AddPromotionDto GetPromotion(int id)
+    public AddPromotionDto GetPromotion(int promotionId)
     {
-        var promotion = _promotionManager.GetPromotionById(id);
+        var promotion = _promotionManager.GetPromotionById(promotionId);
         return new AddPromotionDto
         {
             Label = promotion.Label,
@@ -50,10 +50,10 @@ public class DepoQuickApp
         };
     }
 
-    public void DeletePromotion(int i, Credentials credentials)
+    public void DeletePromotion(int promotionId, Credentials credentials)
     {
-        _depositManager.EnsureThereAreNoDepositsWithThisPromotion(i, credentials);
-        _promotionManager.Delete(i, credentials);
+        _depositManager.EnsureThereAreNoDepositsWithThisPromotion(promotionId, credentials);
+        _promotionManager.Delete(promotionId, credentials);
     }
 
     public List<PromotionDto> ListAllPromotions(Credentials credentials)
@@ -68,15 +68,15 @@ public class DepoQuickApp
         }).ToList();
     }
 
-    public void ModifyPromotion(int id, PromotionDto promotionDto, Credentials credentials)
+    public void ModifyPromotion(int promotionId, PromotionDto promotionDto, Credentials credentials)
     {
         var promotion = new Promotion(
-            id,
+            promotionId,
             promotionDto.Label,
             promotionDto.Discount,
             promotionDto.DateFrom,
             promotionDto.DateTo);
-        _promotionManager.Modify(id, promotion, credentials);
+        _promotionManager.Modify(promotionId, promotion, credentials);
     }
 
     public void AddDeposit(AddDepositDto depositDto, Credentials credentials)
@@ -86,10 +86,10 @@ public class DepoQuickApp
         _depositManager.Add(deposit, credentials);
     }
 
-    public void DeleteDeposit(int id, Credentials credentials)
+    public void DeleteDeposit(int depositId, Credentials credentials)
     {
-        _bookingManager.EnsureThereAreNoBookingsWithThisDeposit(id);
-        _depositManager.Delete(id, credentials);
+        _bookingManager.EnsureThereAreNoBookingsWithThisDeposit(depositId);
+        _depositManager.Delete(depositId, credentials);
     }
 
     private List<Promotion> CreatePromotionListFromDto(AddDepositDto depositDto)
@@ -104,7 +104,7 @@ public class DepoQuickApp
         return promotions;
     }
 
-    public List<DepositDto> ListAllDeposits(Credentials credentials)
+    public List<DepositDto> ListAllDeposits()
     {
         return _depositManager.GetAllDeposits().Select(d => new DepositDto
         {
@@ -116,9 +116,9 @@ public class DepoQuickApp
         }).ToList();
     }
 
-    public DepositDto GetDeposit(int id, Credentials credentials)
+    public DepositDto GetDeposit(int depositId)
     {
-        var deposit = _depositManager.GetDepositById(id);
+        var deposit = _depositManager.GetDepositById(depositId);
         return new DepositDto
         {
             Id = deposit.Id,
@@ -139,7 +139,7 @@ public class DepoQuickApp
         _bookingManager.Add(booking);
     }
 
-    public double CalculateBookingPrice(AddBookingDto addBookingDto, Credentials credentials)
+    public double CalculateBookingPrice(AddBookingDto addBookingDto)
     {
         var priceCalculator = new PriceCalculator();
         var deposit = _depositManager.GetDepositById(addBookingDto.DepositId);
@@ -175,9 +175,9 @@ public class DepoQuickApp
         }).ToList();
     }
 
-    public BookingDto GetBooking(int id, Credentials credentials)
+    public BookingDto GetBooking(int bookingId)
     {
-        var booking = _bookingManager.GetBookingById(id);
+        var booking = _bookingManager.GetBookingById(bookingId);
         return new BookingDto
         {
             Id = booking.Id,
@@ -190,13 +190,13 @@ public class DepoQuickApp
         };
     }
 
-    public void ApproveBooking(int id, Credentials credentials)
+    public void ApproveBooking(int bookingId, Credentials credentials)
     {
-        _bookingManager.Approve(id, credentials);
+        _bookingManager.Approve(bookingId, credentials);
     }
 
-    public void RejectBooking(int id, string message, Credentials credentials)
+    public void RejectBooking(int bookingId, string message, Credentials credentials)
     {
-        _bookingManager.Reject(id, credentials, message);
+        _bookingManager.Reject(bookingId, credentials, message);
     }
 }
