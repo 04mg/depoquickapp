@@ -1,6 +1,6 @@
-using BusinessLogic.Interfaces;
+using BusinessLogic.Domain;
 
-namespace BusinessLogic.Domain;
+namespace BusinessLogic.Calculators;
 
 public class PriceCalculator : IPriceCalculator
 {
