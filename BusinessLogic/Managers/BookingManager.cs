@@ -5,12 +5,7 @@ namespace BusinessLogic.Managers;
 
 public class BookingManager
 {
-    private List<Booking> Bookings { get; set; }
-    
-    public BookingManager()
-    {
-        Bookings = new List<Booking>();
-    }
+    private List<Booking> Bookings { get; set; } = new();
 
     public void Add(Booking booking)
     {

@@ -1,5 +1,6 @@
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
+using BusinessLogic.Enums;
 using BusinessLogic.Managers;
 
 namespace BusinessLogic.Test;
@@ -19,35 +20,49 @@ public class BookingManagerTest
     [TestInitialize]
     public void Initialize()
     {
+        RegisterUsers();
+        CreateDeposit();
+    }
+
+    private void RegisterUsers()
+    {
         _authManager = new AuthManager();
         const string passwordConfirmation = "12345678@mE";
+
         _admin = new User(
             "Name Surname",
             "admin@test.com",
             "12345678@mE",
             "Administrator"
         );
+
         _client = new User(
             "Name Surname",
             "test@test.com",
             "12345678@mE"
         );
+
         _otherClient = new User(
             "Name Surname",
             "other@test.com",
             "12345678@mE"
         );
+
         _authManager.Register(_admin, passwordConfirmation);
         _adminCredentials = _authManager.Login(new LoginDto() { Email = "admin@test.com", Password = "12345678@mE" });
         _authManager.Register(_client, passwordConfirmation);
         _userCredentials = _authManager.Login(new LoginDto() { Email = "test@test.com", Password = "12345678@mE" });
         _authManager.Register(_otherClient, passwordConfirmation);
+    }
 
+    private void CreateDeposit()
+    {
         var promotionList = new List<Promotion>()
         {
             new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
                 DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
         };
+
         _deposit = new Deposit(1, "A", "Small", true, promotionList);
     }
 
@@ -94,7 +109,7 @@ public class BookingManagerTest
         // Assert
         Assert.AreSame(bookings[0], booking);
     }
-    
+
     [TestMethod]
     public void TestCanGetBookingsByEmailIfSameEmail()
     {
@@ -252,9 +267,9 @@ public class BookingManagerTest
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
             _bookingManager.Approve(1, _userCredentials));
         //Assert
-        Assert.AreEqual("You are not authorized to perform this action.", exception.Message);  
+        Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
-    
+
     public void TestCantRejectBookingsIfNotAdministrator()
     {
         //Arrange
@@ -266,9 +281,9 @@ public class BookingManagerTest
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
             _bookingManager.Reject(1, _userCredentials, "message"));
         //Assert
-        Assert.AreEqual("You are not authorized to perform this action.", exception.Message);  
+        Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantApproveNonExistentBooking()
     {
@@ -276,9 +291,9 @@ public class BookingManagerTest
         var exception = Assert.ThrowsException<ArgumentException>(() =>
             _bookingManager.Approve(1, _adminCredentials));
         //Assert
-        Assert.AreEqual("Booking not found.", exception.Message);  
+        Assert.AreEqual("Booking not found.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantRejectNonExistentBooking()
     {
@@ -286,9 +301,9 @@ public class BookingManagerTest
         var exception = Assert.ThrowsException<ArgumentException>(() =>
             _bookingManager.Reject(1, _adminCredentials, "message"));
         //Assert
-        Assert.AreEqual("Booking not found.", exception.Message);  
+        Assert.AreEqual("Booking not found.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestRejectMessageCannotBeEmpty()
     {
@@ -299,8 +314,8 @@ public class BookingManagerTest
 
         //Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            _bookingManager.Reject(1, _adminCredentials, ""));
+            _bookingManager.Reject(1, _adminCredentials));
         //Assert
-        Assert.AreEqual("Message cannot be empty.", exception.Message);  
+        Assert.AreEqual("Message cannot be empty.", exception.Message);
     }
 }

@@ -1,9 +1,11 @@
+using BusinessLogic.Enums;
+
 namespace BusinessLogic.Domain;
 
 public class Deposit
 {
-    private string _area = "";
-    private string _size = "";
+    private readonly string _area = "";
+    private readonly string _size = "";
     public bool ClimateControl { get; set; }
     public List<Promotion> Promotions { get; set; }
     public int Id { get; set; }
@@ -11,7 +13,7 @@ public class Deposit
     public string Area
     {
         get => _area;
-        set
+        private init
         {
             EnsureAreaIsValid(value);
             _area = value;
@@ -21,7 +23,7 @@ public class Deposit
     public string Size
     {
         get => _size;
-        set
+        private init
         {
             EnsureSizeIsValid(value);
             _size = value;
@@ -53,20 +55,4 @@ public class Deposit
             throw new ArgumentException("Size is invalid.");
         }
     }
-}
-
-public enum Area
-{
-    A,
-    B,
-    C,
-    D,
-    E
-}
-
-public enum Size
-{
-    Small,
-    Medium,
-    Large
 }

@@ -1,3 +1,4 @@
+using BusinessLogic.Enums;
 using BusinessLogic.Interfaces;
 
 namespace BusinessLogic.Domain;
@@ -5,17 +6,17 @@ namespace BusinessLogic.Domain;
 public class Booking
 {
     private readonly IPriceCalculator _priceCalculator;
-    private Tuple<DateOnly, DateOnly> _duration = new(new DateOnly(), new DateOnly());
+    private readonly Tuple<DateOnly, DateOnly> _duration = new(new DateOnly(), new DateOnly());
     public int Id { get; set; }
     public Deposit Deposit { get; }
     public User Client { get; }
-    public string Message { get; set; } = "";
-    public BookingStage Stage { get; set; } = BookingStage.Pending;
+    public string Message { get; private set; } = "";
+    public BookingStage Stage { get; private set; } = BookingStage.Pending;
 
     public Tuple<DateOnly, DateOnly> Duration
     {
         get => _duration;
-        set
+        private init
         {
             EnsureDateFromIsLesserThanDateTo(value.Item1, value.Item2);
             EnsureDateFromIsGreaterThanToday(value.Item1);
@@ -64,11 +65,4 @@ public class Booking
         Stage = BookingStage.Rejected;
         Message = message;
     }
-}
-
-public enum BookingStage
-{
-    Approved,
-    Pending,
-    Rejected
 }
