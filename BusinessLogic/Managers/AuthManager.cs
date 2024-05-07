@@ -62,26 +62,14 @@ public class AuthManager
         }
     }
 
-    private void ValidateRegistration(User user, string passwordConfirmation)
+    public Credentials Register(User user, string passwordConfirmation)
     {
+        SetRankAsAdminIfFirstUser(user);
         EnsureUserIsNotRegistered(user.Email);
         EnsurePasswordConfirmationMatch(user.Password, passwordConfirmation);
         EnsureSingleAdmin(user.Rank);
         SetAdminRegisteredIfAdmin(user.Rank);
-    }
-
-    private void ValidateLogin(string email, string password)
-    {
-        EnsureUserIsRegistered(email);
-        EnsurePasswordMatchWithEmail(email, password);
-    }
-
-    public Credentials Register(User user, string passwordConfirmation)
-    {
-        SetRankAsAdminIfFirstUser(user);
-        ValidateRegistration(user, passwordConfirmation);
         UsersByEmail.Add(user.Email, user);
-
         return new Credentials{Email = user.Email, Rank = user.Rank.ToString()};
     }
 
@@ -95,8 +83,8 @@ public class AuthManager
 
     public Credentials Login(LoginDto loginDto)
     {
-        ValidateLogin(loginDto.Email, loginDto.Password);
-
+        EnsureUserIsRegistered(loginDto.Email);
+        EnsurePasswordMatchWithEmail(loginDto.Email, loginDto.Password);
         var userRank = UsersByEmail[loginDto.Email].Rank;
         var credentials = new Credentials { Email = loginDto.Email, Rank = userRank.ToString() };
         return credentials;
@@ -113,10 +101,9 @@ public class AuthManager
         return UsersByEmail[email];
     }
 
-    private void EnsureUserIsAdminOrSameUser(string requestedEmail, Credentials credentials)
+    private static void EnsureUserIsAdminOrSameUser(string requestedEmail, Credentials credentials)
     {
-        if (credentials.Rank == "Administrator") return;
-        if (credentials.Email != requestedEmail)
+        if (credentials.Rank != "Administrator" || credentials.Email != requestedEmail)
         {
             throw new UnauthorizedAccessException("You are not authorized to perform this action.");
         }
