@@ -11,9 +11,9 @@ public class PromotionManagerTest
     private const int Discount = 50;
     private readonly DateOnly _today = DateOnly.FromDateTime(DateTime.Now);
     private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
-    private PromotionManager _promotionManager = new();
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
+    private PromotionManager _promotionManager = new();
 
     [TestInitialize]
     public void Initialize()
@@ -40,10 +40,8 @@ public class PromotionManagerTest
         );
         authManager.Register(admin, passwordConfirmation);
         authManager.Register(client, passwordConfirmation);
-        _adminCredentials = authManager.Login(new LoginDto()
-            { Email = admin.Email, Password = admin.Password });
-        _clientCredentials = authManager.Login(new LoginDto()
-            { Email = client.Email, Password = client.Password });
+        _adminCredentials = authManager.Login(new LoginDto { Email = admin.Email, Password = admin.Password });
+        _clientCredentials = authManager.Login(new LoginDto { Email = client.Email, Password = client.Password });
     }
 
     [TestMethod]

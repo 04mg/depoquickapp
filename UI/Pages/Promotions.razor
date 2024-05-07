@@ -1,14 +1,14 @@
 @page "/Promotions"
-@inherits AuthEnforce
 @using BusinessLogic.DTOs
 @using UI.Data
+@inherits AuthEnforce
 @inject AuthController Auth
 @inject PromotionController PromotionController
 @inject NotificationService NotificationService
 
 @code {
 
-    private AddPromotionDto _addPromotionDto = new AddPromotionDto()
+    private AddPromotionDto _addPromotionDto = new()
     {
         DateFrom = DateOnly.FromDateTime(DateTime.Today),
         DateTo = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),

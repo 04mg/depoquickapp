@@ -7,6 +7,8 @@ public class BookingManager
 {
     private List<Booking> Bookings { get; } = new();
 
+    private int NextBookingId => Bookings.Count > 0 ? Bookings.Max(d => d.Id) + 1 : 1;
+
     public void Add(Booking booking)
     {
         EnsureNoOverlappingBooking(booking);
@@ -29,10 +31,7 @@ public class BookingManager
     {
         var overlaps = BookingEndDateOverlaps(booking, anotherBooking);
         overlaps |= BookingStartDateOverlaps(booking, anotherBooking);
-        if (overlaps)
-        {
-            throw new ArgumentException("User already has a booking for this period.");
-        }
+        if (overlaps) throw new ArgumentException("User already has a booking for this period.");
     }
 
     private static bool BookingStartDateOverlaps(Booking booking, Booking anotherBooking)
@@ -46,8 +45,6 @@ public class BookingManager
         return booking.Duration.Item2 >= anotherBooking.Duration.Item1 &&
                booking.Duration.Item2 <= anotherBooking.Duration.Item2;
     }
-
-    private int NextBookingId => Bookings.Count > 0 ? Bookings.Max(d => d.Id) + 1 : 1;
 
     public bool Exists(int id)
     {
@@ -63,25 +60,19 @@ public class BookingManager
     private static void EnsureUserIsAdministrator(Credentials credentials)
     {
         if (credentials.Rank != "Administrator")
-        {
             throw new UnauthorizedAccessException("You are not authorized to perform this action.");
-        }
     }
 
     private static void EnsureUserIsAdministratorOrEmailMatches(string email, Credentials credentials)
     {
         if (credentials.Rank != "Administrator" && credentials.Email != email)
-        {
             throw new UnauthorizedAccessException("You are not authorized to perform this action.");
-        }
     }
 
     public void EnsureThereAreNoBookingsWithThisDeposit(int id)
     {
         if (Bookings.Any(booking => booking.Deposit.Id == id))
-        {
             throw new ArgumentException("There are existing bookings for this deposit.");
-        }
     }
 
     public List<Booking> GetAllBookings(Credentials credentials)
@@ -107,10 +98,7 @@ public class BookingManager
 
     private void EnsureMessageIsNotEmpty(string message)
     {
-        if (string.IsNullOrWhiteSpace(message))
-        {
-            throw new ArgumentException("Message cannot be empty.");
-        }
+        if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be empty.");
     }
 
     public Booking GetBookingById(int id)
@@ -121,9 +109,6 @@ public class BookingManager
 
     private void EnsureBookingExists(int id)
     {
-        if (Bookings.All(b => b.Id != id))
-        {
-            throw new ArgumentException("Booking not found.");
-        }
+        if (Bookings.All(b => b.Id != id)) throw new ArgumentException("Booking not found.");
     }
 }

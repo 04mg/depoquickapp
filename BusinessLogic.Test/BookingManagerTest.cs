@@ -9,14 +9,14 @@ namespace BusinessLogic.Test;
 [TestClass]
 public class BookingManagerTest
 {
-    private AuthManager _authManager = new();
-    private Credentials _adminCredentials;
-    private Credentials _userCredentials;
-    private Deposit? _deposit;
-    private User? _client;
-    private User? _admin;
-    private User? _otherClient;
     private readonly BookingManager _bookingManager = new();
+    private User? _admin;
+    private Credentials _adminCredentials;
+    private AuthManager _authManager = new();
+    private User? _client;
+    private Deposit? _deposit;
+    private User? _otherClient;
+    private Credentials _userCredentials;
 
     [TestInitialize]
     public void Initialize()
@@ -50,17 +50,17 @@ public class BookingManagerTest
         );
 
         _authManager.Register(_admin, passwordConfirmation);
-        _adminCredentials = _authManager.Login(new LoginDto() { Email = "admin@test.com", Password = "12345678@mE" });
+        _adminCredentials = _authManager.Login(new LoginDto { Email = "admin@test.com", Password = "12345678@mE" });
         _authManager.Register(_client, passwordConfirmation);
-        _userCredentials = _authManager.Login(new LoginDto() { Email = "test@test.com", Password = "12345678@mE" });
+        _userCredentials = _authManager.Login(new LoginDto { Email = "test@test.com", Password = "12345678@mE" });
         _authManager.Register(_otherClient, passwordConfirmation);
     }
 
     private void CreateDeposit()
     {
-        var promotionList = new List<Promotion>()
+        var promotionList = new List<Promotion>
         {
-            new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
+            new(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
                 DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
         };
 

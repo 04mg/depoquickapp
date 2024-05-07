@@ -7,20 +7,17 @@ public class DepositManager
 {
     private List<Deposit> Deposits { get; } = new();
 
+    private int NextDepositId => Deposits.Count > 0 ? Deposits.Max(d => d.Id) + 1 : 1;
+
     public void EnsureDepositExists(int id)
     {
-        if (Deposits.All(d => d.Id != id))
-        {
-            throw new ArgumentException("Deposit not found.");
-        }
+        if (Deposits.All(d => d.Id != id)) throw new ArgumentException("Deposit not found.");
     }
 
     private static void EnsureUserIsAdmin(Credentials credentials)
     {
         if (credentials.Rank != "Administrator")
-        {
             throw new UnauthorizedAccessException("Only administrators can manage deposits.");
-        }
     }
 
     public Deposit GetDepositById(int id)
@@ -44,8 +41,6 @@ public class DepositManager
         Deposits.Remove(deposit);
     }
 
-    private int NextDepositId => Deposits.Count > 0 ? Deposits.Max(d => d.Id) + 1 : 1;
-
     public List<Deposit> GetAllDeposits()
     {
         return Deposits;
@@ -55,8 +50,6 @@ public class DepositManager
     {
         EnsureUserIsAdmin(credentials);
         if (Deposits.Any(d => d.HasPromotion(id)))
-        {
             throw new ArgumentException("There are existing deposits for this promotion.");
-        }
     }
 }

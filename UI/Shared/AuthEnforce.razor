@@ -1,9 +1,13 @@
-@using UI.Data;
+@using UI.Data
 @inject NavigationManager NavigationManager;
 @inject AuthController Auth;
 
 @code {
-    protected override void OnInitialized() => EnsureUserIsAuthenticated();
+
+    protected override void OnInitialized()
+    {
+        EnsureUserIsAuthenticated();
+    }
 
     private void EnsureUserIsAuthenticated()
     {
@@ -13,4 +17,5 @@
             NavigationManager.NavigateTo("/Login");
         }
     }
+
 }

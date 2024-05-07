@@ -8,9 +8,9 @@ namespace BusinessLogic;
 public class DepoQuickApp
 {
     private readonly AuthManager _authManager = new();
-    private readonly PromotionManager _promotionManager = new();
-    private readonly DepositManager _depositManager = new();
     private readonly BookingManager _bookingManager = new();
+    private readonly DepositManager _depositManager = new();
+    private readonly PromotionManager _promotionManager = new();
 
     public void RegisterUser(RegisterDto registerDto)
     {
@@ -41,7 +41,7 @@ public class DepoQuickApp
     public AddPromotionDto GetPromotion(int id)
     {
         var promotion = _promotionManager.GetPromotionById(id);
-        return new AddPromotionDto()
+        return new AddPromotionDto
         {
             Label = promotion.Label,
             Discount = promotion.Discount,
@@ -58,7 +58,7 @@ public class DepoQuickApp
 
     public List<PromotionDto> ListAllPromotions(Credentials credentials)
     {
-        return _promotionManager.GetAllPromotions(credentials).Select(p => new PromotionDto()
+        return _promotionManager.GetAllPromotions(credentials).Select(p => new PromotionDto
         {
             Id = p.Id,
             Label = p.Label,
@@ -67,7 +67,7 @@ public class DepoQuickApp
             DateTo = p.Validity.Item2
         }).ToList();
     }
-    
+
     public void ModifyPromotion(int id, PromotionDto promotionDto, Credentials credentials)
     {
         var promotion = new Promotion(
@@ -106,7 +106,7 @@ public class DepoQuickApp
 
     public List<DepositDto> ListAllDeposits(Credentials credentials)
     {
-        return _depositManager.GetAllDeposits().Select(d => new DepositDto()
+        return _depositManager.GetAllDeposits().Select(d => new DepositDto
         {
             Id = d.Id,
             Area = d.Area,
@@ -119,7 +119,7 @@ public class DepoQuickApp
     public DepositDto GetDeposit(int id, Credentials credentials)
     {
         var deposit = _depositManager.GetDepositById(id);
-        return new DepositDto()
+        return new DepositDto
         {
             Id = deposit.Id,
             Area = deposit.Area,
@@ -149,7 +149,7 @@ public class DepoQuickApp
 
     public List<BookingDto> ListAllBookings(Credentials credentials)
     {
-        return _bookingManager.GetAllBookings(credentials).Select(b => new BookingDto()
+        return _bookingManager.GetAllBookings(credentials).Select(b => new BookingDto
         {
             Id = b.Id,
             DepositId = b.Deposit.Id,
@@ -160,10 +160,10 @@ public class DepoQuickApp
             Message = b.Message
         }).ToList();
     }
-    
+
     public List<BookingDto> ListAllBookingsByEmail(string email, Credentials credentials)
     {
-        return _bookingManager.GetBookingsByEmail(email, credentials).Select(b => new BookingDto()
+        return _bookingManager.GetBookingsByEmail(email, credentials).Select(b => new BookingDto
         {
             Id = b.Id,
             DepositId = b.Deposit.Id,
@@ -174,11 +174,11 @@ public class DepoQuickApp
             Message = b.Message
         }).ToList();
     }
-    
+
     public BookingDto GetBooking(int id, Credentials credentials)
     {
         var booking = _bookingManager.GetBookingById(id);
-        return new BookingDto()
+        return new BookingDto
         {
             Id = booking.Id,
             DepositId = booking.Deposit.Id,

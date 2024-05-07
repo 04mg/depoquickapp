@@ -19,7 +19,7 @@ public class PriceCalculator : IPriceCalculator
         var discount = GetTotalDiscount(duration, deposit.Promotions);
         var days = duration.Item2.DayNumber - duration.Item1.DayNumber;
         var basePrice = pricePerDay * days;
-        var finalPrice = basePrice - (basePrice * discount / 100);
+        var finalPrice = basePrice - basePrice * discount / 100;
         return finalPrice;
     }
 
@@ -56,7 +56,7 @@ public class PriceCalculator : IPriceCalculator
     {
         return promotions.Sum(promotion => promotion.Discount);
     }
-    
+
     private static int GetTotalDiscount(Tuple<DateOnly, DateOnly> duration, IEnumerable<Promotion> promotions)
     {
         var durationDiscount = GetDurationDiscount(duration);

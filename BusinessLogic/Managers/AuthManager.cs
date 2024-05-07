@@ -16,50 +16,33 @@ public class AuthManager
 
     private static void EnsurePasswordConfirmationMatch(string password, string passwordConfirmation)
     {
-        if (password != passwordConfirmation)
-        {
-            throw new ArgumentException("Passwords do not match.");
-        }
+        if (password != passwordConfirmation) throw new ArgumentException("Passwords do not match.");
     }
 
     private void EnsurePasswordMatchWithEmail(string email, string password)
     {
-        if (UsersByEmail[email].Password != password)
-        {
-            throw new ArgumentException("Wrong password.");
-        }
+        if (UsersByEmail[email].Password != password) throw new ArgumentException("Wrong password.");
     }
 
     private void EnsureUserIsRegistered(string email)
     {
-        if (!UsersByEmail.ContainsKey(email))
-        {
-            throw new ArgumentException("User does not exist.");
-        }
+        if (!UsersByEmail.ContainsKey(email)) throw new ArgumentException("User does not exist.");
     }
 
     private void EnsureUserIsNotRegistered(string email)
     {
-        if (UsersByEmail.ContainsKey(email))
-        {
-            throw new ArgumentException("User already exists.");
-        }
+        if (UsersByEmail.ContainsKey(email)) throw new ArgumentException("User already exists.");
     }
 
     private void EnsureSingleAdmin(UserRank rank)
     {
         if (rank == UserRank.Administrator && IsAdminRegistered)
-        {
             throw new ArgumentException("There can only be one administrator.");
-        }
     }
 
     private void SetAdminRegisteredIfAdmin(UserRank rank)
     {
-        if (rank == UserRank.Administrator)
-        {
-            IsAdminRegistered = true;
-        }
+        if (rank == UserRank.Administrator) IsAdminRegistered = true;
     }
 
     public Credentials Register(User user, string passwordConfirmation)
@@ -70,15 +53,12 @@ public class AuthManager
         EnsureSingleAdmin(user.Rank);
         SetAdminRegisteredIfAdmin(user.Rank);
         UsersByEmail.Add(user.Email, user);
-        return new Credentials{Email = user.Email, Rank = user.Rank.ToString()};
+        return new Credentials { Email = user.Email, Rank = user.Rank.ToString() };
     }
 
     private void SetRankAsAdminIfFirstUser(User user)
     {
-        if (UsersByEmail.Count == 0)
-        {
-            user.Rank = UserRank.Administrator;
-        }
+        if (UsersByEmail.Count == 0) user.Rank = UserRank.Administrator;
     }
 
     public Credentials Login(LoginDto loginDto)
@@ -92,10 +72,7 @@ public class AuthManager
 
     public User GetUserByEmail(string email, Credentials credentials)
     {
-        if (!Exists(email))
-        {
-            throw new ArgumentException("User does not exist.");
-        }
+        if (!Exists(email)) throw new ArgumentException("User does not exist.");
 
         EnsureUserIsAdminOrSameUser(email, credentials);
         return UsersByEmail[email];
@@ -104,8 +81,6 @@ public class AuthManager
     private static void EnsureUserIsAdminOrSameUser(string requestedEmail, Credentials credentials)
     {
         if (credentials.Rank != "Administrator" && credentials.Email != requestedEmail)
-        {
             throw new UnauthorizedAccessException("You are not authorized to perform this action.");
-        }
     }
 }

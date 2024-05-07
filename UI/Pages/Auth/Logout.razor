@@ -9,7 +9,7 @@
     {
         base.OnAfterRender(firstRender);
         Auth.LogOut();
-        NavigationManager.NavigateTo("/Login", forceLoad: true);
+        NavigationManager.NavigateTo("/Login", true);
     }
 
 }

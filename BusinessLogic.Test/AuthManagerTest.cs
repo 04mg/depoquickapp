@@ -45,7 +45,7 @@ public class AuthManagerTest
         credManager.Register(Client, Password);
 
         // Act
-        var credentials = credManager.Login(new LoginDto() { Email = Email, Password = Password });
+        var credentials = credManager.Login(new LoginDto { Email = Email, Password = Password });
 
         // Assert
         Assert.AreSame(credentials.Email, Email);
@@ -88,7 +88,7 @@ public class AuthManagerTest
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
             {
-                credManager.Login(new LoginDto() { Email = Email, Password = "wrong" });
+                credManager.Login(new LoginDto { Email = Email, Password = "wrong" });
             });
 
         // Assert
@@ -104,7 +104,7 @@ public class AuthManagerTest
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
-            credManager.Login(new LoginDto() { Email = Email, Password = Password });
+            credManager.Login(new LoginDto { Email = Email, Password = Password });
         });
 
         // Assert
@@ -160,7 +160,7 @@ public class AuthManagerTest
     {
         // Arrange
         var credManager = new AuthManager();
-        var credentials = new Credentials()
+        var credentials = new Credentials
         {
             Email = "test@test.com",
             Rank = "Administrator"
@@ -187,7 +187,7 @@ public class AuthManagerTest
             "other@test.com",
             "OtherP@ssw0rd");
         credManager.Register(otherClient, "OtherP@ssw0rd");
-        var loginDto = new LoginDto()
+        var loginDto = new LoginDto
         {
             Email = otherClient.Email,
             Password = otherClient.Password

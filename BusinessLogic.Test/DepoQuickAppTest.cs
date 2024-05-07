@@ -5,14 +5,14 @@ namespace BusinessLogic.Test;
 [TestClass]
 public class DepoQuickAppTest
 {
-    private DepoQuickApp _app = new();
     private AddBookingDto _addBookingDto = new();
-    private RegisterDto _registerDto;
-    private LoginDto _loginDto;
-    private Credentials _credentials;
-    private AddPromotionDto _addPromotionDto;
-    private PromotionDto _promotionDto;
     private AddDepositDto _addDepositDto;
+    private AddPromotionDto _addPromotionDto;
+    private DepoQuickApp _app = new();
+    private Credentials _credentials;
+    private LoginDto _loginDto;
+    private PromotionDto _promotionDto;
+    private RegisterDto _registerDto;
 
     [TestInitialize]
     public void Initialize()
