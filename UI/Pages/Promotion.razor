@@ -23,9 +23,17 @@
     protected override void OnAfterRender(bool firstRender)
     {
         if (!firstRender) return;
-        var promotion = PromotionController.GetPromotion(Id);
-        SetPromotionDto(promotion);
-        SetPromotionLabel(promotion);
+        try
+        {
+            var promotion = PromotionController.GetPromotion(Id);
+            SetPromotionDto(promotion);
+            SetPromotionLabel(promotion);
+        }
+        catch (InvalidOperationException)
+        {
+            NotificationService.ShowError("Promotion was not found");
+            NavigationManager.NavigateTo("/Promotions");
+        }
         StateHasChanged();
     }
 

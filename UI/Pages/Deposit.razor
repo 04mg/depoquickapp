@@ -25,8 +25,16 @@
     protected override void OnAfterRender(bool firstRender)
     {
         if (!firstRender) return;
-        DepositDto = DepositController.GetDeposit(Id, Auth.CurrentCredentials);
-        Promotions = DepositDto.PromotionList.Select(p => PromotionController.GetPromotion(p)).ToList();
+        try
+        {
+            DepositDto = DepositController.GetDeposit(Id, Auth.CurrentCredentials);
+            Promotions = DepositDto.PromotionList.Select(p => PromotionController.GetPromotion(p)).ToList();
+        }
+        catch (InvalidOperationException)
+        {
+            NotificationService.ShowError("Deposit was not found.");
+            NavigationManager.NavigateTo("/Deposits");            
+        }
         StateHasChanged();
     }
 
