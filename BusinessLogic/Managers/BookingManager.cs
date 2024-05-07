@@ -27,7 +27,9 @@ public class BookingManager
 
     private static void EnsureNoOverlappingDates(Booking booking, Booking anotherBooking)
     {
-        if (BookingEndDateOverlaps(booking, anotherBooking) || BookingStartDateOverlaps(booking, anotherBooking))
+        var overlaps = BookingEndDateOverlaps(booking, anotherBooking);
+        overlaps |= BookingStartDateOverlaps(booking, anotherBooking);
+        if (overlaps)
         {
             throw new ArgumentException("User already has a booking for this period.");
         }

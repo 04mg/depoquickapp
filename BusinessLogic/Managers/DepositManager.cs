@@ -54,7 +54,7 @@ public class DepositManager
     public void EnsureThereAreNoDepositsWithThisPromotion(int id, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
-        if (Deposits.Any(d => d.Promotions.Any(p => p.Id == id)))
+        if (Deposits.Any(d => d.HasPromotion(id)))
         {
             throw new ArgumentException("There are existing deposits for this promotion.");
         }

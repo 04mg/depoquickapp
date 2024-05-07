@@ -55,4 +55,9 @@ public class Deposit
             throw new ArgumentException("Size is invalid.");
         }
     }
+    
+    public bool HasPromotion(int promotionId)
+    {
+        return Promotions.Any(p => p.Id == promotionId);
+    }
 }
