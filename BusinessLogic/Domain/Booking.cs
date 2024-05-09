@@ -30,11 +30,17 @@ public class Booking
         private init
         {
             EnsureDateFromIsLesserThanDateTo(value.Item1, value.Item2);
+            EnsureDateFromIsNotEqualToDateTo(value.Item1, value.Item2);
             EnsureDateFromIsGreaterThanToday(value.Item1);
             _duration = value;
         }
     }
 
+    private static void EnsureDateFromIsNotEqualToDateTo(DateOnly dateFrom, DateOnly dateTo)
+    {
+        if (dateFrom == dateTo)
+            throw new ArgumentException("The starting date of the booking must not be the same as the ending date.");
+    }
 
     private static void EnsureDateFromIsLesserThanDateTo(DateOnly dateFrom, DateOnly dateTo)
     {
