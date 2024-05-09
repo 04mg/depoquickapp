@@ -54,4 +54,9 @@ public class Deposit
     {
         return Promotions.Any(p => p.Id == promotionId);
     }
+
+    public int SumPromotions()
+    {
+        return Promotions.Sum(p => p.Discount);
+    }
 }
