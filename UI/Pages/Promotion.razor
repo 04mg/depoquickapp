@@ -1,0 +1,133 @@
+@page "/Promotion/{Id:int}"
+@using BusinessLogic.DTOs
+@using UI.Data
+@inherits AuthEnforce
+@inject AuthController Auth
+@inject NavigationManager NavigationManager
+@inject PromotionController PromotionController
+@inject NotificationService NotificationService
+
+@code {
+    private PromotionDto _promotionDto;
+    private string _promotionLabel = string.Empty;
+
+    private int? _id;
+
+    [Parameter]
+    public int Id
+    {
+        get => _id ?? throw new NullReferenceException();
+        set => _id = value;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender) return;
+        try
+        {
+            var promotion = PromotionController.GetPromotion(Id);
+            SetPromotionDto(promotion);
+            SetPromotionLabel(promotion);
+        }
+        catch (InvalidOperationException)
+        {
+            NotificationService.ShowError("Promotion was not found");
+            NavigationManager.NavigateTo("/Promotions");
+        }
+
+        StateHasChanged();
+    }
+
+    private void SetPromotionLabel(AddPromotionDto promotion)
+    {
+        _promotionLabel = promotion.Label;
+    }
+
+    private void SetPromotionDto(AddPromotionDto promotion)
+    {
+        _promotionDto = new PromotionDto
+        {
+            Id = Id,
+            Label = promotion.Label,
+            Discount = promotion.Discount,
+            DateFrom = promotion.DateFrom,
+            DateTo = promotion.DateTo
+        };
+    }
+
+    private void ModifyPromotion()
+    {
+        try
+        {
+            PromotionController.ModifyPromotion(Id, _promotionDto, Auth.CurrentCredentials);
+            NotificationService.ShowMessage($"Promotion \"{_promotionLabel}\" modified successfully.");
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+    }
+
+    private void DeletePromotion()
+    {
+        try
+        {
+            PromotionController.DeletePromotion(Id, Auth.CurrentCredentials);
+            NotificationService.ShowMessage($"Promotion \"{_promotionLabel}\" deleted successfully.");
+            NavigationManager.NavigateTo("/Promotions");
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+    }
+
+}
+
+@if (!Auth.IsAdmin)
+{
+    <Forbidden/>
+}
+else
+{
+    <main class="responsive">
+        <NavLink class="extra transparent vertical-margin left-align" href="/Promotions">
+            <i>arrow_back</i>
+        </NavLink>
+        <h6 class="vertical-margin">
+            Promotion
+            <h6 class="button small primary no-wave">@_promotionLabel</h6>
+        </h6>
+        <article class="padding">
+            <div class="field label border">
+                <input type="text" @bind="_promotionDto.Label">
+                <label>Label</label>
+            </div>
+            <div class="field label border">
+                <input type="number" @bind="_promotionDto.Discount">
+                <label>Discount (%)</label>
+            </div>
+            <div class="field label suffix border">
+                <input type="date" @bind="_promotionDto.DateFrom">
+                <label>From</label>
+                <i>calendar_today</i>
+            </div>
+            <div class="field label suffix border no-margin">
+                <input type="date" @bind="_promotionDto.DateTo">
+                <label>To</label>
+                <i>event_upcoming</i>
+            </div>
+        </article>
+        <div class="small-space"></div>
+        <div class="right-align">
+            <button class="extend square round primary" @onclick="ModifyPromotion">
+                <i>edit</i>
+                <span>Modify</span>
+            </button>
+            <button class="extend square round error no-margin" @onclick="DeletePromotion">
+                <i>delete</i>
+                <span>Delete</span>
+            </button>
+        </div>
+    </main>
+}

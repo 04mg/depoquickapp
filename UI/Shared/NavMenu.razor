@@ -1,0 +1,37 @@
+﻿@using UI.Data
+@inject AuthController Auth;
+@if (Auth.IsLoggedIn)
+{
+    <NavLink href="Deposits">
+        <i>garage_door</i>
+        <span>Deposits</span>
+    </NavLink>
+    <NavLink href="Bookings">
+        <i>book</i>
+        <span>Bookings</span>
+    </NavLink>
+
+    @if (Auth.IsAdmin)
+    {
+        <NavLink href="Promotions">
+            <i>sell</i>
+            <span>Promotions</span>
+        </NavLink>
+    }
+
+    <NavLink href="Logout">
+        <i>logout</i>
+        <span>Log Out</span>
+    </NavLink>
+}
+else
+{
+    <NavLink href="Login">
+        <i>login</i>
+        <span>Log In</span>
+    </NavLink>
+    <NavLink href="Register">
+        <i>passkey</i>
+        <span>Register</span>
+    </NavLink>
+}

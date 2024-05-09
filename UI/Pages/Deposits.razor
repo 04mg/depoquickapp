@@ -1,0 +1,124 @@
+@page "/Deposits"
+@using BusinessLogic.DTOs
+@using UI.Data
+@using UI.Pages.Components
+@inherits AuthEnforce
+@inject AuthController Auth
+@inject DepositController DepositController
+@inject NotificationService NotificationService
+
+@code {
+
+    private AddDepositDto _addDepositDto = new()
+    {
+        Area = "A",
+        Size = "Small",
+        ClimateControl = false,
+        PromotionList = new List<int>()
+    };
+
+    private List<DepositDto> DepositsDto { get; set; } = new();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        DepositsDto = DepositController.ListAllDeposits(Auth.CurrentCredentials);
+        StateHasChanged();
+    }
+
+    private void AddDeposit()
+    {
+        try
+        {
+            DepositController.AddDeposit(_addDepositDto, Auth.CurrentCredentials);
+            NotificationService.ShowMessage("Deposit added successfully.");
+            StateHasChanged();
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+    }
+
+}
+
+<main class="responsive">
+    <h6 class="vertical-margin">
+        Deposits
+        @if (Auth.IsAdmin)
+        {
+            <button class="extend square round no-margin absolute right" data-ui="#add-deposit">
+                <i>add</i>
+                <span>Add</span>
+            </button>
+            <div class="medium-space"></div>
+        }
+    </h6>
+    <article>
+        @foreach (var deposit in DepositsDto)
+        {
+            <a class="row padding surface-container wave scroll" href="/Deposit/@deposit.Id">
+                <div class="row max">
+                    <div class="button circle">@deposit.Id</div>
+                </div>
+                <div>
+                    <h6 class="button small primary-container">Area: @deposit.Area</h6>
+                    <h6 class="button small primary-container">Size: @deposit.Size</h6>
+
+                    @if (deposit.ClimateControl)
+                    {
+                        <h6 class="button small primary-container">Climate Control</h6>
+                    }
+                </div>
+            </a>
+            <div class="divider right-align"></div>
+        }
+        @if (DepositsDto.Count == 0)
+        {
+            <p>No deposits found.</p>
+        }
+    </article>
+</main>
+
+@if (Auth.IsAdmin)
+{
+    <div class="medium-space"></div>
+    <div class="overlay blur"></div>
+    <dialog class="medium-width no-elevate" id="add-deposit">
+        <div class="padding center-align">
+            <i>garage_door</i>
+            <h6 class="center-align">Add new deposit</h6>
+        </div>
+        <div class="field label suffix border">
+            <select @bind="_addDepositDto.Area">
+                <option>A</option>
+                <option>B</option>
+                <option>C</option>
+                <option>D</option>
+                <option>E</option>
+            </select>
+            <label>Area</label>
+            <i>arrow_drop_down</i>
+        </div>
+        <div class="field label suffix border">
+            <select @bind="_addDepositDto.Size">
+                <option>Small</option>
+                <option>Medium</option>
+                <option>Large</option>
+            </select>
+            <label>Size</label>
+            <i>arrow_drop_down</i>
+        </div>
+        <PromotionSelect @bind-Promotions="_addDepositDto.PromotionList"/>
+        <div class="divider"></div>
+        <div class="field no-margin top-padding">
+            <label class="checkbox">
+                <input type="checkbox" @bind="_addDepositDto.ClimateControl">
+                <span>Climate Control</span>
+            </label>
+        </div>
+        <nav class="right-align no-space no-margin">
+            <button class="transparent link" data-ui="#add-deposit">Cancel</button>
+            <button class="transparent link" @onclick="AddDeposit">Confirm</button>
+        </nav>
+    </dialog>
+}
