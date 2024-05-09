@@ -56,6 +56,18 @@ public class BookingTest
         // Assert
         Assert.AreEqual("The starting date of the booking must not be earlier than today.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCantCreateBookingWithSameDateFromAndDateTo()
+    {
+        // Act
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() =>
+                new Booking(1, Deposit, Client, Today, Today, new PriceCalculator()));
+
+        // Assert
+        Assert.AreEqual("The starting date of the booking must not be the same as the ending date.", exception.Message);
+    }
 
     [TestMethod]
     public void TestCanReturnCorrectPrice()
