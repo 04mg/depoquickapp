@@ -1,0 +1,50 @@
+@page "/Bookings"
+@using BusinessLogic.DTOs
+@using UI.Data
+@inherits AuthEnforce
+@inject AuthController Auth
+@inject BookingController BookingController
+
+@code {
+    private List<BookingDto> BookingsDto { get; set; } = new();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        BookingsDto = Auth.IsAdmin
+            ? BookingController.ListAllBookings(Auth.CurrentCredentials)
+            : BookingController.ListAllBookingsByEmail(Auth.CurrentCredentials);
+        StateHasChanged();
+    }
+
+}
+
+<main class="responsive">
+    <h6 class="vertical-margin">
+        Bookings
+        <div class="medium-space"></div>
+    </h6>
+    <article>
+        @if (BookingsDto.Count == 0)
+        {
+            <p>No bookings found.</p>
+        }
+        else
+        {
+            @foreach (var booking in BookingsDto)
+            {
+                <a class="row padding surface-container wave scroll" href="/Booking/@booking.Id">
+                    <div class="row max">
+                        <div class="button circle">@booking.Id</div>
+                    </div>
+                    <div>
+                        <h6 class="button small primary-container">From: @booking.DateFrom</h6>
+                        <h6 class="button small primary-container">To: @booking.DateTo</h6>
+                        <h6 class="button small primary-container">Deposit: @booking.DepositId</h6>
+                        <h6 class="button small">@booking.Stage</h6>
+                    </div>
+                </a>
+                <div class="divider right-align"></div>
+            }
+        }
+    </article>
+</main>

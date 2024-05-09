@@ -1,9 +1,9 @@
-namespace BusinessLogic;
+namespace BusinessLogic.DTOs;
 
-public readonly struct AddDepositDto
+public struct AddDepositDto
 {
-    public string Area { get; init; }
-    public string Size { get; init; }
-    public bool ClimateControl { get; init; }
-    public List<int> PromotionList { get; init; }
+    public string Area { set; get; }
+    public string Size { set; get; }
+    public bool ClimateControl { set; get; }
+    public List<int> PromotionList { set; get; }
 }

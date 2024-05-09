@@ -1,9 +1,9 @@
-namespace BusinessLogic;
+namespace BusinessLogic.DTOs;
 
 public class AddBookingDto
 {
-    public DateOnly DateFrom { get; init; }
-    public DateOnly DateTo { get; init; }
-    public int DepositId { get; init; }
-    public string Email { get; init; }
+    public DateOnly DateFrom { set; get; }
+    public DateOnly DateTo { set; get; }
+    public int DepositId { set; get; }
+    public string Email { set; get; } = string.Empty;
 }
