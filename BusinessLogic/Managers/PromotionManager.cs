@@ -5,27 +5,19 @@ namespace BusinessLogic.Managers;
 
 public class PromotionManager
 {
-    private List<Promotion> Promotions { get; set; }
+    private List<Promotion> Promotions { get; } = new();
 
-    public PromotionManager()
-    {
-        Promotions = new List<Promotion>();
-    }
+    private int NextPromotionId => Promotions.Count > 0 ? Promotions.Max(p => p.Id) + 1 : 1;
 
     private static void EnsureUserIsAdmin(Credentials credentials)
     {
         if (credentials.Rank != "Administrator")
-        {
             throw new UnauthorizedAccessException("Only administrators can manage promotions.");
-        }
     }
 
     public void EnsurePromotionExists(int id)
     {
-        if (Promotions.All(p => p.Id != id))
-        {
-            throw new ArgumentException("Promotion not found.");
-        }
+        if (Promotions.All(p => p.Id != id)) throw new ArgumentException("Promotion not found.");
     }
 
     public Promotion GetPromotionById(int id)
@@ -63,8 +55,6 @@ public class PromotionManager
     {
         return Promotions.Any(p => p.Id == id);
     }
-
-    private int NextPromotionId => Promotions.Count > 0 ? Promotions.Max(p => p.Id) + 1 : 1;
 
     public List<Promotion> GetAllPromotions(Credentials credentials)
     {

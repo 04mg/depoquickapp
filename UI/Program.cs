@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using BusinessLogic;
 using UI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +6,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddSingleton<NotificationService>();
+builder.Services.AddSingleton<DepoQuickApp>();
+builder.Services.AddSingleton<AuthController>();
+builder.Services.AddSingleton<DepositController>();
+builder.Services.AddSingleton<PromotionController>();
+builder.Services.AddSingleton<BookingController>();
 
 var app = builder.Build();
 

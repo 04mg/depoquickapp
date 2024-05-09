@@ -10,16 +10,21 @@ public class DepositManagerTest
     private const string Area = "A";
     private const string Size = "Small";
     private const bool ClimateControl = true;
-    private PromotionManager _promotionManager = new();
-    private DepositManager _depositManager = new();
-    private Credentials _clientCredentials;
     private Credentials _adminCredentials;
+    private Credentials _clientCredentials;
+    private DepositManager _depositManager = new();
+    private PromotionManager _promotionManager = new();
 
     [TestInitialize]
-    public void SetUp()
+    public void Initialize()
     {
-        _promotionManager = new PromotionManager();
         _depositManager = new DepositManager();
+        RegisterUsers();
+        CreatePromotion();
+    }
+
+    private void RegisterUsers()
+    {
         var authManager = new AuthManager();
 
         const string passwordConfirmation = "12345678@mE";
@@ -38,13 +43,17 @@ public class DepositManagerTest
         authManager.Register(admin, passwordConfirmation);
         authManager.Register(client, passwordConfirmation);
 
-        _adminCredentials = authManager.Login(new LoginDto()
-            { Email = admin.Email, Password = admin.Password });
-        _clientCredentials = authManager.Login(new LoginDto()
-            { Email = client.Email, Password = client.Password });
+        _adminCredentials = authManager.Login(new LoginDto { Email = admin.Email, Password = admin.Password });
+        _clientCredentials = authManager.Login(new LoginDto { Email = client.Email, Password = client.Password });
+    }
+
+    private void CreatePromotion()
+    {
+        _promotionManager = new PromotionManager();
 
         var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+
         _promotionManager.Add(promotion, _adminCredentials);
     }
 
@@ -52,21 +61,21 @@ public class DepositManagerTest
     public void TestCanAddDepositWithValidData()
     {
         // Arrange
-        var promotionList = new List<Promotion>() { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
+        var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
         var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
 
         // Act
         _depositManager.Add(deposit, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(1, _depositManager.GetAllDeposits(_adminCredentials).Count);
+        Assert.AreEqual(1, _depositManager.GetAllDeposits().Count);
     }
 
     [TestMethod]
     public void TestCanDeleteDeposit()
     {
         // Arrange
-        var promotionList = new List<Promotion>() { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
+        var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
         var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
         _depositManager.Add(deposit, _adminCredentials);
 
@@ -74,7 +83,7 @@ public class DepositManagerTest
         _depositManager.Delete(1, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(0, _depositManager.GetAllDeposits(_adminCredentials).Count);
+        Assert.AreEqual(0, _depositManager.GetAllDeposits().Count);
     }
 
     [TestMethod]
@@ -84,14 +93,14 @@ public class DepositManagerTest
         var exception = Assert.ThrowsException<ArgumentException>(() => _depositManager.Delete(1, _adminCredentials));
 
         // Assert
-        Assert.AreEqual("Deposit not found", exception.Message);
+        Assert.AreEqual("Deposit not found.", exception.Message);
     }
 
     [TestMethod]
     public void TestCantAddDepositIfNotAdministrator()
     {
         // Arrange
-        var promotionList = new List<Promotion>() { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
+        var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
         var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
 
         // Act
@@ -106,7 +115,7 @@ public class DepositManagerTest
     public void TestCantDeleteDepositIfNotAdministrator()
     {
         // Arrange
-        var promotionList = new List<Promotion>() { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
+        var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
         var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
         _depositManager.Add(deposit, _adminCredentials);
 
@@ -122,12 +131,12 @@ public class DepositManagerTest
     public void TestCanGetAllDeposits()
     {
         // Arrange
-        var promotionList = new List<Promotion>() { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
+        var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
         var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
         _depositManager.Add(deposit, _adminCredentials);
 
         // Act
-        var deposits = _depositManager.GetAllDeposits(_clientCredentials);
+        var deposits = _depositManager.GetAllDeposits();
 
         // Assert
         Assert.IsNotNull(deposits);

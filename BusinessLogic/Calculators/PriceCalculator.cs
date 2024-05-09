@@ -1,6 +1,6 @@
-using BusinessLogic.Interfaces;
+using BusinessLogic.Domain;
 
-namespace BusinessLogic.Domain;
+namespace BusinessLogic.Calculators;
 
 public class PriceCalculator : IPriceCalculator
 {
@@ -16,10 +16,10 @@ public class PriceCalculator : IPriceCalculator
     public double CalculatePrice(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
     {
         var pricePerDay = GetPricePerDay(deposit.Size, deposit.ClimateControl);
-        var discount = GetTotalDiscount(duration, deposit.Promotions);
+        var discount = GetTotalDiscount(deposit, duration);
         var days = duration.Item2.DayNumber - duration.Item1.DayNumber;
         var basePrice = pricePerDay * days;
-        var finalPrice = basePrice - (basePrice * discount / 100);
+        var finalPrice = basePrice - basePrice * discount / 100;
         return finalPrice;
     }
 
@@ -52,15 +52,10 @@ public class PriceCalculator : IPriceCalculator
         };
     }
 
-    private static int GetPromotionsDiscount(IEnumerable<Promotion> promotions)
-    {
-        return promotions.Sum(promotion => promotion.Discount);
-    }
-    
-    private static int GetTotalDiscount(Tuple<DateOnly, DateOnly> duration, IEnumerable<Promotion> promotions)
+    private static int GetTotalDiscount(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
     {
         var durationDiscount = GetDurationDiscount(duration);
-        var promotionsDiscount = GetPromotionsDiscount(promotions);
+        var promotionsDiscount = deposit.SumPromotions();
         var totalDiscount = durationDiscount + promotionsDiscount;
         return totalDiscount > 100 ? 100 : totalDiscount;
     }

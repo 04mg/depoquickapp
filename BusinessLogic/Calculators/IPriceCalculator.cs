@@ -1,6 +1,6 @@
 using BusinessLogic.Domain;
 
-namespace BusinessLogic.Interfaces;
+namespace BusinessLogic.Calculators;
 
 public interface IPriceCalculator
 {
