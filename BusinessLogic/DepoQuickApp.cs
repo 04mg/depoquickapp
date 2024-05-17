@@ -108,6 +108,7 @@ public class DepoQuickApp
     {
         return _depositManager.GetAllDeposits().Select(d => new DepositDto
         {
+            Name = d.Name,
             Id = d.Id,
             Area = d.Area,
             Size = d.Size,
@@ -121,6 +122,7 @@ public class DepoQuickApp
         var deposit = _depositManager.GetDepositById(depositId);
         return new DepositDto
         {
+            Name = deposit.Name,
             Id = deposit.Id,
             Area = deposit.Area,
             Size = deposit.Size,
