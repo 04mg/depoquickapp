@@ -7,6 +7,7 @@ namespace BusinessLogic.Test;
 [TestClass]
 public class DepositTest
 {
+    private const string Name = "Deposit 1";
     private const string Area = "A";
     private const string Size = "Small";
     private const bool ClimateControl = true;
@@ -59,7 +60,7 @@ public class DepositTest
     public void TestCanCreateDepositWithValidData()
     {
         // Act
-        var deposit = new Deposit(1, Area, Size, ClimateControl, _promotionList);
+        var deposit = new Deposit(Name, 1, Area, Size, ClimateControl, _promotionList);
 
         // Assert
         Assert.IsNotNull(deposit);
@@ -70,7 +71,7 @@ public class DepositTest
     {
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            new Deposit(1, "Z", Size, ClimateControl, _promotionList));
+            new Deposit(Name, 1, "Z", Size, ClimateControl, _promotionList));
 
         // Assert
         Assert.AreEqual("Area is invalid.", exception.Message);
@@ -81,7 +82,7 @@ public class DepositTest
     {
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            new Deposit(1, Area, "Extra Large", ClimateControl, _promotionList));
+            new Deposit(Name, 1, Area, "Extra Large", ClimateControl, _promotionList));
 
         // Assert
         Assert.AreEqual("Size is invalid.", exception.Message);

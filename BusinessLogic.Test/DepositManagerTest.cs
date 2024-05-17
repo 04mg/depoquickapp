@@ -7,6 +7,7 @@ namespace BusinessLogic.Test;
 [TestClass]
 public class DepositManagerTest
 {
+    private const string Name = "Deposit 1";
     private const string Area = "A";
     private const string Size = "Small";
     private const bool ClimateControl = true;
@@ -62,7 +63,7 @@ public class DepositManagerTest
     {
         // Arrange
         var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
-        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        var deposit = new Deposit(Name, 1, Area, Size, ClimateControl, promotionList);
 
         // Act
         _depositManager.Add(deposit, _adminCredentials);
@@ -76,7 +77,7 @@ public class DepositManagerTest
     {
         // Arrange
         var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
-        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        var deposit = new Deposit(Name, 1, Area, Size, ClimateControl, promotionList);
         _depositManager.Add(deposit, _adminCredentials);
 
         // Act
@@ -101,7 +102,7 @@ public class DepositManagerTest
     {
         // Arrange
         var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
-        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        var deposit = new Deposit(Name, 1, Area, Size, ClimateControl, promotionList);
 
         // Act
         var exception =
@@ -116,7 +117,7 @@ public class DepositManagerTest
     {
         // Arrange
         var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
-        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        var deposit = new Deposit(Name, 1, Area, Size, ClimateControl, promotionList);
         _depositManager.Add(deposit, _adminCredentials);
 
         // Act
@@ -132,7 +133,7 @@ public class DepositManagerTest
     {
         // Arrange
         var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
-        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        var deposit = new Deposit(Name, 1, Area, Size, ClimateControl, promotionList);
         _depositManager.Add(deposit, _adminCredentials);
 
         // Act

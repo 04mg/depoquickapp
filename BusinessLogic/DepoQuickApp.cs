@@ -82,7 +82,7 @@ public class DepoQuickApp
     public void AddDeposit(AddDepositDto depositDto, Credentials credentials)
     {
         var promotions = CreatePromotionListFromDto(depositDto);
-        var deposit = new Deposit(1, depositDto.Area, depositDto.Size, depositDto.ClimateControl, promotions);
+        var deposit = new Deposit(depositDto.Name, 1, depositDto.Area, depositDto.Size, depositDto.ClimateControl, promotions);
         _depositManager.Add(deposit, credentials);
     }
 
