@@ -1,0 +1,111 @@
+@page "/Promotions"
+@using BusinessLogic.DTOs
+@using UI.Data
+@inherits AuthEnforce
+@inject AuthController Auth
+@inject PromotionController PromotionController
+@inject NotificationService NotificationService
+
+@code {
+
+    private AddPromotionDto _addPromotionDto = new()
+    {
+        DateFrom = DateOnly.FromDateTime(DateTime.Today),
+        DateTo = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
+        Discount = 5
+    };
+
+    private List<PromotionDto> PromotionsDto { get; set; } = new();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!Auth.IsAdmin) return;
+        PromotionsDto = PromotionController.ListAllPromotions(Auth.CurrentCredentials);
+        StateHasChanged();
+    }
+
+    private void AddPromotion()
+    {
+        try
+        {
+            PromotionController.AddPromotion(_addPromotionDto, Auth.CurrentCredentials);
+            NotificationService.ShowMessage("Promotion added successfully.");
+            StateHasChanged();
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+    }
+
+}
+
+@if (!Auth.IsAdmin)
+{
+    <Forbidden/>
+}
+else
+{
+    <main class="responsive">
+        <h6 class="vertical-margin">
+            Promotions
+            <button class="extend square round no-margin absolute right" data-ui="#add-promotion">
+                <i>add</i>
+                <span>Add</span>
+            </button>
+            <div class="medium-space"></div>
+        </h6>
+        <article>
+            @foreach (var promotion in PromotionsDto)
+            {
+                <a class="row padding surface-container wave scroll" href="/Promotion/@promotion.Id">
+                    <div class="row max">
+                        <h6 class="button small primary">@promotion.Label</h6>
+                    </div>
+                    <div>
+                        <h6 class="button small primary-container">@promotion.DateFrom &rarr; @promotion.DateTo</h6>
+                        <h6 class="button small primary-container">@promotion.Discount%</h6>
+                    </div>
+                </a>
+                <div class="divider right-align"></div>
+            }
+            @if (PromotionsDto.Count == 0)
+            {
+                <p>No promotions found.</p>
+            }
+        </article>
+    </main>
+
+    <div class="medium-space"></div>
+    <div class="overlay blur"></div>
+    <dialog class="medium-width no-elevate" id="add-promotion">
+        <form @onsubmit="AddPromotion">
+            <div class="padding center-align">
+                <i>sell</i>
+                <h6 class="center-align">Add new promotion</h6>
+            </div>
+            <div class="field label border">
+                <input type="text" @bind="_addPromotionDto.Label" required>
+                <label>Label</label>
+            </div>
+            <div class="field label border">
+                <input type="number" @bind="_addPromotionDto.Discount">
+                <label>Discount (%)</label>
+            </div>
+            <div class="field label suffix border">
+                <input type="date" @bind="_addPromotionDto.DateFrom">
+                <label>From</label>
+                <i>calendar_today</i>
+            </div>
+            <div class="field label suffix border">
+                <input type="date" @bind="_addPromotionDto.DateTo">
+                <label>To</label>
+                <i>event_upcoming</i>
+            </div>
+            <nav class="right-align no-space no-margin">
+                <button class="transparent link" data-ui="#add-promotion">Cancel</button>
+                <button type="submit" class="transparent link">Confirm</button>
+            </nav>
+        </form>
+    </dialog>
+}
