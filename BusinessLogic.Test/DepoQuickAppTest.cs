@@ -59,7 +59,7 @@ public class DepoQuickAppTest
 
         _addDepositDto = new AddDepositDto
         {
-            Name = "Name",
+            Name = "Deposit 1",
             Area = "A",
             Size = "Small",
             ClimateControl = true,
@@ -68,7 +68,7 @@ public class DepoQuickAppTest
 
         _addBookingDto = new AddBookingDto
         {
-            DepositId = 1,
+            DepositName = "Deposit 1",
             Email = "test@test.com",
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
@@ -149,7 +149,7 @@ public class DepoQuickAppTest
         var deposit = _app.ListAllDeposits()[0];
 
         // Assert
-        Assert.AreEqual(deposit.Id, 1);
+        Assert.AreEqual(_addDepositDto.Name, deposit.Name);
         Assert.AreEqual(_addDepositDto.Area, deposit.Area);
         Assert.AreEqual(_addDepositDto.Size, deposit.Size);
         Assert.AreEqual(_addDepositDto.ClimateControl, deposit.ClimateControl);
@@ -167,7 +167,7 @@ public class DepoQuickAppTest
         _app.AddDeposit(_addDepositDto, credentials);
 
         // Act
-        _app.DeleteDeposit(1, credentials);
+        _app.DeleteDeposit(_addDepositDto.Name, credentials);
         var deposits = _app.ListAllDeposits();
 
         // Assert
@@ -189,7 +189,7 @@ public class DepoQuickAppTest
 
         // Assert
         Assert.IsNotNull(booking);
-        Assert.AreEqual(_addBookingDto.DepositId, booking.Id);
+        Assert.AreEqual(_addBookingDto.DepositName, booking.DepositName);
         Assert.AreEqual(_addBookingDto.Email, booking.Email);
         Assert.AreEqual(_addBookingDto.DateFrom, booking.DateFrom);
         Assert.AreEqual(_addBookingDto.DateTo, booking.DateTo);
@@ -243,7 +243,7 @@ public class DepoQuickAppTest
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => _app.DeleteDeposit(1, credentials));
+        var exception = Assert.ThrowsException<ArgumentException>(() => _app.DeleteDeposit(_addDepositDto.Name, credentials));
 
         // Assert
         Assert.AreEqual("There are existing bookings for this deposit.", exception.Message);
@@ -275,7 +275,7 @@ public class DepoQuickAppTest
         _app.AddDeposit(_addDepositDto, credentials);
         var wrongBookingDto = new AddBookingDto
         {
-            DepositId = 1,
+            DepositName = "Deposit 1",
             Email = "wrong@test.com",
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
@@ -343,7 +343,7 @@ public class DepoQuickAppTest
         _app.AddDeposit(_addDepositDto, credentials);
 
         // Act
-        var deposit = _app.GetDeposit(1);
+        var deposit = _app.GetDeposit(_addDepositDto.Name);
 
         // Assert
         Assert.AreEqual(_addDepositDto.Area, deposit.Area);
@@ -384,7 +384,7 @@ public class DepoQuickAppTest
 
         // Assert
         Assert.IsNotNull(booking);
-        Assert.AreEqual(_addBookingDto.DepositId, booking.DepositId);
+        Assert.AreEqual(_addBookingDto.DepositName, booking.DepositName);
         Assert.AreEqual(_addBookingDto.Email, booking.Email);
         Assert.AreEqual(_addBookingDto.DateFrom, booking.DateFrom);
         Assert.AreEqual(_addBookingDto.DateTo, booking.DateTo);
@@ -405,6 +405,6 @@ public class DepoQuickAppTest
 
         // Assert
         Assert.AreEqual(1, bookings.Count);
-        Assert.AreEqual(_addBookingDto.DepositId, bookings[0].DepositId);
+        Assert.AreEqual(_addBookingDto.DepositName, bookings[0].DepositName);
     }
 }

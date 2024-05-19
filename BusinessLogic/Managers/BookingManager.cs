@@ -18,13 +18,14 @@ public class BookingManager
 
     private void EnsureNoOverlappingBooking(Booking booking)
     {
-        GetBookingsByUserAndDeposit(booking.Client.Email, booking.Deposit.Id)
+        GetBookingsByUserAndDeposit(booking.Client.Email, booking.Deposit.Name)
             .ForEach(b => EnsureNoOverlappingDates(booking, b));
     }
 
-    private List<Booking> GetBookingsByUserAndDeposit(string email, int depositId)
+    private List<Booking> GetBookingsByUserAndDeposit(string email, string depositName)
     {
-        return Bookings.Where(b => b.Client.Email == email && b.Deposit.Id == depositId).ToList();
+        depositName = depositName.ToLower();
+        return Bookings.Where(b => b.Client.Email == email && b.Deposit.Name.ToLower() == depositName).ToList();
     }
 
     private static void EnsureNoOverlappingDates(Booking booking, Booking anotherBooking)
@@ -69,9 +70,10 @@ public class BookingManager
             throw new UnauthorizedAccessException("You are not authorized to perform this action.");
     }
 
-    public void EnsureThereAreNoBookingsWithThisDeposit(int id)
+    public void EnsureThereAreNoBookingsWithThisDeposit(string name)
     {
-        if (Bookings.Any(booking => booking.Deposit.Id == id))
+        name = name.ToLower();
+        if (Bookings.Any(booking => booking.Deposit.Name.ToLower() == name))
             throw new ArgumentException("There are existing bookings for this deposit.");
     }
 

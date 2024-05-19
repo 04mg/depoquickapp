@@ -60,7 +60,7 @@ public class DepositTest
     public void TestCanCreateDepositWithValidData()
     {
         // Act
-        var deposit = new Deposit(Name, 1, Area, Size, ClimateControl, _promotionList);
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
 
         // Assert
         Assert.IsNotNull(deposit);
@@ -71,7 +71,7 @@ public class DepositTest
     {
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            new Deposit(Name, 1, "Z", Size, ClimateControl, _promotionList));
+            new Deposit(Name, "Z", Size, ClimateControl, _promotionList));
 
         // Assert
         Assert.AreEqual("Area is invalid.", exception.Message);
@@ -82,7 +82,7 @@ public class DepositTest
     {
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            new Deposit(Name, 1, Area, "Extra Large", ClimateControl, _promotionList));
+            new Deposit(Name, Area, "Extra Large", ClimateControl, _promotionList));
 
         // Assert
         Assert.AreEqual("Size is invalid.", exception.Message);

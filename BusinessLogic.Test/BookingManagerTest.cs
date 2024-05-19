@@ -64,7 +64,7 @@ public class BookingManagerTest
                 DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
         };
 
-        _deposit = new Deposit("Deposit 1", 1, "A", "Small", true, promotionList);
+        _deposit = new Deposit("Deposit 1", "A", "Small", true, promotionList);
     }
 
     [TestMethod]

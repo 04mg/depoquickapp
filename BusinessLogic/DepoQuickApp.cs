@@ -82,14 +82,14 @@ public class DepoQuickApp
     public void AddDeposit(AddDepositDto depositDto, Credentials credentials)
     {
         var promotions = CreatePromotionListFromDto(depositDto);
-        var deposit = new Deposit(depositDto.Name, 1, depositDto.Area, depositDto.Size, depositDto.ClimateControl, promotions);
+        var deposit = new Deposit(depositDto.Name, depositDto.Area, depositDto.Size, depositDto.ClimateControl, promotions);
         _depositManager.Add(deposit, credentials);
     }
 
-    public void DeleteDeposit(int depositId, Credentials credentials)
+    public void DeleteDeposit(string depositName, Credentials credentials)
     {
-        _bookingManager.EnsureThereAreNoBookingsWithThisDeposit(depositId);
-        _depositManager.Delete(depositId, credentials);
+        _bookingManager.EnsureThereAreNoBookingsWithThisDeposit(depositName);
+        _depositManager.Delete(depositName, credentials);
     }
 
     private List<Promotion> CreatePromotionListFromDto(AddDepositDto depositDto)
@@ -109,7 +109,6 @@ public class DepoQuickApp
         return _depositManager.GetAllDeposits().Select(d => new DepositDto
         {
             Name = d.Name,
-            Id = d.Id,
             Area = d.Area,
             Size = d.Size,
             ClimateControl = d.ClimateControl,
@@ -117,13 +116,12 @@ public class DepoQuickApp
         }).ToList();
     }
 
-    public DepositDto GetDeposit(int depositId)
+    public DepositDto GetDeposit(string depositName)
     {
-        var deposit = _depositManager.GetDepositById(depositId);
+        var deposit = _depositManager.GetDepositById(depositName);
         return new DepositDto
         {
             Name = deposit.Name,
-            Id = deposit.Id,
             Area = deposit.Area,
             Size = deposit.Size,
             ClimateControl = deposit.ClimateControl,
@@ -133,8 +131,8 @@ public class DepoQuickApp
 
     public void AddBooking(AddBookingDto addBookingDto, Credentials credentials)
     {
-        _depositManager.EnsureDepositExists(addBookingDto.DepositId);
-        var deposit = _depositManager.GetDepositById(addBookingDto.DepositId);
+        _depositManager.EnsureDepositExists(addBookingDto.DepositName);
+        var deposit = _depositManager.GetDepositById(addBookingDto.DepositName);
         var user = _authManager.GetUserByEmail(addBookingDto.Email, credentials);
         var priceCalculator = new PriceCalculator();
         var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo, priceCalculator);
@@ -144,7 +142,7 @@ public class DepoQuickApp
     public double CalculateBookingPrice(AddBookingDto addBookingDto)
     {
         var priceCalculator = new PriceCalculator();
-        var deposit = _depositManager.GetDepositById(addBookingDto.DepositId);
+        var deposit = _depositManager.GetDepositById(addBookingDto.DepositName);
         return priceCalculator.CalculatePrice(deposit,
             new Tuple<DateOnly, DateOnly>(addBookingDto.DateFrom, addBookingDto.DateTo));
     }
@@ -154,7 +152,7 @@ public class DepoQuickApp
         return _bookingManager.GetAllBookings(credentials).Select(b => new BookingDto
         {
             Id = b.Id,
-            DepositId = b.Deposit.Id,
+            DepositName = b.Deposit.Name,
             Email = b.Client.Email,
             DateFrom = b.Duration.Item1,
             DateTo = b.Duration.Item2,
@@ -168,7 +166,7 @@ public class DepoQuickApp
         return _bookingManager.GetBookingsByEmail(email, credentials).Select(b => new BookingDto
         {
             Id = b.Id,
-            DepositId = b.Deposit.Id,
+            DepositName = b.Deposit.Name,
             Email = b.Client.Email,
             DateFrom = b.Duration.Item1,
             DateTo = b.Duration.Item2,
@@ -183,7 +181,7 @@ public class DepoQuickApp
         return new BookingDto
         {
             Id = booking.Id,
-            DepositId = booking.Deposit.Id,
+            DepositName = booking.Deposit.Name,
             Email = booking.Client.Email,
             DateFrom = booking.Duration.Item1,
             DateTo = booking.Duration.Item2,

@@ -7,11 +7,10 @@ public class DepositManager
 {
     private List<Deposit> Deposits { get; } = new();
 
-    private int NextDepositId => Deposits.Count > 0 ? Deposits.Max(d => d.Id) + 1 : 1;
-
-    public void EnsureDepositExists(int id)
+    public void EnsureDepositExists(string name)
     {
-        if (Deposits.All(d => d.Id != id)) throw new ArgumentException("Deposit not found.");
+        name = name.ToLower();
+        if (Deposits.All(d => d.Name.ToLower() != name)) throw new ArgumentException("Deposit not found.");
     }
 
     private static void EnsureUserIsAdmin(Credentials credentials)
@@ -20,15 +19,15 @@ public class DepositManager
             throw new UnauthorizedAccessException("Only administrators can manage deposits.");
     }
 
-    public Deposit GetDepositById(int id)
+    public Deposit GetDepositById(string name)
     {
-        return Deposits.First(d => d.Id == id);
+        name = name.ToLower();
+        return Deposits.First(d => d.Name.ToLower() == name);
     }
 
     public void Add(Deposit deposit, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
-        deposit.Id = NextDepositId;
         EnsureDepositNameIsNotTaken(deposit.Name);
         Deposits.Add(deposit);
     }
@@ -40,12 +39,12 @@ public class DepositManager
             throw new ArgumentException("Deposit name is already taken.");
     }
 
-    public void Delete(int id, Credentials credentials)
+    public void Delete(string name, Credentials credentials)
     {
-        EnsureDepositExists(id);
+        EnsureDepositExists(name);
         EnsureUserIsAdmin(credentials);
 
-        var deposit = GetDepositById(id);
+        var deposit = GetDepositById(name);
         Deposits.Remove(deposit);
     }
 
