@@ -8,13 +8,13 @@
 
     private AddBookingDto _addBookingDto = new();
 
-    [Parameter] public int DepositId { get; set; }
+    [Parameter] public string DepositName { get; set; }
 
     private double BookingPrice { get; set; }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        _addBookingDto.DepositId = DepositId;
+        _addBookingDto.DepositName = DepositName;
         _addBookingDto.Email = Auth.CurrentCredentials.Email;
     }
 
@@ -28,7 +28,7 @@
         try
         {
             BookingController.AddBooking(_addBookingDto, Auth.CurrentCredentials);
-            NotificationService.ShowMessage($"Booked deposit with ID: {DepositId} from {_addBookingDto.DateFrom} to {_addBookingDto.DateTo}");
+            NotificationService.ShowMessage($"Booked deposit '{DepositName}' from {_addBookingDto.DateFrom} to {_addBookingDto.DateTo}");
         }
         catch (ArgumentException e)
         {

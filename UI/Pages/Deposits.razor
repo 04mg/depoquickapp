@@ -63,12 +63,11 @@
     <article>
         @foreach (var deposit in DepositsDto)
         {
-            <a class="row padding surface-container wave scroll" href="/Deposit/@deposit.Id">
+            <a class="row padding surface-container wave scroll" href="/Deposit/@deposit.Name">
                 <div class="row max">
-                    <div class="button circle">@deposit.Id</div>
+                    <div class="button inverse-primary">@deposit.Name</div>
                 </div>
                 <div>
-                    <h6 class="button small primary-container">Name: @deposit.Name</h6>
                     <h6 class="button small primary-container">Area: @deposit.Area</h6>
                     <h6 class="button small primary-container">Size: @deposit.Size</h6>
 

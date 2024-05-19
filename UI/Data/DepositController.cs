@@ -17,9 +17,9 @@ public class DepositController
         return _app.ListAllDeposits();
     }
 
-    public DepositDto GetDeposit(int id, Credentials credentials)
+    public DepositDto GetDeposit(string name, Credentials credentials)
     {
-        return _app.GetDeposit(id);
+        return _app.GetDeposit(name);
     }
 
     public void AddDeposit(AddDepositDto deposit, Credentials credentials)
@@ -27,8 +27,8 @@ public class DepositController
         _app.AddDeposit(deposit, credentials);
     }
 
-    public void DeleteDeposit(int id, Credentials credentials)
+    public void DeleteDeposit(string name, Credentials credentials)
     {
-        _app.DeleteDeposit(id, credentials);
+        _app.DeleteDeposit(name, credentials);
     }
 }
