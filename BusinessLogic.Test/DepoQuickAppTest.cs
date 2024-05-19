@@ -59,6 +59,7 @@ public class DepoQuickAppTest
 
         _addDepositDto = new AddDepositDto
         {
+            Name = "Name",
             Area = "A",
             Size = "Small",
             ClimateControl = true,

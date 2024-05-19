@@ -29,7 +29,15 @@ public class DepositManager
     {
         EnsureUserIsAdmin(credentials);
         deposit.Id = NextDepositId;
+        EnsureDepositNameIsNotTaken(deposit.Name);
         Deposits.Add(deposit);
+    }
+
+    private void EnsureDepositNameIsNotTaken(string depositName)
+    {
+        depositName = depositName.ToLower();
+        if (Deposits.Any(d => d.Name.ToLower() == depositName))
+            throw new ArgumentException("Deposit name is already taken.");
     }
 
     public void Delete(int id, Credentials credentials)
