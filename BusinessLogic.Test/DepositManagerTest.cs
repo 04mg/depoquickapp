@@ -148,4 +148,19 @@ public class DepositManagerTest
         Assert.AreEqual(ClimateControl, deposits[0].ClimateControl);
         Assert.AreEqual(promotionList, deposits[0].Promotions);
     }
+    
+    [TestMethod]
+    public void TestCantAddDepositIfNameIsAlreadyTaken()
+    {
+        // Arrange
+        var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
+        var deposit = new Deposit(Name, 1, Area, Size, ClimateControl, promotionList);
+        _depositManager.Add(deposit, _adminCredentials);
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => _depositManager.Add(deposit, _adminCredentials));
+
+        // Assert
+        Assert.AreEqual("Deposit name is already taken.", exception.Message);
+    }
 }
