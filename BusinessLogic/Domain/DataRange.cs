@@ -10,4 +10,15 @@ public class DateRange
         StartDate = startDate;
         EndDate = endDate;
     }
+    
+    public bool IsOverlapping(DateRange other)
+    {
+        return StartDate <= other.EndDate && EndDate >= other.StartDate;
+    }
+    
+    public void Merge(DateRange other)
+    {
+        StartDate = StartDate < other.StartDate ? StartDate : other.StartDate;
+        EndDate = EndDate > other.EndDate ? EndDate : other.EndDate;
+    }
 }

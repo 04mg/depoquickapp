@@ -123,4 +123,24 @@ public class DepositTest
         // Assert
         Assert.AreEqual(1, deposit.AvailabilityPeriods.Count);
     }
+    
+    [TestMethod]
+    public void TestOverlappingAvailabilityPeriodsShouldMerge()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var endDate = DateOnly.FromDateTime(DateTime.Now.AddDays(2));
+        var availabilityPeriod1 = new DateRange(startDate, DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        var availabilityPeriod2 = new DateRange(DateOnly.FromDateTime(DateTime.Now.AddDays(1)), endDate);
+
+        // Act
+        deposit.AddAvailabilityPeriod(availabilityPeriod1);
+        deposit.AddAvailabilityPeriod(availabilityPeriod2);
+
+        // Assert
+        Assert.AreEqual(1, deposit.AvailabilityPeriods.Count);
+        Assert.AreEqual(startDate, deposit.AvailabilityPeriods[0].StartDate);
+        Assert.AreEqual(endDate, deposit.AvailabilityPeriods[0].EndDate);
+    }
 }

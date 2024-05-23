@@ -86,6 +86,20 @@ public class Deposit
 
     public void AddAvailabilityPeriod(DateRange availabilityPeriod)
     {
-        AvailabilityPeriods.Add(availabilityPeriod);
+        if (ExistsAnOverlappingPeriod(availabilityPeriod))
+            MergePeriods(availabilityPeriod);
+        else
+            AvailabilityPeriods.Add(availabilityPeriod);
+    }
+
+    private void MergePeriods(DateRange availabilityPeriod)
+    {
+        var overlappingPeriod = AvailabilityPeriods.First(p => p.IsOverlapping(availabilityPeriod));
+        overlappingPeriod.Merge(availabilityPeriod);
+    }
+
+    private bool ExistsAnOverlappingPeriod(DateRange availabilityPeriod)
+    {
+        return AvailabilityPeriods.Any(p => p.IsOverlapping(availabilityPeriod));
     }
 }
