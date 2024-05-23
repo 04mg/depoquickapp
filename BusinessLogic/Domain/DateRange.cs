@@ -9,8 +9,15 @@ public class DateRange
     {
         StartDate = startDate;
         EndDate = endDate;
+        EnsureStartDateIsLesserThanEndDate(startDate, endDate);
     }
-    
+
+    private void EnsureStartDateIsLesserThanEndDate(DateOnly startDate, DateOnly endDate)
+    {
+        if (startDate > endDate)
+            throw new ArgumentException("Date range is invalid.");
+    }
+
     public bool IsOverlapping(DateRange other)
     {
         return StartDate <= other.EndDate && EndDate >= other.StartDate;
