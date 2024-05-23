@@ -59,7 +59,7 @@ public class DepoQuickAppTest
 
         _addDepositDto = new AddDepositDto
         {
-            Name = "Deposit 1",
+            Name = "Deposit",
             Area = "A",
             Size = "Small",
             ClimateControl = true,
@@ -68,8 +68,8 @@ public class DepoQuickAppTest
 
         _addBookingDto = new AddBookingDto
         {
-            DepositName = "Deposit 1",
-            Email = "test@test.com",
+            DepositName = _addDepositDto.Name,
+            Email = _credentials.Email,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
         };
@@ -275,7 +275,7 @@ public class DepoQuickAppTest
         _app.AddDeposit(_addDepositDto, credentials);
         var wrongBookingDto = new AddBookingDto
         {
-            DepositName = "Deposit 1",
+            DepositName = "Deposit",
             Email = "wrong@test.com",
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))

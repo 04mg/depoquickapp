@@ -6,6 +6,7 @@ public class Deposit
 {
     private readonly string _area = "";
     private readonly string _size = "";
+    private readonly string _name = "";
 
     public Deposit(string name, string area, string size, bool climateControl, List<Promotion> promotions)
     {
@@ -16,10 +17,18 @@ public class Deposit
         Promotions = promotions;
     }
 
-    public string Name { get; set; }
     public bool ClimateControl { get; set; }
     public List<Promotion> Promotions { get; set; }
 
+    public string Name
+    {
+        get => _name;
+        private init
+        {
+            EnsureNameIsLettersOrSpaces(value);
+            _name = value;
+        }
+    }
     public string Area
     {
         get => _area;
@@ -39,7 +48,13 @@ public class Deposit
             _size = value;
         }
     }
-
+    
+    private void EnsureNameIsLettersOrSpaces(string name)
+    {
+        if (!name.All(char.IsLetter) && !name.All(char.IsWhiteSpace))
+            throw new ArgumentException("Name is invalid, it should only contain letters and whitespaces.");
+    }
+    
     private static void EnsureAreaIsValid(string area)
     {
         if (!Enum.TryParse<Area>(area, out _)) throw new ArgumentException("Area is invalid.");

@@ -7,7 +7,7 @@ namespace BusinessLogic.Test;
 [TestClass]
 public class DepositTest
 {
-    private const string Name = "Deposit 1";
+    private const string Name = "Deposit";
     private const string Area = "A";
     private const string Size = "Small";
     private const bool ClimateControl = true;

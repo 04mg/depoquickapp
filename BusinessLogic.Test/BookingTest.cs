@@ -20,7 +20,7 @@ public class BookingTest
         new(1, "label", 50, Today, Tomorrow)
     };
 
-    private static readonly Deposit Deposit = new("Deposit 1", "A", "Small", true, Promotions);
+    private static readonly Deposit Deposit = new("Deposit", "A", "Small", true, Promotions);
 
     [TestMethod]
     public void TestCanCreateBookingWithValidData()
