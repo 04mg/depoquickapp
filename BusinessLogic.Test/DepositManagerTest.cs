@@ -7,6 +7,7 @@ namespace BusinessLogic.Test;
 [TestClass]
 public class DepositManagerTest
 {
+    private const string Name = "Deposit";
     private const string Area = "A";
     private const string Size = "Small";
     private const bool ClimateControl = true;
@@ -62,7 +63,7 @@ public class DepositManagerTest
     {
         // Arrange
         var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
-        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
 
         // Act
         _depositManager.Add(deposit, _adminCredentials);
@@ -76,11 +77,11 @@ public class DepositManagerTest
     {
         // Arrange
         var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
-        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
         _depositManager.Add(deposit, _adminCredentials);
 
         // Act
-        _depositManager.Delete(1, _adminCredentials);
+        _depositManager.Delete(Name, _adminCredentials);
 
         // Assert
         Assert.AreEqual(0, _depositManager.GetAllDeposits().Count);
@@ -90,7 +91,7 @@ public class DepositManagerTest
     public void TestCantDeleteNonExistentDeposit()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => _depositManager.Delete(1, _adminCredentials));
+        var exception = Assert.ThrowsException<ArgumentException>(() => _depositManager.Delete(Name, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Deposit not found.", exception.Message);
@@ -101,7 +102,7 @@ public class DepositManagerTest
     {
         // Arrange
         var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
-        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
 
         // Act
         var exception =
@@ -116,12 +117,12 @@ public class DepositManagerTest
     {
         // Arrange
         var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
-        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
         _depositManager.Add(deposit, _adminCredentials);
 
         // Act
         var exception =
-            Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.Delete(1, _clientCredentials));
+            Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.Delete(Name, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage deposits.", exception.Message);
@@ -132,7 +133,7 @@ public class DepositManagerTest
     {
         // Arrange
         var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
-        var deposit = new Deposit(1, Area, Size, ClimateControl, promotionList);
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
         _depositManager.Add(deposit, _adminCredentials);
 
         // Act
@@ -141,10 +142,25 @@ public class DepositManagerTest
         // Assert
         Assert.IsNotNull(deposits);
         Assert.AreEqual(1, deposits.Count);
-        Assert.AreEqual(1, deposits[0].Id);
+        Assert.AreEqual(Name, deposits[0].Name);
         Assert.AreEqual(Area, deposits[0].Area);
         Assert.AreEqual(Size, deposits[0].Size);
         Assert.AreEqual(ClimateControl, deposits[0].ClimateControl);
         Assert.AreEqual(promotionList, deposits[0].Promotions);
+    }
+    
+    [TestMethod]
+    public void TestCantAddDepositIfNameIsAlreadyTaken()
+    {
+        // Arrange
+        var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
+        _depositManager.Add(deposit, _adminCredentials);
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => _depositManager.Add(deposit, _adminCredentials));
+
+        // Assert
+        Assert.AreEqual("Deposit name is already taken.", exception.Message);
     }
 }

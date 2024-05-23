@@ -1,4 +1,4 @@
-@page "/Deposit/{Id:int}"
+@page "/Deposit/{Name}"
 @using BusinessLogic.DTOs
 @using UI.Data
 @using UI.Pages.Components
@@ -13,13 +13,13 @@
     private DepositDto DepositDto { get; set; }
     private List<AddPromotionDto> Promotions { get; set; } = new();
 
-    private int? _id;
+    private string? _name;
 
     [Parameter]
-    public int Id
+    public string Name
     {
-        get => _id ?? throw new NullReferenceException();
-        set => _id = value;
+        get => _name ?? throw new NullReferenceException();
+        set => _name = value;
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -27,7 +27,7 @@
         if (!firstRender) return;
         try
         {
-            DepositDto = DepositController.GetDeposit(Id, Auth.CurrentCredentials);
+            DepositDto = DepositController.GetDeposit(Name, Auth.CurrentCredentials);
             Promotions = DepositDto.PromotionList.Select(p => PromotionController.GetPromotion(p)).ToList();
         }
         catch (InvalidOperationException)
@@ -43,8 +43,8 @@
     {
         try
         {
-            DepositController.DeleteDeposit(Id, Auth.CurrentCredentials);
-            NotificationService.ShowMessage($"Deposit with ID: {Id} deleted successfully.");
+            DepositController.DeleteDeposit(Name, Auth.CurrentCredentials);
+            NotificationService.ShowMessage($"Deposit '{Name}' deleted successfully.");
             NavigationManager.NavigateTo("/Deposits");
         }
         catch (ArgumentException e)
@@ -61,7 +61,7 @@
     </NavLink>
     <h6 class="vertical-margin">
         Deposit
-        <span class="circle primary center-align middle-align left-margin">@Id</span>
+        <span class="button inverse-primary center-align middle-align left-margin">@Name</span>
         @if (Auth.IsAdmin)
         {
             <button class="extend square round error no-margin absolute right" @onclick="DeleteDeposit">
@@ -72,6 +72,8 @@
         }
     </h6>
     <article>
+        <h6 class="small padding">Name:&nbsp; <b>@DepositDto.Name</b></h6>
+        <div class="divider"></div>
         <h6 class="small padding">Area:&nbsp; <b>@DepositDto.Area</b></h6>
         <div class="divider"></div>
         <h6 class="small padding">Size:&nbsp; <b>@DepositDto.Size</b></h6>
@@ -96,5 +98,5 @@
     </article>
     <div class="small-space"></div>
     <h6 class="vertical-margin">Book now</h6>
-    <DepositBooking DepositId="@Id"/>
+    <DepositBooking DepositName="@Name"/>
 </main>

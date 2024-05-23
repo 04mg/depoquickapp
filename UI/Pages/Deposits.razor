@@ -11,6 +11,7 @@
 
     private AddDepositDto _addDepositDto = new()
     {
+        Name = "",
         Area = "A",
         Size = "Small",
         ClimateControl = false,
@@ -27,6 +28,12 @@
 
     private void AddDeposit()
     {
+        if (string.IsNullOrEmpty(_addDepositDto.Name))
+        {
+            NotificationService.ShowError("Name of Deposit is required.");
+            return;
+        }
+        
         try
         {
             DepositController.AddDeposit(_addDepositDto, Auth.CurrentCredentials);
@@ -56,9 +63,9 @@
     <article>
         @foreach (var deposit in DepositsDto)
         {
-            <a class="row padding surface-container wave scroll" href="/Deposit/@deposit.Id">
+            <a class="row padding surface-container wave scroll" href="/Deposit/@deposit.Name">
                 <div class="row max">
-                    <div class="button circle">@deposit.Id</div>
+                    <div class="button inverse-primary">@deposit.Name</div>
                 </div>
                 <div>
                     <h6 class="button small primary-container">Area: @deposit.Area</h6>
@@ -88,6 +95,11 @@
             <i>garage_door</i>
             <h6 class="center-align">Add new deposit</h6>
         </div>
+        <div class="field label prefix border left-align">
+            <i>garage_door</i>
+            <input type="text" @bind="_addDepositDto.Name" required>
+            <label>Name of Deposit</label>
+            </div>
         <div class="field label suffix border">
             <select @bind="_addDepositDto.Area">
                 <option>A</option>

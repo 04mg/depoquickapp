@@ -6,10 +6,11 @@ public class Deposit
 {
     private readonly string _area = "";
     private readonly string _size = "";
+    private readonly string _name = "";
 
-    public Deposit(int id, string area, string size, bool climateControl, List<Promotion> promotions)
+    public Deposit(string name, string area, string size, bool climateControl, List<Promotion> promotions)
     {
-        Id = id;
+        Name = name;
         Area = area;
         Size = size;
         ClimateControl = climateControl;
@@ -18,8 +19,17 @@ public class Deposit
 
     public bool ClimateControl { get; set; }
     public List<Promotion> Promotions { get; set; }
-    public int Id { get; set; }
 
+    public string Name
+    {
+        get => _name;
+        private init
+        {
+            EnsureNameLengthIsValid(value);
+            EnsureNameIsLettersOrSpaces(value);
+            _name = value;
+        }
+    }
     public string Area
     {
         get => _area;
@@ -39,7 +49,18 @@ public class Deposit
             _size = value;
         }
     }
-
+    
+    private void EnsureNameLengthIsValid(string name)
+    {
+        if (name.Length == 0 || name.Length > 100)
+            throw new ArgumentException("Name is invalid, it should be lesser or equal to 100 characters.");
+    }
+    private void EnsureNameIsLettersOrSpaces(string name)
+    {
+        if (!name.All(char.IsLetter) && !name.All(char.IsWhiteSpace))
+            throw new ArgumentException("Name is invalid, it should only contain letters and whitespaces.");
+    }
+    
     private static void EnsureAreaIsValid(string area)
     {
         if (!Enum.TryParse<Area>(area, out _)) throw new ArgumentException("Area is invalid.");
