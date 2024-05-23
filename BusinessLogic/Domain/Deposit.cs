@@ -25,6 +25,7 @@ public class Deposit
         get => _name;
         private init
         {
+            EnsureNameLengthIsValid(value);
             EnsureNameIsLettersOrSpaces(value);
             _name = value;
         }
@@ -49,6 +50,11 @@ public class Deposit
         }
     }
     
+    private void EnsureNameLengthIsValid(string name)
+    {
+        if (name.Length == 0 || name.Length > 100)
+            throw new ArgumentException("Name is invalid, it should be lesser or equal to 100 characters.");
+    }
     private void EnsureNameIsLettersOrSpaces(string name)
     {
         if (!name.All(char.IsLetter) && !name.All(char.IsWhiteSpace))
