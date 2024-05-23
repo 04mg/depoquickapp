@@ -87,4 +87,15 @@ public class DepositTest
         // Assert
         Assert.AreEqual("Size is invalid.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCantCreateDepositIfNameDoesNotHaveOnlyLettersAndSpaces()
+    {
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+            new Deposit("Name123", Area, Size, ClimateControl, _promotionList));
+
+        // Assert
+        Assert.AreEqual("Name is invalid, it should only contain letters and whitespaces.", exception.Message);
+    }
 }
