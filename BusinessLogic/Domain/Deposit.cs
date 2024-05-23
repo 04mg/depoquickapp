@@ -15,6 +15,7 @@ public class Deposit
         Size = size;
         ClimateControl = climateControl;
         Promotions = promotions;
+        AvailabilityPeriods = new List<(DateOnly, DateOnly)>();
     }
 
     public bool ClimateControl { get; set; }
@@ -85,6 +86,6 @@ public class Deposit
 
     public void AddAvailabilityPeriod((DateOnly, DateOnly) availabilityPeriod)
     {
-        throw new NotImplementedException();
+        AvailabilityPeriods.Add(availabilityPeriod);
     }
 }
