@@ -174,7 +174,7 @@ public class DepositManagerTest
         var availabilityPeriod = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
 
         // Act
-        _depositManager.AddAvailabilityPeriod(Name, availabilityPeriod);
+        _depositManager.AddAvailabilityPeriod(Name, availabilityPeriod, _adminCredentials);
 
         // Assert
         var deposits = _depositManager.GetAllDeposits();
@@ -182,5 +182,36 @@ public class DepositManagerTest
         Assert.AreEqual(1, deposits[0].AvailabilityPeriods.Count);
         Assert.AreEqual(DateOnly.FromDateTime(DateTime.Now), deposits[0].AvailabilityPeriods[0].StartDate);
         Assert.AreEqual(DateOnly.FromDateTime(DateTime.Now.AddDays(1)), deposits[0].AvailabilityPeriods[0].EndDate);
+    }
+    
+    [TestMethod]
+    public void TestCantAddAvailabilityPeriodIfNotAdministrator()
+    {
+        // Arrange
+        var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
+        _depositManager.Add(deposit, _adminCredentials);
+        var availabilityPeriod = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+
+        // Act
+        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() => _depositManager.AddAvailabilityPeriod(Name, availabilityPeriod, _clientCredentials));
+
+        // Assert
+        Assert.AreEqual("Only administrators can manage deposits.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantAddAvailabilityPeriodIfDepositDoesNotExist()
+    {
+        // Arrange
+        var availabilityPeriod = new DateRange(DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+            _depositManager.AddAvailabilityPeriod(Name, availabilityPeriod, _adminCredentials));
+
+        // Assert
+        Assert.AreEqual("Deposit not found.", exception.Message);
     }
 }

@@ -60,8 +60,10 @@ public class DepositManager
             throw new ArgumentException("There are existing deposits for this promotion.");
     }
 
-    public void AddAvailabilityPeriod(string deposit, DateRange availabilityPeriod)
+    public void AddAvailabilityPeriod(string deposit, DateRange availabilityPeriod, Credentials credentials)
     {
+        EnsureUserIsAdmin(credentials);
+        EnsureDepositExists(deposit);
         GetDepositById(deposit).AddAvailabilityPeriod(availabilityPeriod);
     }
 }
