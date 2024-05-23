@@ -49,7 +49,9 @@ public class Deposit
             _size = value;
         }
     }
-    
+
+    public List<(DateOnly,DateOnly)> AvailabilityPeriods { get; set; }
+
     private void EnsureNameLengthIsValid(string name)
     {
         if (name.Length == 0 || name.Length > 100)
@@ -79,5 +81,10 @@ public class Deposit
     public int SumPromotions()
     {
         return Promotions.Sum(p => p.Discount);
+    }
+
+    public void AddAvailabilityPeriod((DateOnly, DateOnly) availabilityPeriod)
+    {
+        throw new NotImplementedException();
     }
 }

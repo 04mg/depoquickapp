@@ -110,4 +110,18 @@ public class DepositTest
         // Assert
         Assert.AreEqual("Name is invalid, it should be lesser or equal to 100 characters.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCanAddAvailabilityPeriods()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        (DateOnly, DateOnly) availabilityPeriod = new(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        
+        // Act
+        deposit.AddAvailabilityPeriod(availabilityPeriod);
+        
+        // Assert
+        Assert.AreEqual(1, deposit.AvailabilityPeriods.Count);
+    }
 }
