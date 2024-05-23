@@ -15,7 +15,7 @@ public class Deposit
         Size = size;
         ClimateControl = climateControl;
         Promotions = promotions;
-        AvailabilityPeriods = new List<(DateOnly, DateOnly)>();
+        AvailabilityPeriods = new List<DateRange>();
     }
 
     public bool ClimateControl { get; set; }
@@ -51,7 +51,7 @@ public class Deposit
         }
     }
 
-    public List<(DateOnly,DateOnly)> AvailabilityPeriods { get; set; }
+    public List<DateRange> AvailabilityPeriods { get; set; }
 
     private void EnsureNameLengthIsValid(string name)
     {
@@ -84,7 +84,7 @@ public class Deposit
         return Promotions.Sum(p => p.Discount);
     }
 
-    public void AddAvailabilityPeriod((DateOnly, DateOnly) availabilityPeriod)
+    public void AddAvailabilityPeriod(DateRange availabilityPeriod)
     {
         AvailabilityPeriods.Add(availabilityPeriod);
     }

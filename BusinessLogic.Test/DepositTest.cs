@@ -116,8 +116,7 @@ public class DepositTest
     {
         // Arrange
         var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
-        (DateOnly, DateOnly) availabilityPeriod = new(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
-        
+        var availabilityPeriod = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));        
         // Act
         deposit.AddAvailabilityPeriod(availabilityPeriod);
         

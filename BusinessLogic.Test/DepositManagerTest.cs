@@ -163,4 +163,24 @@ public class DepositManagerTest
         // Assert
         Assert.AreEqual("Deposit name is already taken.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCanAddAviabilityPeriodToDeposit()
+    {
+        // Arrange
+        var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
+        _depositManager.Add(deposit, _adminCredentials);
+        var aviabilityPeriod = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+
+        // Act
+        _depositManager.AddAviabilityPeriod(Name, aviabilityPeriod);
+
+        // Assert
+        var deposits = _depositManager.GetAllDeposits();
+        Assert.AreEqual(1, deposits.Count);
+        Assert.AreEqual(1, deposits[0].AvailabilityPeriods.Count);
+        Assert.AreEqual(DateOnly.FromDateTime(DateTime.Now), deposits[0].AvailabilityPeriods[0].StartDate);
+        Assert.AreEqual(DateOnly.FromDateTime(DateTime.Now.AddDays(1)), deposits[0].AvailabilityPeriods[0].EndDate);
+    }
 }

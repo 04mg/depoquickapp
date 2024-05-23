@@ -59,4 +59,9 @@ public class DepositManager
         if (Deposits.Any(d => d.HasPromotion(id)))
             throw new ArgumentException("There are existing deposits for this promotion.");
     }
+
+    public void AddAviabilityPeriod(string deposit, DateRange aviabilityPeriod)
+    {
+        throw new NotImplementedException();
+    }
 }
