@@ -165,16 +165,16 @@ public class DepositManagerTest
     }
     
     [TestMethod]
-    public void TestCanAddAviabilityPeriodToDeposit()
+    public void TestCanAddAvailabilityPeriodToDeposit()
     {
         // Arrange
         var promotionList = new List<Promotion> { _promotionManager.GetAllPromotions(_adminCredentials)[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
         _depositManager.Add(deposit, _adminCredentials);
-        var aviabilityPeriod = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        var availabilityPeriod = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
 
         // Act
-        _depositManager.AddAviabilityPeriod(Name, aviabilityPeriod);
+        _depositManager.AddAvailabilityPeriod(Name, availabilityPeriod);
 
         // Assert
         var deposits = _depositManager.GetAllDeposits();
