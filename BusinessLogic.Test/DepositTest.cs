@@ -98,4 +98,16 @@ public class DepositTest
         // Assert
         Assert.AreEqual("Name is invalid, it should only contain letters and whitespaces.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCantCreateDepositIfNameIsLongerThan100()
+    {
+        var invalidName = string.Concat(Enumerable.Repeat("a", 101));
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+            new Deposit(invalidName, Area, Size, ClimateControl, _promotionList));
+
+        // Assert
+        Assert.AreEqual("Name is invalid, it should be lesser or equal to 100 characters.", exception.Message);
+    }
 }
