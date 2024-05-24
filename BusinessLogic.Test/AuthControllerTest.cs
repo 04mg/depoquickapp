@@ -154,7 +154,7 @@ public class AuthControllerTest
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
-            authController.GetUserByEmail(Email, credentials);
+            authController.GetUser(Email, credentials);
         });
 
         // Assert
@@ -182,7 +182,7 @@ public class AuthControllerTest
         // Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
         {
-            authController.GetUserByEmail(Email, credentials);
+            authController.GetUser(Email, credentials);
         });
 
         // Assert

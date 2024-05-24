@@ -1,16 +1,22 @@
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
+using BusinessLogic.Repositories;
 
 namespace BusinessLogic.Managers;
 
-public class DepositManager
+public class DepositController
 {
-    private List<Deposit> Deposits { get; } = new();
+    private readonly IDepositRepository _depositRepository;
+    private List<Deposit> AllDeposits => _depositRepository.GetAll().ToList();
+
+    public DepositController()
+    {
+        _depositRepository = new DepositRepository();
+    }
 
     public void EnsureDepositExists(string name)
     {
-        name = name.ToLower();
-        if (Deposits.All(d => d.Name.ToLower() != name)) throw new ArgumentException("Deposit not found.");
+        if (!_depositRepository.Exists(name)) throw new ArgumentException("Deposit not found.");
     }
 
     private static void EnsureUserIsAdmin(Credentials credentials)
@@ -19,23 +25,22 @@ public class DepositManager
             throw new UnauthorizedAccessException("Only administrators can manage deposits.");
     }
 
-    public Deposit GetDepositById(string name)
+    public Deposit GetDeposit(string name)
     {
-        name = name.ToLower();
-        return Deposits.First(d => d.Name.ToLower() == name);
+        return _depositRepository.Get(name);
     }
 
     public void Add(Deposit deposit, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
         EnsureDepositNameIsNotTaken(deposit.Name);
-        Deposits.Add(deposit);
+        _depositRepository.Add(deposit);
     }
 
     private void EnsureDepositNameIsNotTaken(string depositName)
     {
         depositName = depositName.ToLower();
-        if (Deposits.Any(d => d.Name.ToLower() == depositName))
+        if (AllDeposits.Any(d => d.Name.ToLower() == depositName))
             throw new ArgumentException("Deposit name is already taken.");
     }
 
@@ -43,20 +48,17 @@ public class DepositManager
     {
         EnsureDepositExists(name);
         EnsureUserIsAdmin(credentials);
-
-        var deposit = GetDepositById(name);
-        Deposits.Remove(deposit);
+        _depositRepository.Delete(name);
     }
 
-    public List<Deposit> GetAllDeposits()
+    public IEnumerable<Deposit> GetAllDeposits()
     {
-        return Deposits;
+        return AllDeposits;
     }
 
-    public void EnsureThereAreNoDepositsWithThisPromotion(int id, Credentials credentials)
+    public void EnsureThereAreNoDepositsWithThisPromotion(int promotionId)
     {
-        EnsureUserIsAdmin(credentials);
-        if (Deposits.Any(d => d.HasPromotion(id)))
+        if (AllDeposits.Any(d => d.Promotions.Any(p => p.Id == promotionId)))
             throw new ArgumentException("There are existing deposits for this promotion.");
     }
 }

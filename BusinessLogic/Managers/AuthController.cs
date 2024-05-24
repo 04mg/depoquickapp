@@ -72,7 +72,7 @@ public class AuthController
         return credentials;
     }
 
-    public User GetUserByEmail(string email, Credentials credentials)
+    public User GetUser(string email, Credentials credentials)
     {
         EnsureUserIsRegistered(email);
         EnsureUserIsAdminOrSameUser(email, credentials);

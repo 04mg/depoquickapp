@@ -9,14 +9,14 @@ public class DepoQuickApp
 {
     private readonly AuthController _authController;
     private readonly BookingController _bookingController;
-    private readonly DepositManager _depositManager;
+    private readonly DepositController _depositController;
     private readonly PromotionManager _promotionManager;
     
     public DepoQuickApp()
     {
         _authController = new AuthController();
         _bookingController = new BookingController();
-        _depositManager = new DepositManager();
+        _depositController = new DepositController();
         _promotionManager = new PromotionManager();
     }
 
@@ -60,7 +60,7 @@ public class DepoQuickApp
 
     public void DeletePromotion(int promotionId, Credentials credentials)
     {
-        _depositManager.EnsureThereAreNoDepositsWithThisPromotion(promotionId, credentials);
+        _depositController.EnsureThereAreNoDepositsWithThisPromotion(promotionId);
         _promotionManager.Delete(promotionId, credentials);
     }
 
@@ -91,13 +91,13 @@ public class DepoQuickApp
     {
         var promotions = CreatePromotionListFromDto(depositDto);
         var deposit = new Deposit(depositDto.Name, depositDto.Area, depositDto.Size, depositDto.ClimateControl, promotions);
-        _depositManager.Add(deposit, credentials);
+        _depositController.Add(deposit, credentials);
     }
 
     public void DeleteDeposit(string depositName, Credentials credentials)
     {
         _bookingController.EnsureThereAreNoBookingsWithThisDeposit(depositName);
-        _depositManager.Delete(depositName, credentials);
+        _depositController.Delete(depositName, credentials);
     }
 
     private List<Promotion> CreatePromotionListFromDto(AddDepositDto depositDto)
@@ -114,7 +114,7 @@ public class DepoQuickApp
 
     public List<DepositDto> ListAllDeposits()
     {
-        return _depositManager.GetAllDeposits().Select(d => new DepositDto
+        return _depositController.GetAllDeposits().Select(d => new DepositDto
         {
             Name = d.Name,
             Area = d.Area,
@@ -126,7 +126,7 @@ public class DepoQuickApp
 
     public DepositDto GetDeposit(string depositName)
     {
-        var deposit = _depositManager.GetDepositById(depositName);
+        var deposit = _depositController.GetDeposit(depositName);
         return new DepositDto
         {
             Name = deposit.Name,
@@ -139,9 +139,9 @@ public class DepoQuickApp
 
     public void AddBooking(AddBookingDto addBookingDto, Credentials credentials)
     {
-        _depositManager.EnsureDepositExists(addBookingDto.DepositName);
-        var deposit = _depositManager.GetDepositById(addBookingDto.DepositName);
-        var user = _authController.GetUserByEmail(addBookingDto.Email, credentials);
+        _depositController.EnsureDepositExists(addBookingDto.DepositName);
+        var deposit = _depositController.GetDeposit(addBookingDto.DepositName);
+        var user = _authController.GetUser(addBookingDto.Email, credentials);
         var priceCalculator = new PriceCalculator();
         var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo, priceCalculator);
         _bookingController.AddBooking(booking);
@@ -150,7 +150,7 @@ public class DepoQuickApp
     public double CalculateBookingPrice(AddBookingDto addBookingDto)
     {
         var priceCalculator = new PriceCalculator();
-        var deposit = _depositManager.GetDepositById(addBookingDto.DepositName);
+        var deposit = _depositController.GetDeposit(addBookingDto.DepositName);
         return priceCalculator.CalculatePrice(deposit,
             new Tuple<DateOnly, DateOnly>(addBookingDto.DateFrom, addBookingDto.DateTo));
     }
