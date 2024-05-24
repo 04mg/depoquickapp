@@ -24,7 +24,7 @@ public class PromotionManagerTest
 
     private void RegisterUsers()
     {
-        var authManager = new AuthManager();
+        var authManager = new AuthController();
 
         const string passwordConfirmation = "12345678@mE";
         var admin = new User(

@@ -7,10 +7,18 @@ namespace BusinessLogic;
 
 public class DepoQuickApp
 {
-    private readonly AuthManager _authManager = new();
-    private readonly BookingManager _bookingManager = new();
-    private readonly DepositManager _depositManager = new();
-    private readonly PromotionManager _promotionManager = new();
+    private readonly AuthController _authController;
+    private readonly BookingManager _bookingManager;
+    private readonly DepositManager _depositManager;
+    private readonly PromotionManager _promotionManager;
+    
+    public DepoQuickApp()
+    {
+        _authController = new AuthController();
+        _bookingManager = new BookingManager();
+        _depositManager = new DepositManager();
+        _promotionManager = new PromotionManager();
+    }
 
     public void RegisterUser(RegisterDto registerDto)
     {
@@ -19,12 +27,12 @@ public class DepoQuickApp
             registerDto.Email,
             registerDto.Password,
             registerDto.Rank);
-        _authManager.Register(user, registerDto.PasswordConfirmation);
+        _authController.Register(user, registerDto.PasswordConfirmation);
     }
 
     public Credentials Login(LoginDto loginDto)
     {
-        return _authManager.Login(loginDto);
+        return _authController.Login(loginDto);
     }
 
     public void AddPromotion(AddPromotionDto addPromotionDto, Credentials credentials)
@@ -133,7 +141,7 @@ public class DepoQuickApp
     {
         _depositManager.EnsureDepositExists(addBookingDto.DepositName);
         var deposit = _depositManager.GetDepositById(addBookingDto.DepositName);
-        var user = _authManager.GetUserByEmail(addBookingDto.Email, credentials);
+        var user = _authController.GetUserByEmail(addBookingDto.Email, credentials);
         var priceCalculator = new PriceCalculator();
         var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo, priceCalculator);
         _bookingManager.Add(booking);

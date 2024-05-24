@@ -12,13 +12,13 @@ public class DepositTest
     private const string Size = "Small";
     private const bool ClimateControl = true;
     private readonly PromotionManager _promotionManager = new();
-    private AuthManager _authManager = new();
+    private AuthController _authController = new();
     private List<Promotion> _promotionList = new();
 
     [TestInitialize]
     public void Initialize()
     {
-        _authManager = new AuthManager();
+        _authController = new AuthController();
         CreatePromotions();
     }
 
@@ -33,7 +33,7 @@ public class DepositTest
             "Administrator"
         );
 
-        _authManager.Register(admin, passwordConfirmation);
+        _authController.Register(admin, passwordConfirmation);
 
         var loginModel = new LoginDto
         {
@@ -41,7 +41,7 @@ public class DepositTest
             Password = admin.Password
         };
 
-        var credentials = _authManager.Login(loginModel);
+        var credentials = _authController.Login(loginModel);
 
         var promotion1 = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));

@@ -1,48 +1,18 @@
 ﻿using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Enums;
+using BusinessLogic.Repositories;
 
 namespace BusinessLogic.Managers;
 
-public class AuthManager
+public class AuthController
 {
-    private Dictionary<string, User> UsersByEmail { get; } = new();
-    private bool IsAdminRegistered { set; get; }
+    private bool _isAdminRegistered;
+    private readonly IUserRepository _userRepository;
 
-    public bool Exists(string email)
+    public AuthController()
     {
-        return UsersByEmail.ContainsKey(email);
-    }
-
-    private static void EnsurePasswordConfirmationMatch(string password, string passwordConfirmation)
-    {
-        if (password != passwordConfirmation) throw new ArgumentException("Passwords do not match.");
-    }
-
-    private void EnsurePasswordMatchWithEmail(string email, string password)
-    {
-        if (UsersByEmail[email].Password != password) throw new ArgumentException("Wrong password.");
-    }
-
-    private void EnsureUserIsRegistered(string email)
-    {
-        if (!UsersByEmail.ContainsKey(email)) throw new ArgumentException("User does not exist.");
-    }
-
-    private void EnsureUserIsNotRegistered(string email)
-    {
-        if (UsersByEmail.ContainsKey(email)) throw new ArgumentException("User already exists.");
-    }
-
-    private void EnsureSingleAdmin(UserRank rank)
-    {
-        if (rank == UserRank.Administrator && IsAdminRegistered)
-            throw new ArgumentException("There can only be one administrator.");
-    }
-
-    private void SetAdminRegisteredIfAdmin(UserRank rank)
-    {
-        if (rank == UserRank.Administrator) IsAdminRegistered = true;
+        _userRepository = new UserRepository();
     }
 
     public Credentials Register(User user, string passwordConfirmation)
@@ -52,30 +22,61 @@ public class AuthManager
         EnsurePasswordConfirmationMatch(user.Password, passwordConfirmation);
         EnsureSingleAdmin(user.Rank);
         SetAdminRegisteredIfAdmin(user.Rank);
-        UsersByEmail.Add(user.Email, user);
+        _userRepository.Add(user);
         return new Credentials { Email = user.Email, Rank = user.Rank.ToString() };
+    }
+
+    private static void EnsurePasswordConfirmationMatch(string password, string passwordConfirmation)
+    {
+        if (password != passwordConfirmation) throw new ArgumentException("Passwords do not match.");
+    }
+
+    private void EnsurePasswordMatchWithEmail(string email, string password)
+    {
+        var user = _userRepository.Get(email);
+        if (user.Password != password) throw new ArgumentException("Wrong password.");
+    }
+
+    private void EnsureUserIsRegistered(string email)
+    {
+        if (!_userRepository.Exists(email)) throw new ArgumentException("User does not exist.");
+    }
+
+    private void EnsureUserIsNotRegistered(string email)
+    {
+        if (_userRepository.Exists(email)) throw new ArgumentException("User already exists.");
+    }
+
+    private void EnsureSingleAdmin(UserRank rank)
+    {
+        if (rank == UserRank.Administrator && _isAdminRegistered)
+            throw new ArgumentException("There can only be one administrator.");
+    }
+
+    private void SetAdminRegisteredIfAdmin(UserRank rank)
+    {
+        if (rank == UserRank.Administrator) _isAdminRegistered = true;
     }
 
     private void SetRankAsAdminIfFirstUser(User user)
     {
-        if (UsersByEmail.Count == 0) user.Rank = UserRank.Administrator;
+        if (!_isAdminRegistered) user.Rank = UserRank.Administrator;
     }
 
     public Credentials Login(LoginDto loginDto)
     {
         EnsureUserIsRegistered(loginDto.Email);
         EnsurePasswordMatchWithEmail(loginDto.Email, loginDto.Password);
-        var userRank = UsersByEmail[loginDto.Email].Rank;
-        var credentials = new Credentials { Email = loginDto.Email, Rank = userRank.ToString() };
+        var user = _userRepository.Get(loginDto.Email);
+        var credentials = new Credentials { Email = loginDto.Email, Rank = user.Rank.ToString() };
         return credentials;
     }
 
     public User GetUserByEmail(string email, Credentials credentials)
     {
-        if (!Exists(email)) throw new ArgumentException("User does not exist.");
-
+        EnsureUserIsRegistered(email);
         EnsureUserIsAdminOrSameUser(email, credentials);
-        return UsersByEmail[email];
+        return _userRepository.Get(email);
     }
 
     private static void EnsureUserIsAdminOrSameUser(string requestedEmail, Credentials credentials)

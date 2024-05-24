@@ -12,7 +12,7 @@ public class BookingManagerTest
     private readonly BookingManager _bookingManager = new();
     private User? _admin;
     private Credentials _adminCredentials;
-    private AuthManager _authManager = new();
+    private AuthController _authController = new();
     private User? _client;
     private Deposit? _deposit;
     private User? _otherClient;
@@ -27,7 +27,7 @@ public class BookingManagerTest
 
     private void RegisterUsers()
     {
-        _authManager = new AuthManager();
+        _authController = new AuthController();
         const string passwordConfirmation = "12345678@mE";
 
         _admin = new User(
@@ -49,11 +49,11 @@ public class BookingManagerTest
             "12345678@mE"
         );
 
-        _authManager.Register(_admin, passwordConfirmation);
-        _adminCredentials = _authManager.Login(new LoginDto { Email = "admin@test.com", Password = "12345678@mE" });
-        _authManager.Register(_client, passwordConfirmation);
-        _userCredentials = _authManager.Login(new LoginDto { Email = "test@test.com", Password = "12345678@mE" });
-        _authManager.Register(_otherClient, passwordConfirmation);
+        _authController.Register(_admin, passwordConfirmation);
+        _adminCredentials = _authController.Login(new LoginDto { Email = "admin@test.com", Password = "12345678@mE" });
+        _authController.Register(_client, passwordConfirmation);
+        _userCredentials = _authController.Login(new LoginDto { Email = "test@test.com", Password = "12345678@mE" });
+        _authController.Register(_otherClient, passwordConfirmation);
     }
 
     private void CreateDeposit()
