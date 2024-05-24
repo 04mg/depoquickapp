@@ -5,7 +5,7 @@ using BusinessLogic.Managers;
 namespace BusinessLogic.Test;
 
 [TestClass]
-public class PromotionManagerTest
+public class PromotionControllerTest
 {
     private const string Label = "label";
     private const int Discount = 50;
@@ -13,12 +13,12 @@ public class PromotionManagerTest
     private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
-    private PromotionManager _promotionManager = new();
+    private PromotionController _promotionController = new();
 
     [TestInitialize]
     public void Initialize()
     {
-        _promotionManager = new PromotionManager();
+        _promotionController = new PromotionController();
         RegisterUsers();
     }
 
@@ -51,10 +51,10 @@ public class PromotionManagerTest
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
 
         // Act
-        _promotionManager.Add(promotion, _adminCredentials);
+        _promotionController.Add(promotion, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(1, _promotionManager.GetAllPromotions(_adminCredentials).Count);
+        Assert.AreEqual(1, _promotionController.GetAllPromotions(_adminCredentials).Count());
     }
 
     [TestMethod]
@@ -62,13 +62,13 @@ public class PromotionManagerTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionManager.Add(promotion, _adminCredentials);
+        _promotionController.Add(promotion, _adminCredentials);
 
         // Act
-        _promotionManager.Delete(1, _adminCredentials);
+        _promotionController.Delete(1, _adminCredentials);
 
         // Assert
-        Assert.IsFalse(_promotionManager.GetAllPromotions(_adminCredentials).Contains(promotion));
+        Assert.IsFalse(_promotionController.GetAllPromotions(_adminCredentials).Contains(promotion));
     }
 
     [TestMethod]
@@ -76,15 +76,15 @@ public class PromotionManagerTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionManager.Add(promotion, _adminCredentials);
+        _promotionController.Add(promotion, _adminCredentials);
         var modifiedPromotion = new Promotion(1, "new label", 20, DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
             DateOnly.FromDateTime(DateTime.Now.AddDays(3)));
 
         // Act
-        _promotionManager.Modify(1, modifiedPromotion, _adminCredentials);
+        _promotionController.Modify(1, modifiedPromotion, _adminCredentials);
 
         // Assert
-        Assert.IsFalse(_promotionManager.GetAllPromotions(_adminCredentials).Contains(modifiedPromotion));
+        Assert.IsFalse(_promotionController.GetAllPromotions(_adminCredentials).Contains(modifiedPromotion));
     }
 
     [TestMethod]
@@ -96,7 +96,7 @@ public class PromotionManagerTest
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _promotionManager.Add(promotion, _clientCredentials));
+                _promotionController.Add(promotion, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
@@ -107,12 +107,12 @@ public class PromotionManagerTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionManager.Add(promotion, _adminCredentials);
+        _promotionController.Add(promotion, _adminCredentials);
 
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _promotionManager.Delete(1, _clientCredentials));
+                _promotionController.Delete(1, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
@@ -123,14 +123,14 @@ public class PromotionManagerTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionManager.Add(promotion, _adminCredentials);
+        _promotionController.Add(promotion, _adminCredentials);
         var modifiedPromotion = new Promotion(1, "new label", 20, DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
             DateOnly.FromDateTime(DateTime.Now.AddDays(3)));
 
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _promotionManager.Modify(1, modifiedPromotion, _clientCredentials));
+                _promotionController.Modify(1, modifiedPromotion, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
@@ -145,7 +145,7 @@ public class PromotionManagerTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                _promotionManager.Modify(1, modifiedPromotion, _adminCredentials));
+                _promotionController.Modify(1, modifiedPromotion, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
@@ -157,7 +157,7 @@ public class PromotionManagerTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                _promotionManager.Delete(1, _adminCredentials));
+                _promotionController.Delete(1, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
@@ -168,10 +168,10 @@ public class PromotionManagerTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionManager.Add(promotion, _adminCredentials);
+        _promotionController.Add(promotion, _adminCredentials);
 
         // Act
-        var exists = _promotionManager.Exists(1);
+        var exists = _promotionController.Exists(1);
 
         // Assert
         Assert.IsTrue(exists);
@@ -181,7 +181,7 @@ public class PromotionManagerTest
     public void TestCanCheckIfPromotionDoesNotExist()
     {
         // Act
-        var exists = _promotionManager.Exists(1);
+        var exists = _promotionController.Exists(1);
 
         // Assert
         Assert.IsFalse(exists);
@@ -192,12 +192,12 @@ public class PromotionManagerTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionManager.Add(promotion, _adminCredentials);
+        _promotionController.Add(promotion, _adminCredentials);
 
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _promotionManager.GetAllPromotions(_clientCredentials));
+                _promotionController.GetAllPromotions(_clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);

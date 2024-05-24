@@ -10,14 +10,14 @@ public class DepoQuickApp
     private readonly AuthController _authController;
     private readonly BookingController _bookingController;
     private readonly DepositController _depositController;
-    private readonly PromotionManager _promotionManager;
+    private readonly PromotionController _promotionController;
     
     public DepoQuickApp()
     {
         _authController = new AuthController();
         _bookingController = new BookingController();
         _depositController = new DepositController();
-        _promotionManager = new PromotionManager();
+        _promotionController = new PromotionController();
     }
 
     public void RegisterUser(RegisterDto registerDto)
@@ -43,12 +43,12 @@ public class DepoQuickApp
             addPromotionDto.Discount,
             addPromotionDto.DateFrom,
             addPromotionDto.DateTo);
-        _promotionManager.Add(promotion, credentials);
+        _promotionController.Add(promotion, credentials);
     }
 
     public AddPromotionDto GetPromotion(int promotionId)
     {
-        var promotion = _promotionManager.GetPromotionById(promotionId);
+        var promotion = _promotionController.GetPromotion(promotionId);
         return new AddPromotionDto
         {
             Label = promotion.Label,
@@ -61,12 +61,12 @@ public class DepoQuickApp
     public void DeletePromotion(int promotionId, Credentials credentials)
     {
         _depositController.EnsureThereAreNoDepositsWithThisPromotion(promotionId);
-        _promotionManager.Delete(promotionId, credentials);
+        _promotionController.Delete(promotionId, credentials);
     }
 
     public List<PromotionDto> ListAllPromotions(Credentials credentials)
     {
-        return _promotionManager.GetAllPromotions(credentials).Select(p => new PromotionDto
+        return _promotionController.GetAllPromotions(credentials).Select(p => new PromotionDto
         {
             Id = p.Id,
             Label = p.Label,
@@ -84,7 +84,7 @@ public class DepoQuickApp
             promotionDto.Discount,
             promotionDto.DateFrom,
             promotionDto.DateTo);
-        _promotionManager.Modify(promotionId, promotion, credentials);
+        _promotionController.Modify(promotionId, promotion, credentials);
     }
 
     public void AddDeposit(AddDepositDto depositDto, Credentials credentials)
@@ -105,8 +105,8 @@ public class DepoQuickApp
         var promotions = new List<Promotion>();
         foreach (var promotion in depositDto.PromotionList)
         {
-            _promotionManager.EnsurePromotionExists(promotion);
-            promotions.Add(_promotionManager.GetPromotionById(promotion));
+            _promotionController.EnsurePromotionExists(promotion);
+            promotions.Add(_promotionController.GetPromotion(promotion));
         }
 
         return promotions;

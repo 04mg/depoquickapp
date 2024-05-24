@@ -58,7 +58,7 @@ public class DepositController
 
     public void EnsureThereAreNoDepositsWithThisPromotion(int promotionId)
     {
-        if (AllDeposits.Any(d => d.Promotions.Any(p => p.Id == promotionId)))
+        if (AllDeposits.Any(d => d.HasPromotion(promotionId)))
             throw new ArgumentException("There are existing deposits for this promotion.");
     }
 }
