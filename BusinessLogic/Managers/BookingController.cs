@@ -1,19 +1,23 @@
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
+using BusinessLogic.Repositories;
 
 namespace BusinessLogic.Managers;
 
-public class BookingManager
+public class BookingController
 {
-    private List<Booking> Bookings { get; } = new();
+    private readonly IBookingRepository _bookingRepository;
+    private IEnumerable<Booking> AllBookings => _bookingRepository.GetAll();
 
-    private int NextBookingId => Bookings.Count > 0 ? Bookings.Max(d => d.Id) + 1 : 1;
+    public BookingController()
+    {
+        _bookingRepository = new BookingRepository();
+    }
 
-    public void Add(Booking booking)
+    public void AddBooking(Booking booking)
     {
         EnsureNoOverlappingBooking(booking);
-        booking.Id = NextBookingId;
-        Bookings.Add(booking);
+        _bookingRepository.Add(booking);
     }
 
     private void EnsureNoOverlappingBooking(Booking booking)
@@ -25,7 +29,8 @@ public class BookingManager
     private List<Booking> GetBookingsByUserAndDeposit(string email, string depositName)
     {
         depositName = depositName.ToLower();
-        return Bookings.Where(b => b.Client.Email == email && b.Deposit.Name.ToLower() == depositName).ToList();
+        return AllBookings
+            .Where(b => b.Client.Email == email && b.Deposit.Name.ToLower() == depositName).ToList();
     }
 
     private static void EnsureNoOverlappingDates(Booking booking, Booking anotherBooking)
@@ -47,15 +52,10 @@ public class BookingManager
                booking.Duration.Item2 <= anotherBooking.Duration.Item2;
     }
 
-    public bool Exists(int id)
-    {
-        return Bookings.Any(b => b.Id == id);
-    }
-
     public List<Booking> GetBookingsByEmail(string email, Credentials credentials)
     {
         EnsureUserIsAdministratorOrEmailMatches(email, credentials);
-        return Bookings.Where(b => b.Client.Email == email).ToList();
+        return AllBookings.Where(b => b.Client.Email == email).ToList();
     }
 
     private static void EnsureUserIsAdministrator(Credentials credentials)
@@ -70,47 +70,46 @@ public class BookingManager
             throw new UnauthorizedAccessException("You are not authorized to perform this action.");
     }
 
-    public void EnsureThereAreNoBookingsWithThisDeposit(string name)
-    {
-        name = name.ToLower();
-        if (Bookings.Any(booking => booking.Deposit.Name.ToLower() == name))
-            throw new ArgumentException("There are existing bookings for this deposit.");
-    }
-
-    public List<Booking> GetAllBookings(Credentials credentials)
+    public IEnumerable<Booking> GetAllBookings(Credentials credentials)
     {
         EnsureUserIsAdministrator(credentials);
-        return Bookings;
+        return AllBookings;
     }
 
-    public void Approve(int id, Credentials credentials)
+    public void ApproveBooking(int id, Credentials credentials)
     {
         EnsureUserIsAdministrator(credentials);
-        var booking = GetBookingById(id);
+        var booking = GetBooking(id);
         booking.Approve();
     }
 
-    public void Reject(int id, Credentials credentials, string message = "")
+    public void RejectBooking(int id, Credentials credentials, string message = "")
     {
         EnsureMessageIsNotEmpty(message);
         EnsureUserIsAdministrator(credentials);
-        var booking = GetBookingById(id);
+        var booking = GetBooking(id);
         booking.Reject(message);
     }
 
-    private void EnsureMessageIsNotEmpty(string message)
+    private static void EnsureMessageIsNotEmpty(string message)
     {
         if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be empty.");
     }
 
-    public Booking GetBookingById(int id)
+    public void EnsureThereAreNoBookingsWithThisDeposit(string depositName)
+    {
+        if (AllBookings.Any(b => b.Deposit.Name == depositName))
+            throw new ArgumentException("There are existing bookings for this deposit.");
+    }
+
+    public Booking GetBooking(int id)
     {
         EnsureBookingExists(id);
-        return Bookings.First(b => b.Id == id);
+        return _bookingRepository.Get(id);
     }
 
     private void EnsureBookingExists(int id)
     {
-        if (Bookings.All(b => b.Id != id)) throw new ArgumentException("Booking not found.");
+        if (!_bookingRepository.Exists(id)) throw new ArgumentException("Booking not found.");
     }
 }

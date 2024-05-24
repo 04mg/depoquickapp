@@ -7,9 +7,9 @@ using BusinessLogic.Managers;
 namespace BusinessLogic.Test;
 
 [TestClass]
-public class BookingManagerTest
+public class BookingControllerTest
 {
-    private readonly BookingManager _bookingManager = new();
+    private readonly BookingController _bookingController = new();
     private User? _admin;
     private Credentials _adminCredentials;
     private AuthController _authController = new();
@@ -75,25 +75,10 @@ public class BookingManagerTest
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
 
         // Act
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         // Assert
-        Assert.AreEqual(1, _bookingManager.GetAllBookings(_adminCredentials).Count);
-    }
-
-    [TestMethod]
-    public void TestCanCheckIfBookingExists()
-    {
-        // Arrange
-        var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
-
-        // Act
-        var bookingExists = _bookingManager.Exists(1);
-
-        // Assert
-        Assert.IsTrue(bookingExists);
+        Assert.AreEqual(1, _bookingController.GetAllBookings(_adminCredentials).Count());
     }
 
     [TestMethod]
@@ -102,10 +87,10 @@ public class BookingManagerTest
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         // Act
-        var bookings = _bookingManager.GetBookingsByEmail("test@test.com", _adminCredentials);
+        var bookings = _bookingController.GetBookingsByEmail("test@test.com", _adminCredentials);
 
         // Assert
         Assert.AreSame(bookings[0], booking);
@@ -117,10 +102,10 @@ public class BookingManagerTest
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         // Act
-        var bookings = _bookingManager.GetBookingsByEmail("test@test.com", _userCredentials);
+        var bookings = _bookingController.GetBookingsByEmail("test@test.com", _userCredentials);
 
         // Assert
         Assert.AreSame(bookings[0], booking);
@@ -134,14 +119,14 @@ public class BookingManagerTest
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         var otherBooking = new Booking(1, _deposit!, _otherClient!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
-        _bookingManager.Add(otherBooking);
+        _bookingController.AddBooking(booking);
+        _bookingController.AddBooking(otherBooking);
 
         // Act
-        var bookings = _bookingManager.GetAllBookings(_adminCredentials);
+        var bookings = _bookingController.GetAllBookings(_adminCredentials);
 
         // Assert
-        Assert.AreEqual(2, bookings.Count);
+        Assert.AreEqual(2, bookings.Count());
     }
 
     [TestMethod]
@@ -150,13 +135,14 @@ public class BookingManagerTest
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         // Act
-        _bookingManager.Approve(1, _adminCredentials);
+        _bookingController.ApproveBooking(1, _adminCredentials);
+        var bookings = _bookingController.GetAllBookings(_adminCredentials).ToList();
 
         // Assert
-        Assert.AreEqual(BookingStage.Approved, _bookingManager.GetAllBookings(_adminCredentials)[0].Stage);
+        Assert.AreEqual(BookingStage.Approved, bookings[0].Stage);
     }
 
     [TestMethod]
@@ -165,13 +151,14 @@ public class BookingManagerTest
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         // Act
-        _bookingManager.Reject(1, _adminCredentials, "Message");
+        _bookingController.RejectBooking(1, _adminCredentials, "Message");
+        var bookings = _bookingController.GetAllBookings(_adminCredentials).ToList();
 
         // Assert
-        Assert.AreEqual(BookingStage.Rejected, _bookingManager.GetAllBookings(_adminCredentials)[0].Stage);
+        Assert.AreEqual(BookingStage.Rejected, bookings[0].Stage);
     }
 
     [TestMethod]
@@ -181,13 +168,14 @@ public class BookingManagerTest
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         const string message = "example";
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         //Act
-        _bookingManager.Reject(1, _adminCredentials, message);
+        _bookingController.RejectBooking(1, _adminCredentials, message);
+        var bookings = _bookingController.GetAllBookings(_adminCredentials).ToList();
 
         //Assert
-        Assert.AreEqual(message, _bookingManager.GetAllBookings(_adminCredentials)[0].Message);
+        Assert.AreEqual(message, bookings[0].Message);
     }
 
     [TestMethod]
@@ -198,11 +186,11 @@ public class BookingManagerTest
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
         var repeatedBooking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            _bookingManager.Add(repeatedBooking));
+            _bookingController.AddBooking(repeatedBooking));
 
         // Assert
         Assert.AreEqual("User already has a booking for this period.", exception.Message);
@@ -214,11 +202,11 @@ public class BookingManagerTest
         // Arrange
         var booking = new Booking(1, _deposit!, _otherClient!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         // Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
-            _bookingManager.GetBookingsByEmail("other@test.com", _userCredentials));
+            _bookingController.GetBookingsByEmail("other@test.com", _userCredentials));
 
         // Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
@@ -230,11 +218,11 @@ public class BookingManagerTest
         // Arrange
         var booking = new Booking(1, _deposit!, _otherClient!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         // Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
-            _bookingManager.GetBookingsByEmail("other@test.com", _userCredentials));
+            _bookingController.GetBookingsByEmail("other@test.com", _userCredentials));
 
         // Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
@@ -246,11 +234,11 @@ public class BookingManagerTest
         // Arrange
         var booking = new Booking(1, _deposit!, _otherClient!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         // Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
-            _bookingManager.GetAllBookings(_userCredentials));
+            _bookingController.GetAllBookings(_userCredentials));
 
         // Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
@@ -262,11 +250,11 @@ public class BookingManagerTest
         //Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         //Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
-            _bookingManager.Approve(1, _userCredentials));
+            _bookingController.ApproveBooking(1, _userCredentials));
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
@@ -276,11 +264,11 @@ public class BookingManagerTest
         //Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         //Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
-            _bookingManager.Reject(1, _userCredentials, "message"));
+            _bookingController.RejectBooking(1, _userCredentials, "message"));
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
@@ -290,7 +278,7 @@ public class BookingManagerTest
     {
         //Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            _bookingManager.Approve(1, _adminCredentials));
+            _bookingController.ApproveBooking(1, _adminCredentials));
         //Assert
         Assert.AreEqual("Booking not found.", exception.Message);
     }
@@ -300,7 +288,7 @@ public class BookingManagerTest
     {
         //Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            _bookingManager.Reject(1, _adminCredentials, "message"));
+            _bookingController.RejectBooking(1, _adminCredentials, "message"));
         //Assert
         Assert.AreEqual("Booking not found.", exception.Message);
     }
@@ -311,11 +299,11 @@ public class BookingManagerTest
         //Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
 
         //Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            _bookingManager.Reject(1, _adminCredentials));
+            _bookingController.RejectBooking(1, _adminCredentials));
         //Assert
         Assert.AreEqual("Message cannot be empty.", exception.Message);
     }

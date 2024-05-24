@@ -8,14 +8,14 @@ namespace BusinessLogic;
 public class DepoQuickApp
 {
     private readonly AuthController _authController;
-    private readonly BookingManager _bookingManager;
+    private readonly BookingController _bookingController;
     private readonly DepositManager _depositManager;
     private readonly PromotionManager _promotionManager;
     
     public DepoQuickApp()
     {
         _authController = new AuthController();
-        _bookingManager = new BookingManager();
+        _bookingController = new BookingController();
         _depositManager = new DepositManager();
         _promotionManager = new PromotionManager();
     }
@@ -96,7 +96,7 @@ public class DepoQuickApp
 
     public void DeleteDeposit(string depositName, Credentials credentials)
     {
-        _bookingManager.EnsureThereAreNoBookingsWithThisDeposit(depositName);
+        _bookingController.EnsureThereAreNoBookingsWithThisDeposit(depositName);
         _depositManager.Delete(depositName, credentials);
     }
 
@@ -144,7 +144,7 @@ public class DepoQuickApp
         var user = _authController.GetUserByEmail(addBookingDto.Email, credentials);
         var priceCalculator = new PriceCalculator();
         var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo, priceCalculator);
-        _bookingManager.Add(booking);
+        _bookingController.AddBooking(booking);
     }
 
     public double CalculateBookingPrice(AddBookingDto addBookingDto)
@@ -157,7 +157,7 @@ public class DepoQuickApp
 
     public List<BookingDto> ListAllBookings(Credentials credentials)
     {
-        return _bookingManager.GetAllBookings(credentials).Select(b => new BookingDto
+        return _bookingController.GetAllBookings(credentials).Select(b => new BookingDto
         {
             Id = b.Id,
             DepositName = b.Deposit.Name,
@@ -171,7 +171,7 @@ public class DepoQuickApp
 
     public List<BookingDto> ListAllBookingsByEmail(string email, Credentials credentials)
     {
-        return _bookingManager.GetBookingsByEmail(email, credentials).Select(b => new BookingDto
+        return _bookingController.GetBookingsByEmail(email, credentials).Select(b => new BookingDto
         {
             Id = b.Id,
             DepositName = b.Deposit.Name,
@@ -185,7 +185,7 @@ public class DepoQuickApp
 
     public BookingDto GetBooking(int bookingId)
     {
-        var booking = _bookingManager.GetBookingById(bookingId);
+        var booking = _bookingController.GetBooking(bookingId);
         return new BookingDto
         {
             Id = booking.Id,
@@ -200,11 +200,11 @@ public class DepoQuickApp
 
     public void ApproveBooking(int bookingId, Credentials credentials)
     {
-        _bookingManager.Approve(bookingId, credentials);
+        _bookingController.ApproveBooking(bookingId, credentials);
     }
 
     public void RejectBooking(int bookingId, string message, Credentials credentials)
     {
-        _bookingManager.Reject(bookingId, credentials, message);
+        _bookingController.RejectBooking(bookingId, credentials, message);
     }
 }
