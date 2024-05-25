@@ -2,13 +2,13 @@ using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Repositories;
 
-namespace BusinessLogic.Managers;
+namespace BusinessLogic.Logic;
 
-public class PromotionController
+public class PromotionLogic
 {
     private readonly IPromotionRepository _promotionRepository;
 
-    public PromotionController()
+    public PromotionLogic()
     {
         _promotionRepository = new PromotionRepository();
     }

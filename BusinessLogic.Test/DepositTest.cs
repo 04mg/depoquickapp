@@ -1,6 +1,6 @@
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Managers;
+using BusinessLogic.Logic;
 
 namespace BusinessLogic.Test;
 
@@ -11,14 +11,14 @@ public class DepositTest
     private const string Area = "A";
     private const string Size = "Small";
     private const bool ClimateControl = true;
-    private readonly PromotionController _promotionController = new();
-    private AuthController _authController = new();
+    private readonly PromotionLogic _promotionLogic = new();
+    private AuthLogic _authLogic = new();
     private List<Promotion> _promotionList = new();
 
     [TestInitialize]
     public void Initialize()
     {
-        _authController = new AuthController();
+        _authLogic = new AuthLogic();
         CreatePromotions();
     }
 
@@ -33,7 +33,7 @@ public class DepositTest
             "Administrator"
         );
 
-        _authController.Register(admin, passwordConfirmation);
+        _authLogic.Register(admin, passwordConfirmation);
 
         var loginModel = new LoginDto
         {
@@ -41,7 +41,7 @@ public class DepositTest
             Password = admin.Password
         };
 
-        var credentials = _authController.Login(loginModel);
+        var credentials = _authLogic.Login(loginModel);
 
         var promotion1 = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
@@ -49,10 +49,10 @@ public class DepositTest
         var promotion2 = new Promotion(2, "label", 50, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
 
-        _promotionController.Add(promotion1, credentials);
-        _promotionController.Add(promotion2, credentials);
+        _promotionLogic.Add(promotion1, credentials);
+        _promotionLogic.Add(promotion2, credentials);
 
-        _promotionList = _promotionController.GetAllPromotions(credentials).ToList();
+        _promotionList = _promotionLogic.GetAllPromotions(credentials).ToList();
     }
 
     [TestMethod]

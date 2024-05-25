@@ -1,11 +1,11 @@
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Managers;
+using BusinessLogic.Logic;
 
 namespace BusinessLogic.Test;
 
 [TestClass]
-public class AuthControllerTest
+public class AuthLogicTest
 {
     private const string NameSurname = "Name Surname";
     private const string Email = "test@test.com";
@@ -28,7 +28,7 @@ public class AuthControllerTest
     public void TestCanRegisterWithValidCredentials()
     {
         // Arrange
-        var authController = new AuthController();
+        var authController = new AuthLogic();
 
         // Act
         var credentials = authController.Register(Client, Password);
@@ -41,7 +41,7 @@ public class AuthControllerTest
     public void TestCanLoginWithValidCredentials()
     {
         // Arrange
-        var authController = new AuthController();
+        var authController = new AuthLogic();
         authController.Register(Client, Password);
 
         // Act
@@ -55,7 +55,7 @@ public class AuthControllerTest
     public void TestCantRegisterWithSameEmail()
     {
         // Arrange
-        var authController = new AuthController();
+        var authController = new AuthLogic();
         var otherClient = new User("Other Name", Email, "OtherP@ssw0rd");
 
         authController.Register(Client, Password);
@@ -68,7 +68,7 @@ public class AuthControllerTest
     public void TestCantRegisterWithNonMatchingPasswords()
     {
         // Arrange
-        var authController = new AuthController();
+        var authController = new AuthLogic();
 
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() => { authController.Register(Client, "wrong"); });
@@ -81,7 +81,7 @@ public class AuthControllerTest
     public void TestCantLoginWithWrongPassword()
     {
         // Arrange
-        var authController = new AuthController();
+        var authController = new AuthLogic();
         authController.Register(Client, Password);
 
         // Act
@@ -99,7 +99,7 @@ public class AuthControllerTest
     public void TestCantLoginWithNonExistingUser()
     {
         // Arrange
-        var authController = new AuthController();
+        var authController = new AuthLogic();
 
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
@@ -115,7 +115,7 @@ public class AuthControllerTest
     public void TestCantRegisterMoreThanOneAdmin()
     {
         // Arrange
-        var authController = new AuthController();
+        var authController = new AuthLogic();
         var admin = new User(
             NameSurname,
             Email,
@@ -144,7 +144,7 @@ public class AuthControllerTest
     public void TestCantGetUserByEmailIfUserDoesNotExist()
     {
         // Arrange
-        var authController = new AuthController();
+        var authController = new AuthLogic();
         var credentials = new Credentials
         {
             Email = "test@test.com",
@@ -165,7 +165,7 @@ public class AuthControllerTest
     public void TestCantGetUserByEmailOfAnotherUserIfNotAdministrator()
     {
         // Arrange
-        var authController = new AuthController();
+        var authController = new AuthLogic();
         authController.Register(Client, Password);
         var otherClient = new User(
             "Other Name",
@@ -193,7 +193,7 @@ public class AuthControllerTest
     public void TestFirstUserIsAdmin()
     {
         // Arrange
-        var authController = new AuthController();
+        var authController = new AuthLogic();
         var admin = new User(
             NameSurname,
             Email,

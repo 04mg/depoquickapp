@@ -2,14 +2,14 @@ using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Repositories;
 
-namespace BusinessLogic.Managers;
+namespace BusinessLogic.Logic;
 
-public class DepositController
+public class DepositLogic
 {
     private readonly IDepositRepository _depositRepository;
     private List<Deposit> AllDeposits => _depositRepository.GetAll().ToList();
 
-    public DepositController()
+    public DepositLogic()
     {
         _depositRepository = new DepositRepository();
     }

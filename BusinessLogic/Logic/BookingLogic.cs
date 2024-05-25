@@ -2,14 +2,14 @@ using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Repositories;
 
-namespace BusinessLogic.Managers;
+namespace BusinessLogic.Logic;
 
-public class BookingController
+public class BookingLogic
 {
     private readonly IBookingRepository _bookingRepository;
     private IEnumerable<Booking> AllBookings => _bookingRepository.GetAll();
 
-    public BookingController()
+    public BookingLogic()
     {
         _bookingRepository = new BookingRepository();
     }
