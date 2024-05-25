@@ -99,7 +99,6 @@ public class DepoQuickApp
 
     public void DeleteDeposit(string depositName, Credentials credentials)
     {
-        _bookingLogic.EnsureThereAreNoBookingsWithThisDeposit(depositName);
         _depositLogic.Delete(depositName, credentials);
     }
 

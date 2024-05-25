@@ -51,6 +51,7 @@ public class DepositLogic
 
     public void Delete(string name, Credentials credentials)
     {
+        EnsureThereAreNoBookingsForThisDeposit(name);
         EnsureDepositExists(name);
         EnsureUserIsAdmin(credentials);
         _depositRepository.Delete(name);
@@ -59,6 +60,12 @@ public class DepositLogic
     public IEnumerable<Deposit> GetAllDeposits()
     {
         return AllDeposits;
+    }
+
+    private void EnsureThereAreNoBookingsForThisDeposit(string depositName)
+    {
+        if (_bookingRepository.GetAll().Any(b => b.Deposit.Name == depositName))
+            throw new ArgumentException("There are existing bookings for this deposit.");
     }
 
     public void EnsureThereAreNoDepositsWithThisPromotion(int promotionId)

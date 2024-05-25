@@ -101,12 +101,6 @@ public class BookingLogic
         if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be empty.");
     }
 
-    public void EnsureThereAreNoBookingsWithThisDeposit(string depositName)
-    {
-        if (AllBookings.Any(b => b.Deposit.Name == depositName))
-            throw new ArgumentException("There are existing bookings for this deposit.");
-    }
-
     public Booking GetBooking(int id)
     {
         EnsureBookingExists(id);
