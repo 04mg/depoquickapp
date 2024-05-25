@@ -7,10 +7,12 @@ namespace BusinessLogic.Logic;
 public class PromotionLogic
 {
     private readonly IPromotionRepository _promotionRepository;
+    private readonly IDepositRepository _depositRepository;
 
-    public PromotionLogic()
+    public PromotionLogic(IPromotionRepository promotionRepository, IDepositRepository depositRepository)
     {
-        _promotionRepository = new PromotionRepository();
+        _promotionRepository = promotionRepository;
+        _depositRepository = depositRepository;
     }
 
     private static void EnsureUserIsAdmin(Credentials credentials)
@@ -28,7 +30,7 @@ public class PromotionLogic
     {
         return _promotionRepository.Get(id);
     }
-    
+
     public bool Exists(int id)
     {
         return _promotionRepository.Exists(id);

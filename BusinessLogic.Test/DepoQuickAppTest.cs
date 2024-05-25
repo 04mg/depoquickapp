@@ -1,4 +1,5 @@
 using BusinessLogic.DTOs;
+using BusinessLogic.Repositories;
 
 namespace BusinessLogic.Test;
 
@@ -8,7 +9,10 @@ public class DepoQuickAppTest
     private AddBookingDto _addBookingDto = new();
     private AddDepositDto _addDepositDto;
     private AddPromotionDto _addPromotionDto;
-    private DepoQuickApp _app = new();
+
+    private DepoQuickApp _app = new(new UserRepository(), new PromotionRepository(), new DepositRepository(),
+        new BookingRepository());
+
     private Credentials _credentials;
     private LoginDto _loginDto;
     private PromotionDto _promotionDto;
@@ -17,7 +21,8 @@ public class DepoQuickAppTest
     [TestInitialize]
     public void Initialize()
     {
-        _app = new DepoQuickApp();
+        _app = new DepoQuickApp(new UserRepository(), new PromotionRepository(), new DepositRepository(),
+            new BookingRepository());
 
         _registerDto = new RegisterDto
         {
@@ -243,7 +248,8 @@ public class DepoQuickAppTest
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => _app.DeleteDeposit(_addDepositDto.Name, credentials));
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() => _app.DeleteDeposit(_addDepositDto.Name, credentials));
 
         // Assert
         Assert.AreEqual("There are existing bookings for this deposit.", exception.Message);

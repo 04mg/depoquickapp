@@ -2,6 +2,7 @@ using BusinessLogic.Calculators;
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Logic;
+using BusinessLogic.Repositories;
 
 namespace BusinessLogic;
 
@@ -11,13 +12,14 @@ public class DepoQuickApp
     private readonly BookingLogic _bookingLogic;
     private readonly DepositLogic _depositLogic;
     private readonly PromotionLogic _promotionLogic;
-    
-    public DepoQuickApp()
+
+    public DepoQuickApp(IUserRepository userRepository, IPromotionRepository promotionRepository,
+        IDepositRepository depositRepository, IBookingRepository bookingRepository)
     {
-        _authLogic = new AuthLogic();
-        _bookingLogic = new BookingLogic();
-        _depositLogic = new DepositLogic();
-        _promotionLogic = new PromotionLogic();
+        _authLogic = new AuthLogic(userRepository);
+        _promotionLogic = new PromotionLogic(promotionRepository, depositRepository);
+        _depositLogic = new DepositLogic(depositRepository, bookingRepository, promotionRepository);
+        _bookingLogic = new BookingLogic(bookingRepository, userRepository, depositRepository);
     }
 
     public void RegisterUser(RegisterDto registerDto)
@@ -90,7 +92,8 @@ public class DepoQuickApp
     public void AddDeposit(AddDepositDto depositDto, Credentials credentials)
     {
         var promotions = CreatePromotionListFromDto(depositDto);
-        var deposit = new Deposit(depositDto.Name, depositDto.Area, depositDto.Size, depositDto.ClimateControl, promotions);
+        var deposit = new Deposit(depositDto.Name, depositDto.Area, depositDto.Size, depositDto.ClimateControl,
+            promotions);
         _depositLogic.Add(deposit, credentials);
     }
 

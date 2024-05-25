@@ -1,6 +1,7 @@
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Logic;
+using BusinessLogic.Repositories;
 
 namespace BusinessLogic.Test;
 
@@ -13,21 +14,29 @@ public class DepositLogicTest
     private const bool ClimateControl = true;
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
-    private DepositLogic _depositLogic = new();
-    private PromotionLogic _promotionLogic = new();
+
+    private DepositLogic _depositLogic =
+        new(new DepositRepository(), new BookingRepository(), new PromotionRepository());
+
+    private PromotionLogic _promotionLogic = new(new PromotionRepository(), new DepositRepository());
+
+    private readonly AuthLogic _authLogic = new(new UserRepository());
 
     [TestInitialize]
     public void Initialize()
     {
-        _depositLogic = new DepositLogic();
+        var depositRepository = new DepositRepository();
+        var bookingRepository = new BookingRepository();
+        var promotionRepository = new PromotionRepository();
+        _depositLogic = new DepositLogic(depositRepository, bookingRepository, promotionRepository);
+        _promotionLogic = new PromotionLogic(promotionRepository, depositRepository);
+
         RegisterUsers();
         CreatePromotion();
     }
 
     private void RegisterUsers()
     {
-        var authManager = new AuthLogic();
-
         const string passwordConfirmation = "12345678@mE";
         var admin = new User(
             "Name Surname",
@@ -41,17 +50,15 @@ public class DepositLogicTest
             "12345678@mE"
         );
 
-        authManager.Register(admin, passwordConfirmation);
-        authManager.Register(client, passwordConfirmation);
+        _authLogic.Register(admin, passwordConfirmation);
+        _authLogic.Register(client, passwordConfirmation);
 
-        _adminCredentials = authManager.Login(new LoginDto { Email = admin.Email, Password = admin.Password });
-        _clientCredentials = authManager.Login(new LoginDto { Email = client.Email, Password = client.Password });
+        _adminCredentials = _authLogic.Login(new LoginDto { Email = admin.Email, Password = admin.Password });
+        _clientCredentials = _authLogic.Login(new LoginDto { Email = client.Email, Password = client.Password });
     }
 
     private void CreatePromotion()
     {
-        _promotionLogic = new PromotionLogic();
-
         var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
 

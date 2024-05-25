@@ -10,9 +10,9 @@ public class AuthLogic
     private bool _isAdminRegistered;
     private readonly IUserRepository _userRepository;
 
-    public AuthLogic()
+    public AuthLogic(IUserRepository userRepository)
     {
-        _userRepository = new UserRepository();
+        _userRepository = userRepository;
     }
 
     public Credentials Register(User user, string passwordConfirmation)

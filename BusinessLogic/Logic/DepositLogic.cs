@@ -7,11 +7,16 @@ namespace BusinessLogic.Logic;
 public class DepositLogic
 {
     private readonly IDepositRepository _depositRepository;
+    private readonly IBookingRepository _bookingRepository;
+    private readonly IPromotionRepository _promotionRepository;
     private List<Deposit> AllDeposits => _depositRepository.GetAll().ToList();
 
-    public DepositLogic()
+    public DepositLogic(IDepositRepository depositRepository, IBookingRepository bookingRepository,
+        IPromotionRepository promotionRepository)
     {
-        _depositRepository = new DepositRepository();
+        _depositRepository = depositRepository;
+        _bookingRepository = bookingRepository;
+        _promotionRepository = promotionRepository;
     }
 
     public void EnsureDepositExists(string name)

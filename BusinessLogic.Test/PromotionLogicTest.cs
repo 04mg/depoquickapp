@@ -1,6 +1,7 @@
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Logic;
+using BusinessLogic.Repositories;
 
 namespace BusinessLogic.Test;
 
@@ -13,18 +14,18 @@ public class PromotionLogicTest
     private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
-    private PromotionLogic _promotionLogic = new();
+    private PromotionLogic _promotionLogic = new(new PromotionRepository(), new DepositRepository());
 
     [TestInitialize]
     public void Initialize()
     {
-        _promotionLogic = new PromotionLogic();
+        _promotionLogic = new PromotionLogic(new PromotionRepository(), new DepositRepository());
         RegisterUsers();
     }
 
     private void RegisterUsers()
     {
-        var authManager = new AuthLogic();
+        var authManager = new AuthLogic(new UserRepository());
 
         const string passwordConfirmation = "12345678@mE";
         var admin = new User(
