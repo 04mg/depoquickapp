@@ -47,7 +47,14 @@ public class PromotionLogic
     {
         EnsureUserIsAdmin(credentials);
         EnsurePromotionExists(id);
+        EnsureThereAreNoDepositsForThisPromotion(id);
         _promotionRepository.Delete(id);
+    }
+
+    private void EnsureThereAreNoDepositsForThisPromotion(int id)
+    {
+        if (_depositRepository.GetAll().Any(d => d.HasPromotion(id)))
+            throw new ArgumentException("There are existing deposits for this promotion.");
     }
 
     public void Modify(int id, Promotion newPromotion, Credentials credentials)

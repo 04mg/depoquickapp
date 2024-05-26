@@ -8,15 +8,12 @@ public class DepositLogic
 {
     private readonly IDepositRepository _depositRepository;
     private readonly IBookingRepository _bookingRepository;
-    private readonly IPromotionRepository _promotionRepository;
     private List<Deposit> AllDeposits => _depositRepository.GetAll().ToList();
 
-    public DepositLogic(IDepositRepository depositRepository, IBookingRepository bookingRepository,
-        IPromotionRepository promotionRepository)
+    public DepositLogic(IDepositRepository depositRepository, IBookingRepository bookingRepository)
     {
         _depositRepository = depositRepository;
         _bookingRepository = bookingRepository;
-        _promotionRepository = promotionRepository;
     }
 
     private void EnsureDepositExists(string name)
@@ -67,11 +64,5 @@ public class DepositLogic
     {
         if (_bookingRepository.GetAll().Any(b => b.Deposit.Name == depositName))
             throw new ArgumentException("There are existing bookings for this deposit.");
-    }
-
-    public void EnsureThereAreNoDepositsWithThisPromotion(int promotionId)
-    {
-        if (AllDeposits.Any(d => d.HasPromotion(promotionId)))
-            throw new ArgumentException("There are existing deposits for this promotion.");
     }
 }

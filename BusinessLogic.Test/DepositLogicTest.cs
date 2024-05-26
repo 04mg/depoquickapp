@@ -16,7 +16,7 @@ public class DepositLogicTest
     private Credentials _clientCredentials;
 
     private DepositLogic _depositLogic =
-        new(new DepositRepository(), new BookingRepository(), new PromotionRepository());
+        new(new DepositRepository(), new BookingRepository());
 
     private PromotionLogic _promotionLogic = new(new PromotionRepository(), new DepositRepository());
 
@@ -28,7 +28,7 @@ public class DepositLogicTest
         var depositRepository = new DepositRepository();
         var bookingRepository = new BookingRepository();
         var promotionRepository = new PromotionRepository();
-        _depositLogic = new DepositLogic(depositRepository, bookingRepository, promotionRepository);
+        _depositLogic = new DepositLogic(depositRepository, bookingRepository);
         _promotionLogic = new PromotionLogic(promotionRepository, depositRepository);
 
         RegisterUsers();

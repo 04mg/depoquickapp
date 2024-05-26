@@ -22,8 +22,7 @@ public class BookingLogicTest
 
     private AuthLogic AuthLogic { get; set; } = new AuthLogic(new UserRepository());
 
-    private DepositLogic DepositLogic { get; set; } = new DepositLogic(new DepositRepository(), new BookingRepository(),
-        new PromotionRepository());
+    private DepositLogic DepositLogic { get; set; } = new DepositLogic(new DepositRepository(), new BookingRepository());
 
     [TestInitialize]
     public void Initialize()
@@ -31,11 +30,10 @@ public class BookingLogicTest
         var userRepository = new UserRepository();
         var depositRepository = new DepositRepository();
         var bookingRepository = new BookingRepository();
-        var promotionRepository = new PromotionRepository();
 
         BookingLogic = new BookingLogic(bookingRepository, userRepository, depositRepository);
         AuthLogic = new AuthLogic(userRepository);
-        DepositLogic = new DepositLogic(depositRepository, bookingRepository, promotionRepository);
+        DepositLogic = new DepositLogic(depositRepository, bookingRepository);
 
         RegisterUsers();
         CreateDeposit();

@@ -18,7 +18,7 @@ public class DepoQuickApp
     {
         _authLogic = new AuthLogic(userRepository);
         _promotionLogic = new PromotionLogic(promotionRepository, depositRepository);
-        _depositLogic = new DepositLogic(depositRepository, bookingRepository, promotionRepository);
+        _depositLogic = new DepositLogic(depositRepository, bookingRepository);
         _bookingLogic = new BookingLogic(bookingRepository, userRepository, depositRepository);
     }
 
@@ -62,7 +62,6 @@ public class DepoQuickApp
 
     public void DeletePromotion(int promotionId, Credentials credentials)
     {
-        _depositLogic.EnsureThereAreNoDepositsWithThisPromotion(promotionId);
         _promotionLogic.Delete(promotionId, credentials);
     }
 
