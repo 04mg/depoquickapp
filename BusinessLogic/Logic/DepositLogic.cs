@@ -19,7 +19,7 @@ public class DepositLogic
         _promotionRepository = promotionRepository;
     }
 
-    public void EnsureDepositExists(string name)
+    private void EnsureDepositExists(string name)
     {
         if (!_depositRepository.Exists(name)) throw new ArgumentException("Deposit not found.");
     }
@@ -32,6 +32,7 @@ public class DepositLogic
 
     public Deposit GetDeposit(string name)
     {
+        EnsureDepositExists(name);
         return _depositRepository.Get(name);
     }
 

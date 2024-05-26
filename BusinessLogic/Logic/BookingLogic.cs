@@ -21,8 +21,14 @@ public class BookingLogic
 
     public void AddBooking(Booking booking)
     {
+        EnsureDepositExists(booking.Deposit.Name);
         EnsureNoOverlappingBooking(booking);
         _bookingRepository.Add(booking);
+    }
+
+    private void EnsureDepositExists(string name)
+    {
+        if (!_depositRepository.Exists(name)) throw new ArgumentException("Deposit not found.");
     }
 
     private void EnsureNoOverlappingBooking(Booking booking)
