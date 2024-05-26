@@ -104,14 +104,7 @@ public class DepoQuickApp
 
     private List<Promotion> CreatePromotionListFromDto(AddDepositDto depositDto)
     {
-        var promotions = new List<Promotion>();
-        foreach (var promotion in depositDto.PromotionList)
-        {
-            _promotionLogic.EnsurePromotionExists(promotion);
-            promotions.Add(_promotionLogic.GetPromotion(promotion));
-        }
-
-        return promotions;
+        return depositDto.PromotionList.Select(promotion => _promotionLogic.GetPromotion(promotion)).ToList();
     }
 
     public List<DepositDto> ListAllDeposits()

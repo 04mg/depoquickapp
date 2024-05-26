@@ -21,13 +21,14 @@ public class PromotionLogic
             throw new UnauthorizedAccessException("Only administrators can manage promotions.");
     }
 
-    public void EnsurePromotionExists(int id)
+    private void EnsurePromotionExists(int id)
     {
         if (!_promotionRepository.Exists(id)) throw new ArgumentException("Promotion not found.");
     }
 
     public Promotion GetPromotion(int id)
     {
+        EnsurePromotionExists(id);
         return _promotionRepository.Get(id);
     }
 
