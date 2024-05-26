@@ -1,3 +1,4 @@
+using BusinessLogic.Calculators;
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Logic;
@@ -16,11 +17,13 @@ public class DepositLogicTest
     private Credentials _clientCredentials;
 
     private DepositLogic _depositLogic =
-        new(new DepositRepository(), new BookingRepository());
+        new(new DepositRepository(), new BookingRepository(), new PromotionRepository());
 
     private PromotionLogic _promotionLogic = new(new PromotionRepository(), new DepositRepository());
 
-    private readonly AuthLogic _authLogic = new(new UserRepository());
+    private BookingLogic _bookingLogic = new(new BookingRepository(), new DepositRepository(), new UserRepository());
+
+    private AuthLogic _authLogic = new(new UserRepository());
 
     [TestInitialize]
     public void Initialize()
@@ -28,7 +31,10 @@ public class DepositLogicTest
         var depositRepository = new DepositRepository();
         var bookingRepository = new BookingRepository();
         var promotionRepository = new PromotionRepository();
-        _depositLogic = new DepositLogic(depositRepository, bookingRepository);
+        var userRepository = new UserRepository();
+        _authLogic = new AuthLogic(userRepository);
+        _bookingLogic = new BookingLogic(bookingRepository, depositRepository, userRepository);
+        _depositLogic = new DepositLogic(depositRepository, bookingRepository, promotionRepository);
         _promotionLogic = new PromotionLogic(promotionRepository, depositRepository);
 
         RegisterUsers();
@@ -179,5 +185,49 @@ public class DepositLogicTest
 
         // Assert
         Assert.AreEqual("Deposit name is already taken.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantDeleteDepositIncludedInBookings()
+    {
+        // Arrange
+        var promotionList = new List<Promotion>
+            { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
+        _depositLogic.Add(deposit, _adminCredentials);
+        _bookingLogic.AddBooking(new Booking(1, deposit, new User(
+                "Name Surname",
+                "client@client.com",
+                "12345678@mE"
+            ), DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator()));
+
+
+        // Act
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() => _depositLogic.Delete(Name, _adminCredentials));
+
+        // Assert
+        Assert.AreEqual("There are existing bookings for this deposit.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantCreateDepositIfPromotionDoesNotExist()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, new List<Promotion>
+        {
+            new Promotion(2, "label", 50, DateOnly.FromDateTime(DateTime.Now),
+                DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
+        });
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            _depositLogic.Add(deposit, _adminCredentials);
+        });
+
+        // Assert
+        Assert.IsTrue(exception.Message.Contains("Promotion not found."));
     }
 }

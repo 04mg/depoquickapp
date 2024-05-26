@@ -8,12 +8,15 @@ public class DepositLogic
 {
     private readonly IDepositRepository _depositRepository;
     private readonly IBookingRepository _bookingRepository;
+    private readonly IPromotionRepository _promotionRepository;
     private List<Deposit> AllDeposits => _depositRepository.GetAll().ToList();
 
-    public DepositLogic(IDepositRepository depositRepository, IBookingRepository bookingRepository)
+    public DepositLogic(IDepositRepository depositRepository, IBookingRepository bookingRepository,
+        IPromotionRepository promotionRepository)
     {
         _depositRepository = depositRepository;
         _bookingRepository = bookingRepository;
+        _promotionRepository = promotionRepository;
     }
 
     private void EnsureDepositExists(string name)
@@ -35,9 +38,18 @@ public class DepositLogic
 
     public void Add(Deposit deposit, Credentials credentials)
     {
+        EnsureAllPromotionsExist(deposit.Promotions);
         EnsureUserIsAdmin(credentials);
         EnsureDepositNameIsNotTaken(deposit.Name);
         _depositRepository.Add(deposit);
+    }
+
+    private void EnsureAllPromotionsExist(IEnumerable<Promotion> promotions)
+    {
+        if (promotions.Any(p => !_promotionRepository.Exists(p.Id)))
+        {
+            throw new ArgumentException("Promotion not found.");
+        }
     }
 
     private void EnsureDepositNameIsNotTaken(string depositName)

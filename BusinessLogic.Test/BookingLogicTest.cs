@@ -18,11 +18,14 @@ public class BookingLogicTest
     private Credentials UserCredentials { get; set; }
 
     private BookingLogic BookingLogic { get; set; } =
-        new BookingLogic(new BookingRepository(), new DepositRepository());
+        new(new BookingRepository(), new DepositRepository(), new UserRepository());
 
-    private AuthLogic AuthLogic { get; set; } = new AuthLogic(new UserRepository());
+    private AuthLogic AuthLogic { get; set; } = new(new UserRepository());
 
-    private DepositLogic DepositLogic { get; set; } = new DepositLogic(new DepositRepository(), new BookingRepository());
+    private PromotionLogic PromotionLogic { get; set; } = new(new PromotionRepository(), new DepositRepository());
+
+    private DepositLogic DepositLogic { get; set; } =
+        new(new DepositRepository(), new BookingRepository(), new PromotionRepository());
 
     [TestInitialize]
     public void Initialize()
@@ -30,10 +33,12 @@ public class BookingLogicTest
         var userRepository = new UserRepository();
         var depositRepository = new DepositRepository();
         var bookingRepository = new BookingRepository();
+        var promotionRepository = new PromotionRepository();
 
-        BookingLogic = new BookingLogic(bookingRepository, depositRepository);
+        BookingLogic = new BookingLogic(bookingRepository, depositRepository, userRepository);
         AuthLogic = new AuthLogic(userRepository);
-        DepositLogic = new DepositLogic(depositRepository, bookingRepository);
+        DepositLogic = new DepositLogic(depositRepository, bookingRepository, promotionRepository);
+        PromotionLogic = new PromotionLogic(promotionRepository, depositRepository);
 
         RegisterUsers();
         CreateDeposit();
@@ -63,21 +68,20 @@ public class BookingLogicTest
         );
 
         AuthLogic.Register(Admin, passwordConfirmation);
-        AdminCredentials = AuthLogic.Login("admin@test.com","12345678@mE");
+        AdminCredentials = AuthLogic.Login("admin@test.com", "12345678@mE");
         AuthLogic.Register(Client, passwordConfirmation);
-        UserCredentials = AuthLogic.Login("test@test.com","12345678@mE");
+        UserCredentials = AuthLogic.Login("test@test.com", "12345678@mE");
         AuthLogic.Register(OtherClient, passwordConfirmation);
     }
 
     private void CreateDeposit()
     {
-        var promotionList = new List<Promotion>
-        {
-            new(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
-                DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
-        };
+        var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        var promotionList = new List<Promotion> { promotion };
 
         Deposit = new Deposit("Deposit", "A", "Small", true, promotionList);
+        PromotionLogic.Add(promotion, AdminCredentials);
         DepositLogic.Add(Deposit, AdminCredentials);
     }
 
@@ -273,6 +277,7 @@ public class BookingLogicTest
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
 
+    [TestMethod]
     public void TestCantRejectBookingsIfNotAdministrator()
     {
         //Arrange
@@ -320,5 +325,34 @@ public class BookingLogicTest
             BookingLogic.RejectBooking(1, AdminCredentials));
         //Assert
         Assert.AreEqual("Message cannot be empty.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantCreateBookingIfDepositDoesNotExist()
+    {
+        // Arrange
+        var booking = new Booking(1, new Deposit("Deposit Two", "A", "Small", true, new List<Promotion>()), Client!,
+            DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => { BookingLogic.AddBooking(booking); });
+
+        // Assert
+        Assert.AreEqual("Deposit not found.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantCreateBookingIfUserDoesNotExist()
+    {
+        // Arrange
+        var nonExistentUser = new User("Name Surname", "nonexistent@test.com", "12345678@mE");
+        var booking = new Booking(1, Deposit!, nonExistentUser, DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => { BookingLogic.AddBooking(booking); });
+
+        // Assert
+        Assert.AreEqual("User not found.", exception.Message);
     }
 }

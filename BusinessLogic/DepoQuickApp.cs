@@ -18,8 +18,8 @@ public class DepoQuickApp
     {
         _authLogic = new AuthLogic(userRepository);
         _promotionLogic = new PromotionLogic(promotionRepository, depositRepository);
-        _depositLogic = new DepositLogic(depositRepository, bookingRepository);
-        _bookingLogic = new BookingLogic(bookingRepository, depositRepository);
+        _depositLogic = new DepositLogic(depositRepository, bookingRepository, promotionRepository);
+        _bookingLogic = new BookingLogic(bookingRepository, depositRepository, userRepository);
     }
 
     public void RegisterUser(RegisterDto registerDto)

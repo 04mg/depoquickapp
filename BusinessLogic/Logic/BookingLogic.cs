@@ -8,17 +8,20 @@ public class BookingLogic
 {
     private readonly IBookingRepository _bookingRepository;
     private readonly IDepositRepository _depositRepository;
+    private readonly IUserRepository _userRepository;
     private IEnumerable<Booking> AllBookings => _bookingRepository.GetAll();
 
     public BookingLogic(IBookingRepository bookingRepository,
-        IDepositRepository depositRepository)
+        IDepositRepository depositRepository, IUserRepository userRepository)
     {
         _bookingRepository = bookingRepository;
         _depositRepository = depositRepository;
+        _userRepository = userRepository;
     }
 
     public void AddBooking(Booking booking)
     {
+        EnsureUserExists(booking.Client.Email);
         EnsureDepositExists(booking.Deposit.Name);
         EnsureNoOverlappingBooking(booking);
         _bookingRepository.Add(booking);
@@ -27,6 +30,11 @@ public class BookingLogic
     private void EnsureDepositExists(string name)
     {
         if (!_depositRepository.Exists(name)) throw new ArgumentException("Deposit not found.");
+    }
+
+    private void EnsureUserExists(string email)
+    {
+        if (!_userRepository.Exists(email)) throw new ArgumentException("User not found.");
     }
 
     private void EnsureNoOverlappingBooking(Booking booking)

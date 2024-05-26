@@ -1,5 +1,6 @@
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
+using BusinessLogic.Enums;
 using BusinessLogic.Logic;
 using BusinessLogic.Repositories;
 
@@ -16,10 +17,16 @@ public class PromotionLogicTest
     private Credentials _clientCredentials;
     private PromotionLogic _promotionLogic = new(new PromotionRepository(), new DepositRepository());
 
+    private DepositLogic _depositLogic =
+        new(new DepositRepository(), new BookingRepository(), new PromotionRepository());
+
     [TestInitialize]
     public void Initialize()
     {
-        _promotionLogic = new PromotionLogic(new PromotionRepository(), new DepositRepository());
+        var promotionRepository = new PromotionRepository();
+        var depositRepository = new DepositRepository();
+        _depositLogic = new DepositLogic(depositRepository, new BookingRepository(), promotionRepository);
+        _promotionLogic = new PromotionLogic(promotionRepository, depositRepository);
         RegisterUsers();
     }
 
@@ -41,7 +48,7 @@ public class PromotionLogicTest
         );
         authManager.Register(admin, passwordConfirmation);
         authManager.Register(client, passwordConfirmation);
-        _adminCredentials = authManager.Login(admin.Email, admin.Password );
+        _adminCredentials = authManager.Login(admin.Email, admin.Password);
         _clientCredentials = authManager.Login(client.Email, client.Password);
     }
 
@@ -202,5 +209,21 @@ public class PromotionLogicTest
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantDeletePromotionIncludedInDeposits()
+    {
+        // Arrange
+        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
+        _promotionLogic.Add(promotion, _adminCredentials);
+        var deposit = new Deposit("Deposit", "A", "Large", true, new List<Promotion>() { promotion });
+        _depositLogic.Add(deposit, _adminCredentials);
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => _promotionLogic.Delete(1, _adminCredentials));
+
+        // Assert
+        Assert.AreEqual("There are existing deposits for this promotion.", exception.Message);
     }
 }

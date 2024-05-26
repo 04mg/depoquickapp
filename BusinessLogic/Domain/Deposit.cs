@@ -30,6 +30,7 @@ public class Deposit
             _name = value;
         }
     }
+
     public string Area
     {
         get => _area;
@@ -49,18 +50,19 @@ public class Deposit
             _size = value;
         }
     }
-    
-    private void EnsureNameLengthIsValid(string name)
+
+    private static void EnsureNameLengthIsValid(string name)
     {
-        if (name.Length == 0 || name.Length > 100)
+        if (name.Length is 0 or > 100)
             throw new ArgumentException("Name is invalid, it should be lesser or equal to 100 characters.");
     }
-    private void EnsureNameIsLettersOrSpaces(string name)
+
+    private static void EnsureNameIsLettersOrSpaces(string name)
     {
-        if (!name.All(char.IsLetter) && !name.All(char.IsWhiteSpace))
+        if (!name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
             throw new ArgumentException("Name is invalid, it should only contain letters and whitespaces.");
     }
-    
+
     private static void EnsureAreaIsValid(string area)
     {
         if (!Enum.TryParse<Area>(area, out _)) throw new ArgumentException("Area is invalid.");
