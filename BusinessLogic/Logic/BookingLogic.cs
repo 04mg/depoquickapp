@@ -7,15 +7,13 @@ namespace BusinessLogic.Logic;
 public class BookingLogic
 {
     private readonly IBookingRepository _bookingRepository;
-    private readonly IUserRepository _userRepository;
     private readonly IDepositRepository _depositRepository;
     private IEnumerable<Booking> AllBookings => _bookingRepository.GetAll();
 
-    public BookingLogic(IBookingRepository bookingRepository, IUserRepository userRepository,
+    public BookingLogic(IBookingRepository bookingRepository,
         IDepositRepository depositRepository)
     {
         _bookingRepository = bookingRepository;
-        _userRepository = userRepository;
         _depositRepository = depositRepository;
     }
 

@@ -19,7 +19,7 @@ public class DepoQuickApp
         _authLogic = new AuthLogic(userRepository);
         _promotionLogic = new PromotionLogic(promotionRepository, depositRepository);
         _depositLogic = new DepositLogic(depositRepository, bookingRepository);
-        _bookingLogic = new BookingLogic(bookingRepository, userRepository, depositRepository);
+        _bookingLogic = new BookingLogic(bookingRepository, depositRepository);
     }
 
     public void RegisterUser(RegisterDto registerDto)
@@ -34,7 +34,7 @@ public class DepoQuickApp
 
     public Credentials Login(LoginDto loginDto)
     {
-        return _authLogic.Login(loginDto);
+        return _authLogic.Login(loginDto.Email, loginDto.Password);
     }
 
     public void AddPromotion(AddPromotionDto addPromotionDto, Credentials credentials)

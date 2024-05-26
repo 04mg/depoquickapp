@@ -42,7 +42,7 @@ public class AuthLogicTest
         authLogic.Register(Client, Password);
 
         // Act
-        var credentials = authLogic.Login(new LoginDto { Email = Email, Password = Password });
+        var credentials = authLogic.Login(Email, Password);
 
         // Assert
         Assert.AreSame(credentials.Email, Email);
@@ -83,10 +83,7 @@ public class AuthLogicTest
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() =>
-            {
-                authLogic.Login(new LoginDto { Email = Email, Password = "wrong" });
-            });
+            Assert.ThrowsException<ArgumentException>(() => { authLogic.Login(Email, "wrong"); });
 
         // Assert
         Assert.IsTrue(exception.Message.Contains("Wrong password."));
@@ -99,10 +96,7 @@ public class AuthLogicTest
         var authLogic = new AuthLogic(UserRepository);
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
-        {
-            authLogic.Login(new LoginDto { Email = Email, Password = Password });
-        });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { authLogic.Login(Email, Password); });
 
         // Assert
         Assert.AreSame(exception.Message, "User does not exist.");
@@ -128,10 +122,7 @@ public class AuthLogicTest
 
         // Act
         authLogic.Register(admin, Password);
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
-        {
-            authLogic.Register(otherAdmin, Password);
-        });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { authLogic.Register(otherAdmin, Password); });
 
         // Assert
         Assert.AreSame(exception.Message, "There can only be one administrator.");
@@ -149,10 +140,7 @@ public class AuthLogicTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
-        {
-            authLogic.GetUser(Email, credentials);
-        });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { authLogic.GetUser(Email, credentials); });
 
         // Assert
         Assert.AreSame(exception.Message, "User does not exist.");
@@ -169,12 +157,7 @@ public class AuthLogicTest
             "other@test.com",
             "OtherP@ssw0rd");
         authLogic.Register(otherClient, "OtherP@ssw0rd");
-        var loginDto = new LoginDto
-        {
-            Email = otherClient.Email,
-            Password = otherClient.Password
-        };
-        var credentials = authLogic.Login(loginDto);
+        var credentials = authLogic.Login(otherClient.Email, otherClient.Password);
 
         // Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>

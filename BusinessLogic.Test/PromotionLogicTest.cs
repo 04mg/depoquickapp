@@ -41,8 +41,8 @@ public class PromotionLogicTest
         );
         authManager.Register(admin, passwordConfirmation);
         authManager.Register(client, passwordConfirmation);
-        _adminCredentials = authManager.Login(new LoginDto { Email = admin.Email, Password = admin.Password });
-        _clientCredentials = authManager.Login(new LoginDto { Email = client.Email, Password = client.Password });
+        _adminCredentials = authManager.Login(admin.Email, admin.Password );
+        _clientCredentials = authManager.Login(client.Email, client.Password);
     }
 
     [TestMethod]

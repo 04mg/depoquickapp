@@ -53,8 +53,8 @@ public class DepositLogicTest
         _authLogic.Register(admin, passwordConfirmation);
         _authLogic.Register(client, passwordConfirmation);
 
-        _adminCredentials = _authLogic.Login(new LoginDto { Email = admin.Email, Password = admin.Password });
-        _clientCredentials = _authLogic.Login(new LoginDto { Email = client.Email, Password = client.Password });
+        _adminCredentials = _authLogic.Login(admin.Email, admin.Password);
+        _clientCredentials = _authLogic.Login(client.Email, client.Password);
     }
 
     private void CreatePromotion()

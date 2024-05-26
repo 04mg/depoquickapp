@@ -63,12 +63,12 @@ public class AuthLogic
         if (!_isAdminRegistered) user.Rank = UserRank.Administrator;
     }
 
-    public Credentials Login(LoginDto loginDto)
+    public Credentials Login(string email, string password)
     {
-        EnsureUserIsRegistered(loginDto.Email);
-        EnsurePasswordMatchWithEmail(loginDto.Email, loginDto.Password);
-        var user = _userRepository.Get(loginDto.Email);
-        var credentials = new Credentials { Email = loginDto.Email, Rank = user.Rank.ToString() };
+        EnsureUserIsRegistered(email);
+        EnsurePasswordMatchWithEmail(email, password);
+        var user = _userRepository.Get(email);
+        var credentials = new Credentials { Email = email, Rank = user.Rank.ToString() };
         return credentials;
     }
 

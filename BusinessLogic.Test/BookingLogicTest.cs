@@ -18,7 +18,7 @@ public class BookingLogicTest
     private Credentials UserCredentials { get; set; }
 
     private BookingLogic BookingLogic { get; set; } =
-        new BookingLogic(new BookingRepository(), new UserRepository(), new DepositRepository());
+        new BookingLogic(new BookingRepository(), new DepositRepository());
 
     private AuthLogic AuthLogic { get; set; } = new AuthLogic(new UserRepository());
 
@@ -31,7 +31,7 @@ public class BookingLogicTest
         var depositRepository = new DepositRepository();
         var bookingRepository = new BookingRepository();
 
-        BookingLogic = new BookingLogic(bookingRepository, userRepository, depositRepository);
+        BookingLogic = new BookingLogic(bookingRepository, depositRepository);
         AuthLogic = new AuthLogic(userRepository);
         DepositLogic = new DepositLogic(depositRepository, bookingRepository);
 
@@ -63,9 +63,9 @@ public class BookingLogicTest
         );
 
         AuthLogic.Register(Admin, passwordConfirmation);
-        AdminCredentials = AuthLogic.Login(new LoginDto { Email = "admin@test.com", Password = "12345678@mE" });
+        AdminCredentials = AuthLogic.Login("admin@test.com","12345678@mE");
         AuthLogic.Register(Client, passwordConfirmation);
-        UserCredentials = AuthLogic.Login(new LoginDto { Email = "test@test.com", Password = "12345678@mE" });
+        UserCredentials = AuthLogic.Login("test@test.com","12345678@mE");
         AuthLogic.Register(OtherClient, passwordConfirmation);
     }
 
