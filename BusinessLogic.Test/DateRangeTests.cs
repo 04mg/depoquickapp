@@ -76,4 +76,18 @@ public class DateRangeTests
         Assert.AreEqual(Today.AddDays(5), result.StartDate);
         Assert.AreEqual(Today.AddDays(6), result.EndDate);
     }
+    
+    [TestMethod]
+    public void TestCantMergeRangesIfNotOverlappingOrAdjacent()
+    {
+        // Arrange
+        var range1 = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        var range2 = new DateRange(DateOnly.FromDateTime(DateTime.Now.AddDays(3)), DateOnly.FromDateTime(DateTime.Now.AddDays(4)));
+        
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => range1.Merge(range2));
+        
+        // Assert
+        Assert.AreEqual("Ranges are not overlapping or adjacent.", exception.Message);
+    }
 }

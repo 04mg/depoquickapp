@@ -26,8 +26,15 @@ public class DateRange
 
     public void Merge(DateRange other)
     {
+        EnsureOverlapOrAdjacent(other);
         StartDate = StartDate < other.StartDate ? StartDate : other.StartDate;
         EndDate = EndDate > other.EndDate ? EndDate : other.EndDate;
+    }
+
+    private void EnsureOverlapOrAdjacent(DateRange other)
+    {
+        if (!IsOverlapping(other) && !IsAdjacent(other))
+            throw new ArgumentException("Ranges are not overlapping or adjacent.");
     }
 
     public DateRange? Subtract(DateRange other)
