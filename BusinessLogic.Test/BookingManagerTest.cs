@@ -65,6 +65,8 @@ public class BookingManagerTest
         };
 
         _deposit = new Deposit("Deposit", "A", "Small", true, promotionList);
+        var dateRange = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(100)));
+        _deposit.AddAvailabilityPeriod(dateRange);
     }
 
     [TestMethod]

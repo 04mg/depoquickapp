@@ -97,4 +97,9 @@ public class Deposit
     {
         return AvailabilityPeriods.AvailablePeriods;
     }
+
+    public bool IsAvailable(DateRange dateRange)
+    {
+        return AvailabilityPeriods.IsAvailable(dateRange);
+    }
 }

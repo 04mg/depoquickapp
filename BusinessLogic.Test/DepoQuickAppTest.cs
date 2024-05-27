@@ -7,6 +7,7 @@ public class DepoQuickAppTest
 {
     private AddBookingDto _addBookingDto = new();
     private AddDepositDto _addDepositDto;
+    private DateRange _dateRange;
     private AddPromotionDto _addPromotionDto;
     private DepoQuickApp _app = new();
     private Credentials _credentials;
@@ -65,6 +66,9 @@ public class DepoQuickAppTest
             ClimateControl = true,
             PromotionList = new List<int> { 1 }
         };
+        
+        _dateRange = new DateRange(DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(100)));
 
         _addBookingDto = new AddBookingDto
         {
@@ -182,6 +186,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRange, credentials);
 
         // Act
         _app.AddBooking(_addBookingDto, _credentials);
@@ -203,6 +208,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRange, credentials);
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
@@ -221,6 +227,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRange, credentials);
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
@@ -240,6 +247,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRange, credentials);
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
@@ -377,6 +385,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRange, credentials);
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
@@ -398,6 +407,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRange, credentials);
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
@@ -406,5 +416,22 @@ public class DepoQuickAppTest
         // Assert
         Assert.AreEqual(1, bookings.Count);
         Assert.AreEqual(_addBookingDto.DepositName, bookings[0].DepositName);
+    }
+    
+    [TestMethod]
+    public void TestCanAddAvailabilityPeriod()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+
+        // Act
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRange, credentials);
+        var deposit = _app.GetDeposit(_addDepositDto.Name);
+
+        // Assert
+        Assert.AreEqual(1, deposit.AvailabilityPeriods.Count);
     }
 }

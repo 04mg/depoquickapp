@@ -7,4 +7,6 @@ public struct DepositDto
     public string Size { get; set; }
     public bool ClimateControl { get; set; }
     public List<int> PromotionList { get; set; }
+    
+    public List<DateRangeDto> AvailabilityPeriods { get; set; }
 }

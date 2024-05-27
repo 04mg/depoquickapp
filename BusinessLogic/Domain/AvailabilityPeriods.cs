@@ -64,4 +64,9 @@ public class AvailabilityPeriods
             AvailablePeriods.Add(result);
         }
     }
+
+    public bool IsAvailable(DateRange dateRange)
+    {
+        return AvailablePeriods.Any(dateRange.IsContained);
+    }
 }

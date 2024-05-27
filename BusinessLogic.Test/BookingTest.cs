@@ -22,6 +22,11 @@ public class BookingTest
 
     private static readonly Deposit Deposit = new("Deposit", "A", "Small", true, Promotions);
 
+    [TestInitialize]
+    public void Initialize()
+    {
+        Deposit.AddAvailabilityPeriod(new DateRange(Today, Today.AddDays(100)));
+    }
     [TestMethod]
     public void TestCanCreateBookingWithValidData()
     {
@@ -82,5 +87,17 @@ public class BookingTest
 
         // Assert
         Assert.AreEqual(expectedPrice, price);
+    }
+    
+    [TestMethod]
+    public void TestCantCreateBookingIfTheDurationOfTheBookingIsNotIncludedInAnAvailabilityPeriod()
+    {
+        var depositA = new Deposit("Deposit", "A", "Small", true, Promotions);
+        // Act
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() =>
+                new Booking(1, depositA, Client, Tomorrow, Tomorrow.AddDays(2), new PriceCalculator()));
+        // Assert
+        Assert.AreEqual("The duration of the booking must be contained in the deposit availability periods.", exception.Message);
     }
 }
