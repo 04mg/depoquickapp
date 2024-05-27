@@ -59,7 +59,7 @@ public class PromotionLogicTest
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
 
         // Act
-        _promotionLogic.Add(promotion, _adminCredentials);
+        _promotionLogic.AddPromotion(promotion, _adminCredentials);
 
         // Assert
         Assert.AreEqual(1, _promotionLogic.GetAllPromotions(_adminCredentials).Count());
@@ -70,10 +70,10 @@ public class PromotionLogicTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionLogic.Add(promotion, _adminCredentials);
+        _promotionLogic.AddPromotion(promotion, _adminCredentials);
 
         // Act
-        _promotionLogic.Delete(1, _adminCredentials);
+        _promotionLogic.DeletePromotion(1, _adminCredentials);
 
         // Assert
         Assert.IsFalse(_promotionLogic.GetAllPromotions(_adminCredentials).Contains(promotion));
@@ -84,12 +84,12 @@ public class PromotionLogicTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionLogic.Add(promotion, _adminCredentials);
+        _promotionLogic.AddPromotion(promotion, _adminCredentials);
         var modifiedPromotion = new Promotion(1, "new label", 20, DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
             DateOnly.FromDateTime(DateTime.Now.AddDays(3)));
 
         // Act
-        _promotionLogic.Modify(1, modifiedPromotion, _adminCredentials);
+        _promotionLogic.ModifyPromotion(1, modifiedPromotion, _adminCredentials);
 
         // Assert
         Assert.IsFalse(_promotionLogic.GetAllPromotions(_adminCredentials).Contains(modifiedPromotion));
@@ -104,7 +104,7 @@ public class PromotionLogicTest
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _promotionLogic.Add(promotion, _clientCredentials));
+                _promotionLogic.AddPromotion(promotion, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
@@ -115,12 +115,12 @@ public class PromotionLogicTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionLogic.Add(promotion, _adminCredentials);
+        _promotionLogic.AddPromotion(promotion, _adminCredentials);
 
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _promotionLogic.Delete(1, _clientCredentials));
+                _promotionLogic.DeletePromotion(1, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
@@ -131,14 +131,14 @@ public class PromotionLogicTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionLogic.Add(promotion, _adminCredentials);
+        _promotionLogic.AddPromotion(promotion, _adminCredentials);
         var modifiedPromotion = new Promotion(1, "new label", 20, DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
             DateOnly.FromDateTime(DateTime.Now.AddDays(3)));
 
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _promotionLogic.Modify(1, modifiedPromotion, _clientCredentials));
+                _promotionLogic.ModifyPromotion(1, modifiedPromotion, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
@@ -153,7 +153,7 @@ public class PromotionLogicTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                _promotionLogic.Modify(1, modifiedPromotion, _adminCredentials));
+                _promotionLogic.ModifyPromotion(1, modifiedPromotion, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
@@ -165,34 +165,10 @@ public class PromotionLogicTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                _promotionLogic.Delete(1, _adminCredentials));
+                _promotionLogic.DeletePromotion(1, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
-    }
-
-    [TestMethod]
-    public void TestCanCheckIfPromotionExists()
-    {
-        // Arrange
-        var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionLogic.Add(promotion, _adminCredentials);
-
-        // Act
-        var exists = _promotionLogic.Exists(1);
-
-        // Assert
-        Assert.IsTrue(exists);
-    }
-
-    [TestMethod]
-    public void TestCanCheckIfPromotionDoesNotExist()
-    {
-        // Act
-        var exists = _promotionLogic.Exists(1);
-
-        // Assert
-        Assert.IsFalse(exists);
     }
 
     [TestMethod]
@@ -200,7 +176,7 @@ public class PromotionLogicTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionLogic.Add(promotion, _adminCredentials);
+        _promotionLogic.AddPromotion(promotion, _adminCredentials);
 
         // Act
         var exception =
@@ -216,12 +192,12 @@ public class PromotionLogicTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        _promotionLogic.Add(promotion, _adminCredentials);
+        _promotionLogic.AddPromotion(promotion, _adminCredentials);
         var deposit = new Deposit("Deposit", "A", "Large", true, new List<Promotion>() { promotion });
-        _depositLogic.Add(deposit, _adminCredentials);
+        _depositLogic.AddDeposit(deposit, _adminCredentials);
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => _promotionLogic.Delete(1, _adminCredentials));
+        var exception = Assert.ThrowsException<ArgumentException>(() => _promotionLogic.DeletePromotion(1, _adminCredentials));
 
         // Assert
         Assert.AreEqual("There are existing deposits for this promotion.", exception.Message);

@@ -36,7 +36,7 @@ public class DepositLogic
         return _depositRepository.Get(name);
     }
 
-    public void Add(Deposit deposit, Credentials credentials)
+    public void AddDeposit(Deposit deposit, Credentials credentials)
     {
         EnsureAllPromotionsExist(deposit.Promotions);
         EnsureUserIsAdmin(credentials);
@@ -59,7 +59,7 @@ public class DepositLogic
             throw new ArgumentException("Deposit name is already taken.");
     }
 
-    public void Delete(string name, Credentials credentials)
+    public void DeleteDeposit(string name, Credentials credentials)
     {
         EnsureThereAreNoBookingsForThisDeposit(name);
         EnsureDepositExists(name);

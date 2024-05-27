@@ -45,7 +45,7 @@ public class DepoQuickApp
             addPromotionDto.Discount,
             addPromotionDto.DateFrom,
             addPromotionDto.DateTo);
-        _promotionLogic.Add(promotion, credentials);
+        _promotionLogic.AddPromotion(promotion, credentials);
     }
 
     public AddPromotionDto GetPromotion(int promotionId)
@@ -62,7 +62,7 @@ public class DepoQuickApp
 
     public void DeletePromotion(int promotionId, Credentials credentials)
     {
-        _promotionLogic.Delete(promotionId, credentials);
+        _promotionLogic.DeletePromotion(promotionId, credentials);
     }
 
     public List<PromotionDto> ListAllPromotions(Credentials credentials)
@@ -85,7 +85,7 @@ public class DepoQuickApp
             promotionDto.Discount,
             promotionDto.DateFrom,
             promotionDto.DateTo);
-        _promotionLogic.Modify(promotionId, promotion, credentials);
+        _promotionLogic.ModifyPromotion(promotionId, promotion, credentials);
     }
 
     public void AddDeposit(AddDepositDto depositDto, Credentials credentials)
@@ -93,12 +93,12 @@ public class DepoQuickApp
         var promotions = CreatePromotionListFromDto(depositDto);
         var deposit = new Deposit(depositDto.Name, depositDto.Area, depositDto.Size, depositDto.ClimateControl,
             promotions);
-        _depositLogic.Add(deposit, credentials);
+        _depositLogic.AddDeposit(deposit, credentials);
     }
 
     public void DeleteDeposit(string depositName, Credentials credentials)
     {
-        _depositLogic.Delete(depositName, credentials);
+        _depositLogic.DeleteDeposit(depositName, credentials);
     }
 
     private List<Promotion> CreatePromotionListFromDto(AddDepositDto depositDto)

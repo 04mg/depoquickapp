@@ -81,8 +81,8 @@ public class BookingLogicTest
         var promotionList = new List<Promotion> { promotion };
 
         Deposit = new Deposit("Deposit", "A", "Small", true, promotionList);
-        PromotionLogic.Add(promotion, AdminCredentials);
-        DepositLogic.Add(Deposit, AdminCredentials);
+        PromotionLogic.AddPromotion(promotion, AdminCredentials);
+        DepositLogic.AddDeposit(Deposit, AdminCredentials);
     }
 
     [TestMethod]

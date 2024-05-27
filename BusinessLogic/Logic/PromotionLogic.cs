@@ -32,18 +32,13 @@ public class PromotionLogic
         return _promotionRepository.Get(id);
     }
 
-    public bool Exists(int id)
-    {
-        return _promotionRepository.Exists(id);
-    }
-
-    public void Add(Promotion promotion, Credentials credentials)
+    public void AddPromotion(Promotion promotion, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
         _promotionRepository.Add(promotion);
     }
 
-    public void Delete(int id, Credentials credentials)
+    public void DeletePromotion(int id, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
         EnsurePromotionExists(id);
@@ -57,7 +52,7 @@ public class PromotionLogic
             throw new ArgumentException("There are existing deposits for this promotion.");
     }
 
-    public void Modify(int id, Promotion newPromotion, Credentials credentials)
+    public void ModifyPromotion(int id, Promotion newPromotion, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
         EnsurePromotionExists(id);

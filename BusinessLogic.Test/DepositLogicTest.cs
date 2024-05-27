@@ -68,7 +68,7 @@ public class DepositLogicTest
         var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
 
-        _promotionLogic.Add(promotion, _adminCredentials);
+        _promotionLogic.AddPromotion(promotion, _adminCredentials);
     }
 
     [TestMethod]
@@ -80,7 +80,7 @@ public class DepositLogicTest
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
 
         // Act
-        _depositLogic.Add(deposit, _adminCredentials);
+        _depositLogic.AddDeposit(deposit, _adminCredentials);
 
         // Assert
         Assert.AreEqual(1, _depositLogic.GetAllDeposits().Count());
@@ -93,10 +93,10 @@ public class DepositLogicTest
         var promotionList = new List<Promotion>
             { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
-        _depositLogic.Add(deposit, _adminCredentials);
+        _depositLogic.AddDeposit(deposit, _adminCredentials);
 
         // Act
-        _depositLogic.Delete(Name, _adminCredentials);
+        _depositLogic.DeleteDeposit(Name, _adminCredentials);
 
         // Assert
         Assert.AreEqual(0, _depositLogic.GetAllDeposits().Count());
@@ -107,7 +107,7 @@ public class DepositLogicTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositLogic.Delete(Name, _adminCredentials));
+            Assert.ThrowsException<ArgumentException>(() => _depositLogic.DeleteDeposit(Name, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Deposit not found.", exception.Message);
@@ -124,7 +124,7 @@ public class DepositLogicTest
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _depositLogic.Add(deposit, _clientCredentials));
+                _depositLogic.AddDeposit(deposit, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage deposits.", exception.Message);
@@ -137,12 +137,12 @@ public class DepositLogicTest
         var promotionList = new List<Promotion>
             { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
-        _depositLogic.Add(deposit, _adminCredentials);
+        _depositLogic.AddDeposit(deposit, _adminCredentials);
 
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _depositLogic.Delete(Name, _clientCredentials));
+                _depositLogic.DeleteDeposit(Name, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage deposits.", exception.Message);
@@ -155,7 +155,7 @@ public class DepositLogicTest
         var promotionList = new List<Promotion>
             { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
-        _depositLogic.Add(deposit, _adminCredentials);
+        _depositLogic.AddDeposit(deposit, _adminCredentials);
 
         // Act
         var deposits = _depositLogic.GetAllDeposits().ToList();
@@ -177,11 +177,11 @@ public class DepositLogicTest
         var promotionList = new List<Promotion>
             { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
-        _depositLogic.Add(deposit, _adminCredentials);
+        _depositLogic.AddDeposit(deposit, _adminCredentials);
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositLogic.Add(deposit, _adminCredentials));
+            Assert.ThrowsException<ArgumentException>(() => _depositLogic.AddDeposit(deposit, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Deposit name is already taken.", exception.Message);
@@ -194,7 +194,7 @@ public class DepositLogicTest
         var promotionList = new List<Promotion>
             { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
-        _depositLogic.Add(deposit, _adminCredentials);
+        _depositLogic.AddDeposit(deposit, _adminCredentials);
         _bookingLogic.AddBooking(new Booking(1, deposit, new User(
                 "Name Surname",
                 "client@client.com",
@@ -205,7 +205,7 @@ public class DepositLogicTest
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositLogic.Delete(Name, _adminCredentials));
+            Assert.ThrowsException<ArgumentException>(() => _depositLogic.DeleteDeposit(Name, _adminCredentials));
 
         // Assert
         Assert.AreEqual("There are existing bookings for this deposit.", exception.Message);
@@ -224,7 +224,7 @@ public class DepositLogicTest
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
-            _depositLogic.Add(deposit, _adminCredentials);
+            _depositLogic.AddDeposit(deposit, _adminCredentials);
         });
 
         // Assert
