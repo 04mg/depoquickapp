@@ -22,10 +22,34 @@ public class DateRange
     {
         return StartDate <= other.EndDate && EndDate >= other.StartDate;
     }
-    
+
     public void Merge(DateRange other)
     {
         StartDate = StartDate < other.StartDate ? StartDate : other.StartDate;
         EndDate = EndDate > other.EndDate ? EndDate : other.EndDate;
+    }
+
+    public DateRange? Subtract(DateRange other)
+    {
+        if(!IsOverlapping(other))
+            return null;
+        if (StartDate == other.StartDate && EndDate == other.EndDate)
+            return null;
+        if (StartDate < other.StartDate && EndDate > other.EndDate)
+        {
+            var range1 = new DateRange(StartDate, other.StartDate.AddDays(-1));
+            var range2 = new DateRange(other.EndDate.AddDays(1), EndDate);
+            EndDate = range1.EndDate;
+            return range2;
+        }
+        else if (StartDate < other.StartDate && EndDate <= other.EndDate)
+        {
+            EndDate = other.StartDate.AddDays(-1);
+        }else if(StartDate >= other.StartDate && EndDate > other.EndDate)
+        {
+            StartDate = other.EndDate.AddDays(1);
+        }
+
+        return null;
     }
 }
