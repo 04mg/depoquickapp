@@ -102,4 +102,35 @@ public class Deposit
     {
         return AvailabilityPeriods.Any(p => p.IsOverlapping(availabilityPeriod));
     }
+
+    public void RemoveAvailabilityPeriod(DateRange dateRange)
+    {
+        var clonedAvailabilityPeriods = new List<DateRange>(AvailabilityPeriods);
+        foreach (var period in clonedAvailabilityPeriods)
+        {
+            if(period.IsContained(dateRange))
+            {
+                RemoveContainedPeriod(dateRange);
+            }
+            else if (period.IsOverlapping(dateRange))
+            {
+                SubtractOverlappedPeriod(dateRange);
+            }
+        }
+    }
+
+    private void RemoveContainedPeriod(DateRange dateRange)
+    {
+        AvailabilityPeriods.Remove(AvailabilityPeriods.First(p => p.IsContained(dateRange)));
+    }
+
+    private void SubtractOverlappedPeriod(DateRange dateRange)
+    {
+        var overlappingPeriod = AvailabilityPeriods.First(p => p.IsOverlapping(dateRange));
+        var result = overlappingPeriod.Subtract(dateRange);
+        if (result != null)
+        {
+            AvailabilityPeriods.Add(result);
+        }
+    }
 }

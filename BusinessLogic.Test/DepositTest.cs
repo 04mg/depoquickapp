@@ -143,4 +143,64 @@ public class DepositTest
         Assert.AreEqual(startDate, deposit.AvailabilityPeriods[0].StartDate);
         Assert.AreEqual(endDate, deposit.AvailabilityPeriods[0].EndDate);
     }
+    
+    [TestMethod]
+    public void TestCanRemoveTheTotalityOfAnAvailabilityPeriod()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        var availabilityPeriod = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        deposit.AddAvailabilityPeriod(availabilityPeriod);
+        
+        // Act
+        deposit.RemoveAvailabilityPeriod(availabilityPeriod);
+        
+        // Assert
+        Assert.AreEqual(0, deposit.AvailabilityPeriods.Count);
+    }
+    
+    [TestMethod]
+    public void TestCanRemovePartOfAnAvailabilityPeriod()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var middleDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.Now.AddDays(3));
+        var availabilityPeriod = new DateRange(startDate, endDate);
+        deposit.AddAvailabilityPeriod(availabilityPeriod);
+        var rangeToRemove = new DateRange(startDate, middleDate);
+        
+        // Act
+        deposit.RemoveAvailabilityPeriod(rangeToRemove);
+        
+        // Assert
+        Assert.AreEqual(1, deposit.AvailabilityPeriods.Count);
+        Assert.AreEqual(middleDate.AddDays(1), deposit.AvailabilityPeriods[0].StartDate);
+        Assert.AreEqual(endDate, deposit.AvailabilityPeriods[0].EndDate);
+    }
+    
+    [TestMethod]
+    public void TestCanRemoveTheMiddleOfAnAvailabilityPeriod()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var middleStartDate = DateOnly.FromDateTime(DateTime.Now.AddDays(2));
+        var middleEndDate = DateOnly.FromDateTime(DateTime.Now.AddDays(3));
+        var endDate = DateOnly.FromDateTime(DateTime.Now.AddDays(5));
+        var availabilityPeriod = new DateRange(startDate, endDate);
+        deposit.AddAvailabilityPeriod(availabilityPeriod);
+        var rangeToRemove = new DateRange(middleStartDate, middleEndDate);
+        
+        // Act
+        deposit.RemoveAvailabilityPeriod(rangeToRemove);
+        
+        // Assert
+        Assert.AreEqual(2, deposit.AvailabilityPeriods.Count);
+        Assert.AreEqual(startDate, deposit.AvailabilityPeriods[0].StartDate);
+        Assert.AreEqual(middleStartDate.AddDays(-1), deposit.AvailabilityPeriods[0].EndDate);
+        Assert.AreEqual(middleEndDate.AddDays(1), deposit.AvailabilityPeriods[1].StartDate);
+        Assert.AreEqual(endDate, deposit.AvailabilityPeriods[1].EndDate);
+    }
 }
