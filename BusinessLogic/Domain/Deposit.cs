@@ -15,9 +15,10 @@ public class Deposit
         Size = size;
         ClimateControl = climateControl;
         Promotions = promotions;
-        AvailabilityPeriods = new List<DateRange>();
+        AvailabilityPeriods = new AvailabilityPeriods();
     }
 
+    private AvailabilityPeriods AvailabilityPeriods { get;}
     public bool ClimateControl { get; set; }
     public List<Promotion> Promotions { get; set; }
 
@@ -51,8 +52,6 @@ public class Deposit
         }
     }
 
-    public List<DateRange> AvailabilityPeriods { get; set; }
-
     private void EnsureNameLengthIsValid(string name)
     {
         if (name.Length == 0 || name.Length > 100)
@@ -84,53 +83,18 @@ public class Deposit
         return Promotions.Sum(p => p.Discount);
     }
 
-    public void AddAvailabilityPeriod(DateRange availabilityPeriod)
+    public void AddAvailabilityPeriod(DateRange dateRange)
     {
-        if (ExistsAnOverlappingPeriod(availabilityPeriod))
-            MergePeriods(availabilityPeriod);
-        else
-            AvailabilityPeriods.Add(availabilityPeriod);
-    }
-
-    private void MergePeriods(DateRange availabilityPeriod)
-    {
-        var overlappingPeriod = AvailabilityPeriods.First(p => p.IsOverlapping(availabilityPeriod));
-        overlappingPeriod.Merge(availabilityPeriod);
-    }
-
-    private bool ExistsAnOverlappingPeriod(DateRange availabilityPeriod)
-    {
-        return AvailabilityPeriods.Any(p => p.IsOverlapping(availabilityPeriod));
+        AvailabilityPeriods.AddAvailabilityPeriod(dateRange);
     }
 
     public void RemoveAvailabilityPeriod(DateRange dateRange)
     {
-        var clonedAvailabilityPeriods = new List<DateRange>(AvailabilityPeriods);
-        foreach (var period in clonedAvailabilityPeriods)
-        {
-            if(period.IsContained(dateRange))
-            {
-                RemoveContainedPeriod(dateRange);
-            }
-            else if (period.IsOverlapping(dateRange))
-            {
-                SubtractOverlappedPeriod(dateRange);
-            }
-        }
+        AvailabilityPeriods.RemoveAvailabilityPeriod(dateRange);
     }
-
-    private void RemoveContainedPeriod(DateRange dateRange)
+    
+    public List<DateRange> GetAvailablePeriods()
     {
-        AvailabilityPeriods.Remove(AvailabilityPeriods.First(p => p.IsContained(dateRange)));
-    }
-
-    private void SubtractOverlappedPeriod(DateRange dateRange)
-    {
-        var overlappingPeriod = AvailabilityPeriods.First(p => p.IsOverlapping(dateRange));
-        var result = overlappingPeriod.Subtract(dateRange);
-        if (result != null)
-        {
-            AvailabilityPeriods.Add(result);
-        }
+        return AvailabilityPeriods.AvailablePeriods;
     }
 }

@@ -121,7 +121,7 @@ public class DepositTest
         deposit.AddAvailabilityPeriod(availabilityPeriod);
         
         // Assert
-        Assert.AreEqual(1, deposit.AvailabilityPeriods.Count);
+        Assert.AreEqual(1, deposit.GetAvailablePeriods().Count);
     }
     
     [TestMethod]
@@ -139,9 +139,9 @@ public class DepositTest
         deposit.AddAvailabilityPeriod(availabilityPeriod2);
 
         // Assert
-        Assert.AreEqual(1, deposit.AvailabilityPeriods.Count);
-        Assert.AreEqual(startDate, deposit.AvailabilityPeriods[0].StartDate);
-        Assert.AreEqual(endDate, deposit.AvailabilityPeriods[0].EndDate);
+        Assert.AreEqual(1, deposit.GetAvailablePeriods().Count);
+        Assert.AreEqual(startDate, deposit.GetAvailablePeriods()[0].StartDate);
+        Assert.AreEqual(endDate, deposit.GetAvailablePeriods()[0].EndDate);
     }
     
     [TestMethod]
@@ -156,7 +156,7 @@ public class DepositTest
         deposit.RemoveAvailabilityPeriod(availabilityPeriod);
         
         // Assert
-        Assert.AreEqual(0, deposit.AvailabilityPeriods.Count);
+        Assert.AreEqual(0, deposit.GetAvailablePeriods().Count);
     }
     
     [TestMethod]
@@ -175,9 +175,9 @@ public class DepositTest
         deposit.RemoveAvailabilityPeriod(rangeToRemove);
         
         // Assert
-        Assert.AreEqual(1, deposit.AvailabilityPeriods.Count);
-        Assert.AreEqual(middleDate.AddDays(1), deposit.AvailabilityPeriods[0].StartDate);
-        Assert.AreEqual(endDate, deposit.AvailabilityPeriods[0].EndDate);
+        Assert.AreEqual(1, deposit.GetAvailablePeriods().Count);
+        Assert.AreEqual(middleDate.AddDays(1), deposit.GetAvailablePeriods()[0].StartDate);
+        Assert.AreEqual(endDate, deposit.GetAvailablePeriods()[0].EndDate);
     }
     
     [TestMethod]
@@ -197,10 +197,10 @@ public class DepositTest
         deposit.RemoveAvailabilityPeriod(rangeToRemove);
         
         // Assert
-        Assert.AreEqual(2, deposit.AvailabilityPeriods.Count);
-        Assert.AreEqual(startDate, deposit.AvailabilityPeriods[0].StartDate);
-        Assert.AreEqual(middleStartDate.AddDays(-1), deposit.AvailabilityPeriods[0].EndDate);
-        Assert.AreEqual(middleEndDate.AddDays(1), deposit.AvailabilityPeriods[1].StartDate);
-        Assert.AreEqual(endDate, deposit.AvailabilityPeriods[1].EndDate);
+        Assert.AreEqual(2, deposit.GetAvailablePeriods().Count);
+        Assert.AreEqual(startDate, deposit.GetAvailablePeriods()[0].StartDate);
+        Assert.AreEqual(middleStartDate.AddDays(-1), deposit.GetAvailablePeriods()[0].EndDate);
+        Assert.AreEqual(middleEndDate.AddDays(1), deposit.GetAvailablePeriods()[1].StartDate);
+        Assert.AreEqual(endDate, deposit.GetAvailablePeriods()[1].EndDate);
     }
 }

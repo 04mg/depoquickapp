@@ -179,9 +179,9 @@ public class DepositManagerTest
         // Assert
         var deposits = _depositManager.GetAllDeposits();
         Assert.AreEqual(1, deposits.Count);
-        Assert.AreEqual(1, deposits[0].AvailabilityPeriods.Count);
-        Assert.AreEqual(DateOnly.FromDateTime(DateTime.Now), deposits[0].AvailabilityPeriods[0].StartDate);
-        Assert.AreEqual(DateOnly.FromDateTime(DateTime.Now.AddDays(1)), deposits[0].AvailabilityPeriods[0].EndDate);
+        Assert.AreEqual(1, deposits[0].GetAvailablePeriods().Count);
+        Assert.AreEqual(DateOnly.FromDateTime(DateTime.Now), deposits[0].GetAvailablePeriods()[0].StartDate);
+        Assert.AreEqual(DateOnly.FromDateTime(DateTime.Now.AddDays(1)), deposits[0].GetAvailablePeriods()[0].EndDate);
     }
     
     [TestMethod]

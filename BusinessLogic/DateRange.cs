@@ -1,4 +1,4 @@
-namespace BusinessLogic.Domain;
+namespace BusinessLogic;
 
 public class DateRange
 {
