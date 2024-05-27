@@ -4,23 +4,34 @@ public class AvailabilityPeriods
 {
     public List<DateRange> AvailablePeriods { get;} = new();
 
-    public void AddAvailabilityPeriod(DateRange availabilityPeriod)
+    public void AddAvailabilityPeriod(DateRange newPeriod)
     {
-        if (ExistsAnOverlappingPeriod(availabilityPeriod))
-            MergePeriods(availabilityPeriod);
-        else
-            AvailablePeriods.Add(availabilityPeriod);
+        var clonedAvailablePeriods = new List<DateRange>(AvailablePeriods);
+        foreach (var period in clonedAvailablePeriods)
+        {
+            if (period.IsOverlapping(newPeriod))
+            {
+                MergeOverlappingPeriod(newPeriod);
+            } else if (period.IsAdjacent(newPeriod))
+            {
+                MergeAdjacentPeriod(newPeriod);
+            }
+        }
+        AvailablePeriods.Add(newPeriod);
     }
 
-    private void MergePeriods(DateRange availabilityPeriod)
+    private void MergeOverlappingPeriod(DateRange newPeriod)
     {
-        var overlappingPeriod = AvailablePeriods.First(p => p.IsOverlapping(availabilityPeriod));
-        overlappingPeriod.Merge(availabilityPeriod);
+        var overlappingPeriod = AvailablePeriods.First(p => p.IsOverlapping(newPeriod));
+        newPeriod.Merge(overlappingPeriod);
+        AvailablePeriods.Remove(overlappingPeriod);
     }
-
-    private bool ExistsAnOverlappingPeriod(DateRange availabilityPeriod)
+    
+    private void MergeAdjacentPeriod(DateRange newPeriod)
     {
-        return AvailablePeriods.Any(p => p.IsOverlapping(availabilityPeriod));
+        var overlappingPeriod = AvailablePeriods.First(p => p.IsAdjacent(newPeriod));
+        newPeriod.Merge(overlappingPeriod);
+        AvailablePeriods.Remove(overlappingPeriod);
     }
 
     public void RemoveAvailabilityPeriod(DateRange dateRange)

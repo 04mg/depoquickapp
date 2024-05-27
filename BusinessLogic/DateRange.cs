@@ -58,4 +58,9 @@ public class DateRange
     {
         return StartDate >= dateRange.StartDate && EndDate <= dateRange.EndDate;
     }
+    
+    public bool IsAdjacent(DateRange dateRange)
+    {
+        return StartDate == dateRange.EndDate.AddDays(1) || EndDate == dateRange.StartDate.AddDays(-1);
+    }
 }
