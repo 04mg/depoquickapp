@@ -102,4 +102,14 @@ public class Deposit
     {
         return AvailabilityPeriods.IsAvailable(dateRange);
     }
+
+    public void MakeAvailable(DateRange dateRange)
+    {
+        AvailabilityPeriods.MakePeriodAvailable(dateRange);
+    }
+
+    public void MakeUnavailable(DateRange dateRange)
+    {
+        AvailabilityPeriods.MakePeriodUnavailable(dateRange);
+    }
 }

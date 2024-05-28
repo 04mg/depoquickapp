@@ -134,8 +134,8 @@ public class BookingManagerTest
         // Arrange
         var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        var otherBooking = new Booking(1, _deposit!, _otherClient!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
+        var otherBooking = new Booking(1, _deposit!, _otherClient!, DateOnly.FromDateTime(DateTime.Now.AddDays(3)),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(4)), new PriceCalculator());
         _bookingManager.Add(booking);
         _bookingManager.Add(otherBooking);
 
@@ -190,24 +190,6 @@ public class BookingManagerTest
 
         //Assert
         Assert.AreEqual(message, _bookingManager.GetAllBookings(_adminCredentials)[0].Message);
-    }
-
-    [TestMethod]
-    public void TestCantAddBookingThatAlreadyExists()
-    {
-        // Arrange
-        var booking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        var repeatedBooking = new Booking(1, _deposit!, _client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        _bookingManager.Add(booking);
-
-        // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
-            _bookingManager.Add(repeatedBooking));
-
-        // Assert
-        Assert.AreEqual("User already has a booking for this period.", exception.Message);
     }
 
     [TestMethod]

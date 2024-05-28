@@ -3,6 +3,7 @@ namespace BusinessLogic.Domain;
 public class AvailabilityPeriods
 {
     public List<DateRange> AvailablePeriods { get;} = new();
+    public List<DateRange> UnavailablePeriods { get;} = new();
 
     public void AddAvailabilityPeriod(DateRange newPeriod)
     {
@@ -67,6 +68,19 @@ public class AvailabilityPeriods
 
     public bool IsAvailable(DateRange dateRange)
     {
-        return AvailablePeriods.Any(dateRange.IsContained);
+        return AvailablePeriods.Any(dateRange.IsContained) && !UnavailablePeriods.Any(dateRange.IsOverlapping);
+    }
+
+    public void MakePeriodAvailable(DateRange dateRange)
+    {
+        var unavailablePeriod = UnavailablePeriods.First(dateRange.IsContained);
+        UnavailablePeriods.Remove(unavailablePeriod);
+        AddAvailabilityPeriod(dateRange);
+    }
+
+    public void MakePeriodUnavailable(DateRange dateRange)
+    {
+        RemoveAvailabilityPeriod(dateRange);
+        UnavailablePeriods.Add(dateRange);
     }
 }

@@ -11,40 +11,8 @@ public class BookingManager
 
     public void Add(Booking booking)
     {
-        EnsureNoOverlappingBooking(booking);
         booking.Id = NextBookingId;
         Bookings.Add(booking);
-    }
-
-    private void EnsureNoOverlappingBooking(Booking booking)
-    {
-        GetBookingsByUserAndDeposit(booking.Client.Email, booking.Deposit.Name)
-            .ForEach(b => EnsureNoOverlappingDates(booking, b));
-    }
-
-    private List<Booking> GetBookingsByUserAndDeposit(string email, string depositName)
-    {
-        depositName = depositName.ToLower();
-        return Bookings.Where(b => b.Client.Email == email && b.Deposit.Name.ToLower() == depositName).ToList();
-    }
-
-    private static void EnsureNoOverlappingDates(Booking booking, Booking anotherBooking)
-    {
-        var overlaps = BookingEndDateOverlaps(booking, anotherBooking);
-        overlaps |= BookingStartDateOverlaps(booking, anotherBooking);
-        if (overlaps) throw new ArgumentException("User already has a booking for this period.");
-    }
-
-    private static bool BookingStartDateOverlaps(Booking booking, Booking anotherBooking)
-    {
-        return booking.Duration.Item1 >= anotherBooking.Duration.Item1 &&
-               booking.Duration.Item1 <= anotherBooking.Duration.Item2;
-    }
-
-    private static bool BookingEndDateOverlaps(Booking booking, Booking anotherBooking)
-    {
-        return booking.Duration.Item2 >= anotherBooking.Duration.Item1 &&
-               booking.Duration.Item2 <= anotherBooking.Duration.Item2;
     }
 
     public bool Exists(int id)

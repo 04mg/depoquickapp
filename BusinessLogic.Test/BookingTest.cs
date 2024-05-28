@@ -20,18 +20,20 @@ public class BookingTest
         new(1, "label", 50, Today, Tomorrow)
     };
 
-    private static readonly Deposit Deposit = new("Deposit", "A", "Small", true, Promotions);
+    private Deposit _deposit;
 
     [TestInitialize]
     public void Initialize()
     {
-        Deposit.AddAvailabilityPeriod(new DateRange(Today, Today.AddDays(100)));
+        _deposit = new Deposit("Deposit", "A", "Small", true, Promotions);
+        _deposit.AddAvailabilityPeriod(new DateRange(Today, Today.AddDays(100)));
     }
+    
     [TestMethod]
     public void TestCanCreateBookingWithValidData()
     {
         // Act
-        var booking = new Booking(1, Deposit, Client, Today, Tomorrow, new PriceCalculator());
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
 
         // Assert
         Assert.IsNotNull(booking);
@@ -43,7 +45,7 @@ public class BookingTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                new Booking(1, Deposit, Client, Tomorrow, Today, new PriceCalculator()));
+                new Booking(1, _deposit, Client, Tomorrow, Today, new PriceCalculator()));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be later than the ending date.",
@@ -56,7 +58,7 @@ public class BookingTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                new Booking(1, Deposit, Client, Today.AddDays(-1), Tomorrow, new PriceCalculator()));
+                new Booking(1, _deposit, Client, Today.AddDays(-1), Tomorrow, new PriceCalculator()));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be earlier than today.", exception.Message);
@@ -68,7 +70,7 @@ public class BookingTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                new Booking(1, Deposit, Client, Today, Today, new PriceCalculator()));
+                new Booking(1, _deposit, Client, Today, Today, new PriceCalculator()));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be the same as the ending date.", exception.Message);
@@ -78,7 +80,7 @@ public class BookingTest
     public void TestCanReturnCorrectPrice()
     {
         // Arrange
-        var booking = new Booking(1, Deposit, Client, Today, Tomorrow, new PriceCalculator());
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
         var priceCalculator = new PriceCalculator();
         var expectedPrice = priceCalculator.CalculatePrice(booking.Deposit, booking.Duration);
 
@@ -99,5 +101,29 @@ public class BookingTest
                 new Booking(1, depositA, Client, Tomorrow, Tomorrow.AddDays(2), new PriceCalculator()));
         // Assert
         Assert.AreEqual("The duration of the booking must be contained in the deposit availability periods.", exception.Message);
+    }
+    
+    [TestMethod]
+    public void TestCreatingABookingMakesHisDurationUnavailable()
+    {
+        // Act
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
+        
+        // Assert
+        var isAvailable = _deposit.IsAvailable(new DateRange(Today, Tomorrow));
+        Assert.IsFalse(isAvailable);
+    }
+    
+    [TestMethod]
+    public void TestRejectingABookingMakesTheDurationAvailable()
+    {
+        // Arrange
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
+        
+        // Act
+        booking.Reject("rejection");
+        
+        // Assert
+        Assert.IsTrue(_deposit.IsAvailable(new DateRange(Today, Tomorrow)));
     }
 }
