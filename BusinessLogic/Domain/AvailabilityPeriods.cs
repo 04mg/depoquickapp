@@ -81,7 +81,7 @@ public class AvailabilityPeriods
 
     public void MakePeriodAvailable(DateRange dateRange)
     {
-        var unavailablePeriod = UnavailablePeriods.First(dateRange.IsContained);
+        var unavailablePeriod = UnavailablePeriods.First(dateRange.Equals);
         UnavailablePeriods.Remove(unavailablePeriod);
         AddAvailabilityPeriod(dateRange);
     }

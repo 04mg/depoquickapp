@@ -70,4 +70,22 @@ public class DateRange
     {
         return StartDate == dateRange.EndDate.AddDays(1) || EndDate == dateRange.StartDate.AddDays(-1);
     }
+
+    protected bool Equals(DateRange other)
+    {
+        return StartDate.Equals(other.StartDate) && EndDate.Equals(other.EndDate);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj)) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != this.GetType()) return false;
+        return Equals((DateRange)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(StartDate, EndDate);
+    }
 }
