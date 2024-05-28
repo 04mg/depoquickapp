@@ -25,7 +25,7 @@ public class AvailabilityPeriods
     private void EnsurePeriodIsNotBooked(DateRange newPeriod)
     {
         if (!UnavailablePeriods.Any(newPeriod.IsOverlapped)) return;
-        var overlappingPeriod = UnavailablePeriods.FirstOrDefault(newPeriod.IsOverlapped);
+        var overlappingPeriod = UnavailablePeriods.First(newPeriod.IsOverlapped);
         throw new ArgumentException($"The availability period overlaps with an already booked period from {overlappingPeriod.StartDate} to {overlappingPeriod.EndDate}.");
     }
 
