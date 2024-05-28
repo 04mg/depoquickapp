@@ -126,4 +126,22 @@ public class BookingTest
         // Assert
         Assert.IsTrue(_deposit.IsAvailable(new DateRange(Today, Tomorrow)));
     }
+    
+    [TestMethod]
+    public void TestCantAddAvailabilityPeriodIfPeriodIsBooked()
+    {
+        // Arrange
+        var availabilityPeriod = new DateRange(Today, Tomorrow);
+        _deposit.AddAvailabilityPeriod(availabilityPeriod);
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
+        var overlappingPeriod = new DateRange(Today, Tomorrow.AddDays(1));
+        
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+            _deposit.AddAvailabilityPeriod(overlappingPeriod));
+        
+        // Assert
+        Assert.AreEqual($"The availability period overlaps with an already booked period from {Today} to {Tomorrow}.",
+            exception.Message);
+    }
 }

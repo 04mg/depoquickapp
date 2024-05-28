@@ -7,6 +7,7 @@ public class AvailabilityPeriods
 
     public void AddAvailabilityPeriod(DateRange newPeriod)
     {
+        EnsurePeriodIsNotBooked(newPeriod);
         var clonedAvailablePeriods = new List<DateRange>(AvailablePeriods);
         foreach (var period in clonedAvailablePeriods)
         {
@@ -19,6 +20,13 @@ public class AvailabilityPeriods
             }
         }
         AvailablePeriods.Add(newPeriod);
+    }
+
+    private void EnsurePeriodIsNotBooked(DateRange newPeriod)
+    {
+        if (!UnavailablePeriods.Any(newPeriod.IsOverlapping)) return;
+        var overlappingPeriod = UnavailablePeriods.FirstOrDefault(newPeriod.IsOverlapping);
+        throw new ArgumentException($"The availability period overlaps with an already booked period from {overlappingPeriod.StartDate} to {overlappingPeriod.EndDate}.");
     }
 
     private void MergeOverlappingPeriod(DateRange newPeriod)
