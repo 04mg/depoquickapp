@@ -73,4 +73,144 @@ public class DepositTest
         // Assert
         Assert.AreEqual("Name is invalid, it should be lesser or equal to 100 characters.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCanAddAvailabilityPeriods()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        var availabilityPeriod = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));        
+        // Act
+        deposit.AddAvailabilityPeriod(availabilityPeriod);
+        
+        // Assert
+        Assert.AreEqual(1, deposit.GetAvailablePeriods().Count);
+    }
+    
+    [TestMethod]
+    public void TestOverlappingAvailabilityPeriodsShouldMerge()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var endDate = DateOnly.FromDateTime(DateTime.Now.AddDays(2));
+        var availabilityPeriod1 = new DateRange(startDate, DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        var availabilityPeriod2 = new DateRange(DateOnly.FromDateTime(DateTime.Now.AddDays(1)), endDate);
+
+        // Act
+        deposit.AddAvailabilityPeriod(availabilityPeriod1);
+        deposit.AddAvailabilityPeriod(availabilityPeriod2);
+
+        // Assert
+        Assert.AreEqual(1, deposit.GetAvailablePeriods().Count);
+        Assert.AreEqual(startDate, deposit.GetAvailablePeriods()[0].StartDate);
+        Assert.AreEqual(endDate, deposit.GetAvailablePeriods()[0].EndDate);
+    }
+    
+    [TestMethod]
+    public void TestCanRemoveTheTotalityOfAnAvailabilityPeriod()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        var availabilityPeriod = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        deposit.AddAvailabilityPeriod(availabilityPeriod);
+        
+        // Act
+        deposit.RemoveAvailabilityPeriod(availabilityPeriod);
+        
+        // Assert
+        Assert.AreEqual(0, deposit.GetAvailablePeriods().Count);
+    }
+    
+    [TestMethod]
+    public void TestCanRemovePartOfAnAvailabilityPeriod()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var middleDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+        var endDate = DateOnly.FromDateTime(DateTime.Now.AddDays(3));
+        var availabilityPeriod = new DateRange(startDate, endDate);
+        deposit.AddAvailabilityPeriod(availabilityPeriod);
+        var rangeToRemove = new DateRange(startDate, middleDate);
+        
+        // Act
+        deposit.RemoveAvailabilityPeriod(rangeToRemove);
+        
+        // Assert
+        Assert.AreEqual(1, deposit.GetAvailablePeriods().Count);
+        Assert.AreEqual(middleDate.AddDays(1), deposit.GetAvailablePeriods()[0].StartDate);
+        Assert.AreEqual(endDate, deposit.GetAvailablePeriods()[0].EndDate);
+    }
+    
+    [TestMethod]
+    public void TestCanRemoveTheMiddleOfAnAvailabilityPeriod()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var middleStartDate = DateOnly.FromDateTime(DateTime.Now.AddDays(2));
+        var middleEndDate = DateOnly.FromDateTime(DateTime.Now.AddDays(3));
+        var endDate = DateOnly.FromDateTime(DateTime.Now.AddDays(5));
+        var availabilityPeriod = new DateRange(startDate, endDate);
+        deposit.AddAvailabilityPeriod(availabilityPeriod);
+        var rangeToRemove = new DateRange(middleStartDate, middleEndDate);
+        
+        // Act
+        deposit.RemoveAvailabilityPeriod(rangeToRemove);
+        
+        // Assert
+        Assert.AreEqual(2, deposit.GetAvailablePeriods().Count);
+        Assert.AreEqual(startDate, deposit.GetAvailablePeriods()[0].StartDate);
+        Assert.AreEqual(middleStartDate.AddDays(-1), deposit.GetAvailablePeriods()[0].EndDate);
+        Assert.AreEqual(middleEndDate.AddDays(1), deposit.GetAvailablePeriods()[1].StartDate);
+        Assert.AreEqual(endDate, deposit.GetAvailablePeriods()[1].EndDate);
+    }
+    
+    [TestMethod]
+    public void TestAdjacentAvailabilityPeriodsShouldMerge()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var middleStartDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+        var middleEndDate = DateOnly.FromDateTime(DateTime.Now.AddDays(2));
+        var endDate = DateOnly.FromDateTime(DateTime.Now.AddDays(3));
+        var availabilityPeriod1 = new DateRange(startDate, middleStartDate);
+        var availabilityPeriod2 = new DateRange(middleEndDate, endDate);
+        
+        // Act
+        deposit.AddAvailabilityPeriod(availabilityPeriod1);
+        deposit.AddAvailabilityPeriod(availabilityPeriod2);
+        
+        // Assert
+        Assert.AreEqual(1, deposit.GetAvailablePeriods().Count);
+        Assert.AreEqual(startDate, deposit.GetAvailablePeriods()[0].StartDate);
+        Assert.AreEqual(endDate, deposit.GetAvailablePeriods()[0].EndDate);
+    }
+
+    [TestMethod]
+    public void TestCanAddAvailabilityPeriodsThatOverlapWithMoreThanOnePeriodShouldMergeWithAllOfThem()
+    {
+        // Arrange
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, _promotionList);
+        var date0 = DateOnly.FromDateTime(DateTime.Now);
+        var date3 = DateOnly.FromDateTime(DateTime.Now.AddDays(3));
+        var date6 = DateOnly.FromDateTime(DateTime.Now.AddDays(6));
+        var availabilityPeriod1 = new DateRange(date0, date0.AddDays(1));
+        var availabilityPeriod2 = new DateRange(date3, date3.AddDays(1));
+        var availabilityPeriod3 = new DateRange(date6, date6.AddDays(1));
+        var overlappingPeriod = new DateRange(date0, date6.AddDays(1));
+        
+        // Act
+        deposit.AddAvailabilityPeriod(availabilityPeriod1);
+        deposit.AddAvailabilityPeriod(availabilityPeriod2);
+        deposit.AddAvailabilityPeriod(availabilityPeriod3);
+        deposit.AddAvailabilityPeriod(overlappingPeriod);
+        
+        // Assert
+        Assert.AreEqual(1, deposit.GetAvailablePeriods().Count);
+        Assert.AreEqual(date0, deposit.GetAvailablePeriods()[0].StartDate);
+        Assert.AreEqual(date6.AddDays(1), deposit.GetAvailablePeriods()[0].EndDate);
+    }
 }

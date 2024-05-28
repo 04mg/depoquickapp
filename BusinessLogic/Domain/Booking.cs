@@ -16,6 +16,14 @@ public class Booking
         Client = client;
         Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
         _priceCalculator = priceCalculator;
+        EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit, Duration);
+        MakeDurationUnavailable(_duration);
+    }
+
+    private void MakeDurationUnavailable(Tuple<DateOnly, DateOnly> duration)
+    {
+        var dateRange = new DateRange(duration.Item1, duration.Item2);
+        Deposit.MakeUnavailable(dateRange);
     }
 
     public int Id { get; set; }
@@ -33,6 +41,15 @@ public class Booking
             EnsureDateFromIsNotEqualToDateTo(value.Item1, value.Item2);
             EnsureDateFromIsGreaterThanToday(value.Item1);
             _duration = value;
+        }
+    }
+    
+    private void EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
+    {
+        var dateRange = new DateRange(duration.Item1, duration.Item2);
+        if (!deposit.IsAvailable(dateRange))
+        {
+            throw new ArgumentException("The duration of the booking must be contained in the deposit availability periods.");
         }
     }
 
@@ -66,7 +83,14 @@ public class Booking
 
     public void Reject(string message)
     {
+        MakeDurationAvailable(Duration);
         Stage = BookingStage.Rejected;
         Message = message;
+    }
+
+    private void MakeDurationAvailable(Tuple<DateOnly, DateOnly> duration)
+    {
+        var dateRange = new DateRange(duration.Item1, duration.Item2);
+        Deposit.MakeAvailable(dateRange);
     }
 }

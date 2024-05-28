@@ -8,6 +8,7 @@ public class DepoQuickAppTest
 {
     private AddBookingDto _addBookingDto = new();
     private AddDepositDto _addDepositDto;
+    private DateRangeDto _dateRangeDto;
     private AddPromotionDto _addPromotionDto;
 
     private DepoQuickApp _app = new(new UserRepository(), new PromotionRepository(), new DepositRepository(),
@@ -69,6 +70,12 @@ public class DepoQuickAppTest
             Size = "Small",
             ClimateControl = true,
             PromotionList = new List<int> { 1 }
+        };
+
+        _dateRangeDto = new DateRangeDto
+        {
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now.AddDays(100))
         };
 
         _addBookingDto = new AddBookingDto
@@ -187,6 +194,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRangeDto, credentials);
 
         // Act
         _app.AddBooking(_addBookingDto, _credentials);
@@ -208,6 +216,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRangeDto, credentials);
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
@@ -226,6 +235,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRangeDto, credentials);
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
@@ -235,6 +245,108 @@ public class DepoQuickAppTest
         // Assert
         Assert.AreEqual("Rejected", booking?.Stage);
         Assert.AreEqual("Rejected", booking?.Message);
+    }
+
+    [TestMethod]
+    public void TestCantDeleteDepositIncludedInBookings()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRangeDto, credentials);
+        _app.AddBooking(_addBookingDto, _credentials);
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => _app.DeleteDeposit(_addDepositDto.Name, credentials));
+
+        // Assert
+        Assert.AreEqual("There are existing bookings for this deposit.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantDeletePromotionIncludedInDeposits()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() => _app.DeletePromotion(1, credentials));
+
+        // Assert
+        Assert.AreEqual("There are existing deposits for this promotion.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantCreateBookingIfUserDoesNotExist()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+        var wrongBookingDto = new AddBookingDto
+        {
+            DepositName = "Deposit",
+            Email = "wrong@test.com",
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            _app.AddBooking(wrongBookingDto, _credentials);
+        });
+
+        // Assert
+        Assert.AreEqual("User does not exist.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantCreateBookingIfDepositDoesNotExist()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            _app.AddBooking(_addBookingDto, _credentials);
+        });
+
+        // Assert
+        Assert.AreEqual("Deposit not found.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantCreateDepositIfPromotionDoesNotExist()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        var wrongAddDepositDto = new AddDepositDto
+        {
+            Area = "A",
+            Size = "Small",
+            ClimateControl = true,
+            PromotionList = new List<int> { 1 }
+        };
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            _app.AddDeposit(wrongAddDepositDto, credentials);
+        });
+
+        // Assert
+        Assert.IsTrue(exception.Message.Contains("Promotion not found."));
     }
 
     [TestMethod]
@@ -281,6 +393,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRangeDto, credentials);
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
@@ -302,6 +415,7 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         _app.AddPromotion(_addPromotionDto, credentials);
         _app.AddDeposit(_addDepositDto, credentials);
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRangeDto, credentials);
         _app.AddBooking(_addBookingDto, _credentials);
 
         // Act
@@ -310,5 +424,22 @@ public class DepoQuickAppTest
         // Assert
         Assert.AreEqual(1, bookings.Count);
         Assert.AreEqual(_addBookingDto.DepositName, bookings[0].DepositName);
+    }
+    
+    [TestMethod]
+    public void TestCanAddAvailabilityPeriod()
+    {
+        // Arrange
+        _app.RegisterUser(_registerDto);
+        var credentials = _app.Login(_loginDto);
+        _app.AddPromotion(_addPromotionDto, credentials);
+        _app.AddDeposit(_addDepositDto, credentials);
+
+        // Act
+        _app.AddAvailabilityPeriod(_addDepositDto.Name, _dateRangeDto, credentials);
+        var deposit = _app.GetDeposit(_addDepositDto.Name);
+
+        // Assert
+        Assert.AreEqual(1, deposit.AvailabilityPeriods.Count);
     }
 }

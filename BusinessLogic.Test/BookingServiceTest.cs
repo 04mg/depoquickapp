@@ -83,6 +83,9 @@ public class BookingServiceTest
         Deposit = new Deposit("Deposit", "A", "Small", true, promotionList);
         PromotionService.AddPromotion(promotion, AdminCredentials);
         DepositService.AddDeposit(Deposit, AdminCredentials);
+        var dateRange = new DateRange(DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(100)));
+        DepositService.AddAvailabilityPeriod(Deposit.Name, dateRange, AdminCredentials);
     }
 
     [TestMethod]
@@ -135,8 +138,8 @@ public class BookingServiceTest
         // Arrange
         var booking = new Booking(1, Deposit!, Client!, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        var otherBooking = new Booking(1, Deposit!, OtherClient!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
+        var otherBooking = new Booking(1, Deposit!, OtherClient!, DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(3)), new PriceCalculator());
         BookingService.AddBooking(booking);
         BookingService.AddBooking(otherBooking);
 
@@ -194,24 +197,6 @@ public class BookingServiceTest
 
         //Assert
         Assert.AreEqual(message, bookings[0].Message);
-    }
-
-    [TestMethod]
-    public void TestCantAddBookingThatAlreadyExists()
-    {
-        // Arrange
-        var booking = new Booking(1, Deposit!, Client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        var repeatedBooking = new Booking(1, Deposit!, Client!, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
-        BookingService.AddBooking(booking);
-
-        // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
-            BookingService.AddBooking(repeatedBooking));
-
-        // Assert
-        Assert.AreEqual("User already has a booking for this period.", exception.Message);
     }
 
     [TestMethod]
@@ -331,7 +316,11 @@ public class BookingServiceTest
     public void TestCantCreateBookingIfDepositDoesNotExist()
     {
         // Arrange
-        var booking = new Booking(1, new Deposit("Deposit Two", "A", "Small", true, new List<Promotion>()), Client!,
+        var deposit = new Deposit("Deposit Two", "A", "Small", true, new List<Promotion>());
+        var dateRange = new DateRange(DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+        deposit.AddAvailabilityPeriod(dateRange);
+        var booking = new Booking(1, deposit, Client!,
             DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
 
         // Act

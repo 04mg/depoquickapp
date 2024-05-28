@@ -21,7 +21,8 @@ public class DepositServiceTest
 
     private PromotionService _promotionService = new(new PromotionRepository(), new DepositRepository());
 
-    private BookingService _bookingService = new(new BookingRepository(), new DepositRepository(), new UserRepository());
+    private BookingService _bookingService =
+        new(new BookingRepository(), new DepositRepository(), new UserRepository());
 
     private UserService _userService = new(new UserRepository());
 
@@ -194,7 +195,10 @@ public class DepositServiceTest
         var promotionList = new List<Promotion>
             { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
+        var dateRange = new DateRange(DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         _depositService.AddDeposit(deposit, _adminCredentials);
+        _depositService.AddAvailabilityPeriod(Name, dateRange, _adminCredentials);
         _bookingService.AddBooking(new Booking(1, deposit, new User(
                 "Name Surname",
                 "client@client.com",

@@ -114,7 +114,12 @@ public class DepoQuickApp
             Area = d.Area,
             Size = d.Size,
             ClimateControl = d.ClimateControl,
-            PromotionList = d.Promotions.Select(p => p.Id).ToList()
+            PromotionList = d.Promotions.Select(p => p.Id).ToList(),
+            AvailabilityPeriods = d.GetAvailablePeriods().Select(p => new DateRangeDto
+            {
+                StartDate = p.StartDate,
+                EndDate = p.EndDate
+            }).ToList()
         }).ToList();
     }
 
@@ -127,7 +132,12 @@ public class DepoQuickApp
             Area = deposit.Area,
             Size = deposit.Size,
             ClimateControl = deposit.ClimateControl,
-            PromotionList = deposit.Promotions.Select(p => p.Id).ToList()
+            PromotionList = deposit.Promotions.Select(p => p.Id).ToList(),
+            AvailabilityPeriods = deposit.GetAvailablePeriods().Select(p => new DateRangeDto
+            {
+                StartDate = p.StartDate,
+                EndDate = p.EndDate
+            }).ToList()
         };
     }
 
@@ -199,5 +209,11 @@ public class DepoQuickApp
     public void RejectBooking(int bookingId, string message, Credentials credentials)
     {
         _bookingService.RejectBooking(bookingId, credentials, message);
+    }
+
+    public void AddAvailabilityPeriod(string name, DateRangeDto dateRange, Credentials credentials)
+    {
+        var period = new DateRange(dateRange.StartDate, dateRange.EndDate);
+        _depositService.AddAvailabilityPeriod(name, period, credentials);
     }
 }

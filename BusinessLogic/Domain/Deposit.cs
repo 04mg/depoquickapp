@@ -15,8 +15,10 @@ public class Deposit
         Size = size;
         ClimateControl = climateControl;
         Promotions = promotions;
+        AvailabilityPeriods = new AvailabilityPeriods();
     }
 
+    private AvailabilityPeriods AvailabilityPeriods { get;}
     public bool ClimateControl { get; set; }
     public List<Promotion> Promotions { get; set; }
 
@@ -81,5 +83,35 @@ public class Deposit
     public int SumPromotions()
     {
         return Promotions.Sum(p => p.Discount);
+    }
+
+    public void AddAvailabilityPeriod(DateRange dateRange)
+    {
+        AvailabilityPeriods.AddAvailabilityPeriod(dateRange);
+    }
+
+    public void RemoveAvailabilityPeriod(DateRange dateRange)
+    {
+        AvailabilityPeriods.RemoveAvailabilityPeriod(dateRange);
+    }
+    
+    public List<DateRange> GetAvailablePeriods()
+    {
+        return AvailabilityPeriods.AvailablePeriods;
+    }
+
+    public bool IsAvailable(DateRange dateRange)
+    {
+        return AvailabilityPeriods.IsAvailable(dateRange);
+    }
+
+    public void MakeAvailable(DateRange dateRange)
+    {
+        AvailabilityPeriods.MakePeriodAvailable(dateRange);
+    }
+
+    public void MakeUnavailable(DateRange dateRange)
+    {
+        AvailabilityPeriods.MakePeriodUnavailable(dateRange);
     }
 }

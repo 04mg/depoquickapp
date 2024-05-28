@@ -77,4 +77,11 @@ public class DepositService
         if (_bookingRepository.GetAll().Any(b => b.Deposit.Name == depositName))
             throw new ArgumentException("There are existing bookings for this deposit.");
     }
+    
+    public void AddAvailabilityPeriod(string deposit, DateRange availabilityPeriod, Credentials credentials)
+    {
+        EnsureUserIsAdmin(credentials);
+        EnsureDepositExists(deposit);
+        GetDeposit(deposit).AddAvailabilityPeriod(availabilityPeriod);
+    }
 }
