@@ -18,10 +18,10 @@ public class DateRange
             throw new ArgumentException("Date range is invalid.");
     }
 
-    public bool IsOverlapping(DateRange other)
+    public bool IsOverlapped(DateRange other)
     {
-        return !((StartDate > other.StartDate && StartDate > other.EndDate) ||
-                (EndDate < other.StartDate && EndDate < other.EndDate));
+        return (StartDate <= other.StartDate || StartDate <= other.EndDate) &&
+               (EndDate >= other.StartDate || EndDate >= other.EndDate);
     }
 
     public void Merge(DateRange other)
@@ -33,13 +33,13 @@ public class DateRange
 
     private void EnsureOverlapOrAdjacent(DateRange other)
     {
-        if (!IsOverlapping(other) && !IsAdjacent(other))
+        if (!IsOverlapped(other) && !IsAdjacent(other))
             throw new ArgumentException("Ranges are not overlapping or adjacent.");
     }
 
     public DateRange? Subtract(DateRange other)
     {
-        if(!IsOverlapping(other))
+        if(!IsOverlapped(other))
             return null;
         if (StartDate == other.StartDate && EndDate == other.EndDate)
             return null;

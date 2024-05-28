@@ -11,7 +11,7 @@ public class AvailabilityPeriods
         var clonedAvailablePeriods = new List<DateRange>(AvailablePeriods);
         foreach (var period in clonedAvailablePeriods)
         {
-            if (period.IsOverlapping(newPeriod))
+            if (period.IsOverlapped(newPeriod))
             {
                 MergeOverlappingPeriod(newPeriod);
             } else if (period.IsAdjacent(newPeriod))
@@ -24,14 +24,14 @@ public class AvailabilityPeriods
 
     private void EnsurePeriodIsNotBooked(DateRange newPeriod)
     {
-        if (!UnavailablePeriods.Any(newPeriod.IsOverlapping)) return;
-        var overlappingPeriod = UnavailablePeriods.FirstOrDefault(newPeriod.IsOverlapping);
+        if (!UnavailablePeriods.Any(newPeriod.IsOverlapped)) return;
+        var overlappingPeriod = UnavailablePeriods.FirstOrDefault(newPeriod.IsOverlapped);
         throw new ArgumentException($"The availability period overlaps with an already booked period from {overlappingPeriod.StartDate} to {overlappingPeriod.EndDate}.");
     }
 
     private void MergeOverlappingPeriod(DateRange newPeriod)
     {
-        var overlappingPeriod = AvailablePeriods.First(p => p.IsOverlapping(newPeriod));
+        var overlappingPeriod = AvailablePeriods.First(p => p.IsOverlapped(newPeriod));
         newPeriod.Merge(overlappingPeriod);
         AvailablePeriods.Remove(overlappingPeriod);
     }
@@ -52,7 +52,7 @@ public class AvailabilityPeriods
             {
                 RemoveContainedPeriod(dateRange);
             }
-            else if (period.IsOverlapping(dateRange))
+            else if (period.IsOverlapped(dateRange))
             {
                 SubtractOverlappedPeriod(dateRange);
             }
@@ -66,7 +66,7 @@ public class AvailabilityPeriods
 
     private void SubtractOverlappedPeriod(DateRange dateRange)
     {
-        var overlappingPeriod = AvailablePeriods.First(p => p.IsOverlapping(dateRange));
+        var overlappingPeriod = AvailablePeriods.First(p => p.IsOverlapped(dateRange));
         var result = overlappingPeriod.Subtract(dateRange);
         if (result != null)
         {
@@ -76,7 +76,7 @@ public class AvailabilityPeriods
 
     public bool IsAvailable(DateRange dateRange)
     {
-        return AvailablePeriods.Any(dateRange.IsContained) && !UnavailablePeriods.Any(dateRange.IsOverlapping);
+        return AvailablePeriods.Any(dateRange.IsContained) && !UnavailablePeriods.Any(dateRange.IsOverlapped);
     }
 
     public void MakePeriodAvailable(DateRange dateRange)
