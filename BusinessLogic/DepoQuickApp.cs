@@ -210,8 +210,9 @@ public class DepoQuickApp
         _bookingManager.Reject(bookingId, credentials, message);
     }
 
-    public void AddAvailabilityPeriod(string name, DateRange dateRange, Credentials credentials)
+    public void AddAvailabilityPeriod(string name, DateRangeDto dateRange, Credentials credentials)
     {
-        _depositManager.AddAvailabilityPeriod(name, dateRange, credentials);
+        var period = new DateRange(dateRange.StartDate, dateRange.EndDate);
+        _depositManager.AddAvailabilityPeriod(name, period, credentials);
     }
 }
