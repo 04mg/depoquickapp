@@ -2,16 +2,16 @@ using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Repositories;
 
-namespace BusinessLogic.Logic;
+namespace BusinessLogic.Services;
 
-public class BookingLogic
+public class BookingService
 {
     private readonly IBookingRepository _bookingRepository;
     private readonly IDepositRepository _depositRepository;
     private readonly IUserRepository _userRepository;
     private IEnumerable<Booking> AllBookings => _bookingRepository.GetAll();
 
-    public BookingLogic(IBookingRepository bookingRepository,
+    public BookingService(IBookingRepository bookingRepository,
         IDepositRepository depositRepository, IUserRepository userRepository)
     {
         _bookingRepository = bookingRepository;

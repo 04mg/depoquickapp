@@ -1,13 +1,13 @@
 using BusinessLogic.Calculators;
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Logic;
 using BusinessLogic.Repositories;
+using BusinessLogic.Services;
 
 namespace BusinessLogic.Test;
 
 [TestClass]
-public class DepositLogicTest
+public class DepositServiceTest
 {
     private const string Name = "Deposit";
     private const string Area = "A";
@@ -16,14 +16,14 @@ public class DepositLogicTest
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
 
-    private DepositLogic _depositLogic =
+    private DepositService _depositService =
         new(new DepositRepository(), new BookingRepository(), new PromotionRepository());
 
-    private PromotionLogic _promotionLogic = new(new PromotionRepository(), new DepositRepository());
+    private PromotionService _promotionService = new(new PromotionRepository(), new DepositRepository());
 
-    private BookingLogic _bookingLogic = new(new BookingRepository(), new DepositRepository(), new UserRepository());
+    private BookingService _bookingService = new(new BookingRepository(), new DepositRepository(), new UserRepository());
 
-    private AuthLogic _authLogic = new(new UserRepository());
+    private UserService _userService = new(new UserRepository());
 
     [TestInitialize]
     public void Initialize()
@@ -32,10 +32,10 @@ public class DepositLogicTest
         var bookingRepository = new BookingRepository();
         var promotionRepository = new PromotionRepository();
         var userRepository = new UserRepository();
-        _authLogic = new AuthLogic(userRepository);
-        _bookingLogic = new BookingLogic(bookingRepository, depositRepository, userRepository);
-        _depositLogic = new DepositLogic(depositRepository, bookingRepository, promotionRepository);
-        _promotionLogic = new PromotionLogic(promotionRepository, depositRepository);
+        _userService = new UserService(userRepository);
+        _bookingService = new BookingService(bookingRepository, depositRepository, userRepository);
+        _depositService = new DepositService(depositRepository, bookingRepository, promotionRepository);
+        _promotionService = new PromotionService(promotionRepository, depositRepository);
 
         RegisterUsers();
         CreatePromotion();
@@ -56,11 +56,11 @@ public class DepositLogicTest
             "12345678@mE"
         );
 
-        _authLogic.Register(admin, passwordConfirmation);
-        _authLogic.Register(client, passwordConfirmation);
+        _userService.Register(admin, passwordConfirmation);
+        _userService.Register(client, passwordConfirmation);
 
-        _adminCredentials = _authLogic.Login(admin.Email, admin.Password);
-        _clientCredentials = _authLogic.Login(client.Email, client.Password);
+        _adminCredentials = _userService.Login(admin.Email, admin.Password);
+        _clientCredentials = _userService.Login(client.Email, client.Password);
     }
 
     private void CreatePromotion()
@@ -68,7 +68,7 @@ public class DepositLogicTest
         var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
 
-        _promotionLogic.AddPromotion(promotion, _adminCredentials);
+        _promotionService.AddPromotion(promotion, _adminCredentials);
     }
 
     [TestMethod]
@@ -76,14 +76,14 @@ public class DepositLogicTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
 
         // Act
-        _depositLogic.AddDeposit(deposit, _adminCredentials);
+        _depositService.AddDeposit(deposit, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(1, _depositLogic.GetAllDeposits().Count());
+        Assert.AreEqual(1, _depositService.GetAllDeposits().Count());
     }
 
     [TestMethod]
@@ -91,15 +91,15 @@ public class DepositLogicTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
-        _depositLogic.AddDeposit(deposit, _adminCredentials);
+        _depositService.AddDeposit(deposit, _adminCredentials);
 
         // Act
-        _depositLogic.DeleteDeposit(Name, _adminCredentials);
+        _depositService.DeleteDeposit(Name, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(0, _depositLogic.GetAllDeposits().Count());
+        Assert.AreEqual(0, _depositService.GetAllDeposits().Count());
     }
 
     [TestMethod]
@@ -107,7 +107,7 @@ public class DepositLogicTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositLogic.DeleteDeposit(Name, _adminCredentials));
+            Assert.ThrowsException<ArgumentException>(() => _depositService.DeleteDeposit(Name, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Deposit not found.", exception.Message);
@@ -118,13 +118,13 @@ public class DepositLogicTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
 
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _depositLogic.AddDeposit(deposit, _clientCredentials));
+                _depositService.AddDeposit(deposit, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage deposits.", exception.Message);
@@ -135,14 +135,14 @@ public class DepositLogicTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
-        _depositLogic.AddDeposit(deposit, _adminCredentials);
+        _depositService.AddDeposit(deposit, _adminCredentials);
 
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _depositLogic.DeleteDeposit(Name, _clientCredentials));
+                _depositService.DeleteDeposit(Name, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage deposits.", exception.Message);
@@ -153,12 +153,12 @@ public class DepositLogicTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
-        _depositLogic.AddDeposit(deposit, _adminCredentials);
+        _depositService.AddDeposit(deposit, _adminCredentials);
 
         // Act
-        var deposits = _depositLogic.GetAllDeposits().ToList();
+        var deposits = _depositService.GetAllDeposits().ToList();
 
         // Assert
         Assert.IsNotNull(deposits);
@@ -175,13 +175,13 @@ public class DepositLogicTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
-        _depositLogic.AddDeposit(deposit, _adminCredentials);
+        _depositService.AddDeposit(deposit, _adminCredentials);
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositLogic.AddDeposit(deposit, _adminCredentials));
+            Assert.ThrowsException<ArgumentException>(() => _depositService.AddDeposit(deposit, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Deposit name is already taken.", exception.Message);
@@ -192,10 +192,10 @@ public class DepositLogicTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionLogic.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
-        _depositLogic.AddDeposit(deposit, _adminCredentials);
-        _bookingLogic.AddBooking(new Booking(1, deposit, new User(
+        _depositService.AddDeposit(deposit, _adminCredentials);
+        _bookingService.AddBooking(new Booking(1, deposit, new User(
                 "Name Surname",
                 "client@client.com",
                 "12345678@mE"
@@ -205,7 +205,7 @@ public class DepositLogicTest
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositLogic.DeleteDeposit(Name, _adminCredentials));
+            Assert.ThrowsException<ArgumentException>(() => _depositService.DeleteDeposit(Name, _adminCredentials));
 
         // Assert
         Assert.AreEqual("There are existing bookings for this deposit.", exception.Message);
@@ -224,7 +224,7 @@ public class DepositLogicTest
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
-            _depositLogic.AddDeposit(deposit, _adminCredentials);
+            _depositService.AddDeposit(deposit, _adminCredentials);
         });
 
         // Assert

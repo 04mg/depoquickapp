@@ -2,16 +2,16 @@ using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Repositories;
 
-namespace BusinessLogic.Logic;
+namespace BusinessLogic.Services;
 
-public class DepositLogic
+public class DepositService
 {
     private readonly IDepositRepository _depositRepository;
     private readonly IBookingRepository _bookingRepository;
     private readonly IPromotionRepository _promotionRepository;
     private List<Deposit> AllDeposits => _depositRepository.GetAll().ToList();
 
-    public DepositLogic(IDepositRepository depositRepository, IBookingRepository bookingRepository,
+    public DepositService(IDepositRepository depositRepository, IBookingRepository bookingRepository,
         IPromotionRepository promotionRepository)
     {
         _depositRepository = depositRepository;

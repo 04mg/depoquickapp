@@ -1,25 +1,25 @@
 using BusinessLogic.Calculators;
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Logic;
 using BusinessLogic.Repositories;
+using BusinessLogic.Services;
 
 namespace BusinessLogic;
 
 public class DepoQuickApp
 {
-    private readonly AuthLogic _authLogic;
-    private readonly BookingLogic _bookingLogic;
-    private readonly DepositLogic _depositLogic;
-    private readonly PromotionLogic _promotionLogic;
+    private readonly UserService _userService;
+    private readonly BookingService _bookingService;
+    private readonly DepositService _depositService;
+    private readonly PromotionService _promotionService;
 
     public DepoQuickApp(IUserRepository userRepository, IPromotionRepository promotionRepository,
         IDepositRepository depositRepository, IBookingRepository bookingRepository)
     {
-        _authLogic = new AuthLogic(userRepository);
-        _promotionLogic = new PromotionLogic(promotionRepository, depositRepository);
-        _depositLogic = new DepositLogic(depositRepository, bookingRepository, promotionRepository);
-        _bookingLogic = new BookingLogic(bookingRepository, depositRepository, userRepository);
+        _userService = new UserService(userRepository);
+        _promotionService = new PromotionService(promotionRepository, depositRepository);
+        _depositService = new DepositService(depositRepository, bookingRepository, promotionRepository);
+        _bookingService = new BookingService(bookingRepository, depositRepository, userRepository);
     }
 
     public void RegisterUser(RegisterDto registerDto)
@@ -29,12 +29,12 @@ public class DepoQuickApp
             registerDto.Email,
             registerDto.Password,
             registerDto.Rank);
-        _authLogic.Register(user, registerDto.PasswordConfirmation);
+        _userService.Register(user, registerDto.PasswordConfirmation);
     }
 
     public Credentials Login(LoginDto loginDto)
     {
-        return _authLogic.Login(loginDto.Email, loginDto.Password);
+        return _userService.Login(loginDto.Email, loginDto.Password);
     }
 
     public void AddPromotion(AddPromotionDto addPromotionDto, Credentials credentials)
@@ -45,12 +45,12 @@ public class DepoQuickApp
             addPromotionDto.Discount,
             addPromotionDto.DateFrom,
             addPromotionDto.DateTo);
-        _promotionLogic.AddPromotion(promotion, credentials);
+        _promotionService.AddPromotion(promotion, credentials);
     }
 
     public AddPromotionDto GetPromotion(int promotionId)
     {
-        var promotion = _promotionLogic.GetPromotion(promotionId);
+        var promotion = _promotionService.GetPromotion(promotionId);
         return new AddPromotionDto
         {
             Label = promotion.Label,
@@ -62,12 +62,12 @@ public class DepoQuickApp
 
     public void DeletePromotion(int promotionId, Credentials credentials)
     {
-        _promotionLogic.DeletePromotion(promotionId, credentials);
+        _promotionService.DeletePromotion(promotionId, credentials);
     }
 
     public List<PromotionDto> ListAllPromotions(Credentials credentials)
     {
-        return _promotionLogic.GetAllPromotions(credentials).Select(p => new PromotionDto
+        return _promotionService.GetAllPromotions(credentials).Select(p => new PromotionDto
         {
             Id = p.Id,
             Label = p.Label,
@@ -85,7 +85,7 @@ public class DepoQuickApp
             promotionDto.Discount,
             promotionDto.DateFrom,
             promotionDto.DateTo);
-        _promotionLogic.ModifyPromotion(promotionId, promotion, credentials);
+        _promotionService.ModifyPromotion(promotionId, promotion, credentials);
     }
 
     public void AddDeposit(AddDepositDto depositDto, Credentials credentials)
@@ -93,22 +93,22 @@ public class DepoQuickApp
         var promotions = CreatePromotionListFromDto(depositDto);
         var deposit = new Deposit(depositDto.Name, depositDto.Area, depositDto.Size, depositDto.ClimateControl,
             promotions);
-        _depositLogic.AddDeposit(deposit, credentials);
+        _depositService.AddDeposit(deposit, credentials);
     }
 
     public void DeleteDeposit(string depositName, Credentials credentials)
     {
-        _depositLogic.DeleteDeposit(depositName, credentials);
+        _depositService.DeleteDeposit(depositName, credentials);
     }
 
     private List<Promotion> CreatePromotionListFromDto(AddDepositDto depositDto)
     {
-        return depositDto.PromotionList.Select(promotion => _promotionLogic.GetPromotion(promotion)).ToList();
+        return depositDto.PromotionList.Select(promotion => _promotionService.GetPromotion(promotion)).ToList();
     }
 
     public List<DepositDto> ListAllDeposits()
     {
-        return _depositLogic.GetAllDeposits().Select(d => new DepositDto
+        return _depositService.GetAllDeposits().Select(d => new DepositDto
         {
             Name = d.Name,
             Area = d.Area,
@@ -120,7 +120,7 @@ public class DepoQuickApp
 
     public DepositDto GetDeposit(string depositName)
     {
-        var deposit = _depositLogic.GetDeposit(depositName);
+        var deposit = _depositService.GetDeposit(depositName);
         return new DepositDto
         {
             Name = deposit.Name,
@@ -133,24 +133,24 @@ public class DepoQuickApp
 
     public void AddBooking(AddBookingDto addBookingDto, Credentials credentials)
     {
-        var deposit = _depositLogic.GetDeposit(addBookingDto.DepositName);
-        var user = _authLogic.GetUser(addBookingDto.Email, credentials);
+        var deposit = _depositService.GetDeposit(addBookingDto.DepositName);
+        var user = _userService.GetUser(addBookingDto.Email, credentials);
         var priceCalculator = new PriceCalculator();
         var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo, priceCalculator);
-        _bookingLogic.AddBooking(booking);
+        _bookingService.AddBooking(booking);
     }
 
     public double CalculateBookingPrice(AddBookingDto addBookingDto)
     {
         var priceCalculator = new PriceCalculator();
-        var deposit = _depositLogic.GetDeposit(addBookingDto.DepositName);
+        var deposit = _depositService.GetDeposit(addBookingDto.DepositName);
         return priceCalculator.CalculatePrice(deposit,
             new Tuple<DateOnly, DateOnly>(addBookingDto.DateFrom, addBookingDto.DateTo));
     }
 
     public List<BookingDto> ListAllBookings(Credentials credentials)
     {
-        return _bookingLogic.GetAllBookings(credentials).Select(b => new BookingDto
+        return _bookingService.GetAllBookings(credentials).Select(b => new BookingDto
         {
             Id = b.Id,
             DepositName = b.Deposit.Name,
@@ -164,7 +164,7 @@ public class DepoQuickApp
 
     public List<BookingDto> ListAllBookingsByEmail(string email, Credentials credentials)
     {
-        return _bookingLogic.GetBookingsByEmail(email, credentials).Select(b => new BookingDto
+        return _bookingService.GetBookingsByEmail(email, credentials).Select(b => new BookingDto
         {
             Id = b.Id,
             DepositName = b.Deposit.Name,
@@ -178,7 +178,7 @@ public class DepoQuickApp
 
     public BookingDto GetBooking(int bookingId)
     {
-        var booking = _bookingLogic.GetBooking(bookingId);
+        var booking = _bookingService.GetBooking(bookingId);
         return new BookingDto
         {
             Id = booking.Id,
@@ -193,11 +193,11 @@ public class DepoQuickApp
 
     public void ApproveBooking(int bookingId, Credentials credentials)
     {
-        _bookingLogic.ApproveBooking(bookingId, credentials);
+        _bookingService.ApproveBooking(bookingId, credentials);
     }
 
     public void RejectBooking(int bookingId, string message, Credentials credentials)
     {
-        _bookingLogic.RejectBooking(bookingId, credentials, message);
+        _bookingService.RejectBooking(bookingId, credentials, message);
     }
 }

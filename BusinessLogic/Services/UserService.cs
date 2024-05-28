@@ -3,14 +3,14 @@ using BusinessLogic.DTOs;
 using BusinessLogic.Enums;
 using BusinessLogic.Repositories;
 
-namespace BusinessLogic.Logic;
+namespace BusinessLogic.Services;
 
-public class AuthLogic
+public class UserService
 {
     private bool _isAdminRegistered;
     private readonly IUserRepository _userRepository;
 
-    public AuthLogic(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }

@@ -2,14 +2,14 @@ using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Repositories;
 
-namespace BusinessLogic.Logic;
+namespace BusinessLogic.Services;
 
-public class PromotionLogic
+public class PromotionService
 {
     private readonly IPromotionRepository _promotionRepository;
     private readonly IDepositRepository _depositRepository;
 
-    public PromotionLogic(IPromotionRepository promotionRepository, IDepositRepository depositRepository)
+    public PromotionService(IPromotionRepository promotionRepository, IDepositRepository depositRepository)
     {
         _promotionRepository = promotionRepository;
         _depositRepository = depositRepository;
