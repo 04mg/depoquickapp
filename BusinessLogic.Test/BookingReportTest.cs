@@ -46,4 +46,20 @@ public class BookingReportTest
                         "35$\t" +
                         "Yes\n", reportContent);
     }
+    
+    [TestMethod]
+    public void TestCanGenerateCsvBookingReportContent()
+    {
+        // Arrange
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
+        var bookingReport = new BookingReport(booking);
+
+        // Act
+        var reportContent = bookingReport.GenerateCsvReportContent();
+
+        // Assert
+        Assert.AreEqual("Deposit,Client,StartDate,EndDate,Price,Confirmed\n" +
+                        "Deposit,client@client.com," +
+                        $"{Today:yyyy-MM-dd},{Tomorrow:yyyy-MM-dd},35$,Yes\n", reportContent);
+    }
 }
