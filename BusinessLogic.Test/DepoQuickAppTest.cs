@@ -1,4 +1,5 @@
 using BusinessLogic.DTOs;
+using BusinessLogic.Repositories;
 
 namespace BusinessLogic.Test;
 
@@ -9,7 +10,10 @@ public class DepoQuickAppTest
     private AddDepositDto _addDepositDto;
     private DateRangeDto _dateRangeDto;
     private AddPromotionDto _addPromotionDto;
-    private DepoQuickApp _app = new();
+
+    private DepoQuickApp _app = new(new UserRepository(), new PromotionRepository(), new DepositRepository(),
+        new BookingRepository());
+
     private Credentials _credentials;
     private LoginDto _loginDto;
     private PromotionDto _promotionDto;
@@ -18,7 +22,8 @@ public class DepoQuickAppTest
     [TestInitialize]
     public void Initialize()
     {
-        _app = new DepoQuickApp();
+        _app = new DepoQuickApp(new UserRepository(), new PromotionRepository(), new DepositRepository(),
+            new BookingRepository());
 
         _registerDto = new RegisterDto
         {
