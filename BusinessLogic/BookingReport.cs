@@ -13,6 +13,10 @@ public class BookingReport
 
     public string GenerateTxtReportContent()
     {
-        throw new NotImplementedException();
+        return $"{Booking.Deposit.Name}\t" +
+               $"{Booking.Duration.Item1}-{Booking.Duration.Item2}\t" +
+               $"{Booking.Client.Email}\t" +
+               $"{Booking.CalculatePrice()}$\t" +
+               $"{(Booking.Deposit.Promotions.Count > 0 ? "Yes" : "No")}\n";
     }
 }
