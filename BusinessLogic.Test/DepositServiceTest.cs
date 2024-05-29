@@ -16,52 +16,33 @@ public class DepositServiceTest
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
 
+    private DepositRepository _depositRepository = new();
+    private BookingRepository _bookingRepository = new();
+    private PromotionRepository _promotionRepository = new();
+
     private DepositService _depositService =
         new(new DepositRepository(), new BookingRepository(), new PromotionRepository());
-
-    private PromotionService _promotionService = new(new PromotionRepository(), new DepositRepository());
-
-    private BookingService _bookingService =
-        new(new BookingRepository(), new DepositRepository(), new UserRepository());
-
-    private UserService _userService = new(new UserRepository());
 
     [TestInitialize]
     public void Initialize()
     {
-        var depositRepository = new DepositRepository();
-        var bookingRepository = new BookingRepository();
-        var promotionRepository = new PromotionRepository();
-        var userRepository = new UserRepository();
-        _userService = new UserService(userRepository);
-        _bookingService = new BookingService(bookingRepository, depositRepository, userRepository);
-        _depositService = new DepositService(depositRepository, bookingRepository, promotionRepository);
-        _promotionService = new PromotionService(promotionRepository, depositRepository);
-
-        RegisterUsers();
+        InitializeDepositService();
+        SetCredentials();
         CreatePromotion();
     }
 
-    private void RegisterUsers()
+    private void InitializeDepositService()
     {
-        const string passwordConfirmation = "12345678@mE";
-        var admin = new User(
-            "Name Surname",
-            "admin@admin.com",
-            "12345678@mE",
-            "Administrator"
-        );
-        var client = new User(
-            "Name Surname",
-            "client@client.com",
-            "12345678@mE"
-        );
+        _depositRepository = new DepositRepository();
+        _bookingRepository = new BookingRepository();
+        _promotionRepository = new PromotionRepository();
+        _depositService = new DepositService(_depositRepository, _bookingRepository, _promotionRepository);
+    }
 
-        _userService.Register(admin, passwordConfirmation);
-        _userService.Register(client, passwordConfirmation);
-
-        _adminCredentials = _userService.Login(admin.Email, admin.Password);
-        _clientCredentials = _userService.Login(client.Email, client.Password);
+    private void SetCredentials()
+    {
+        _adminCredentials = new Credentials() { Email = "admin@admin.com", Rank = "Administrator" };
+        _clientCredentials = new Credentials() { Email = "client@client.com", Rank = "Client" };
     }
 
     private void CreatePromotion()
@@ -69,7 +50,7 @@ public class DepositServiceTest
         var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
 
-        _promotionService.AddPromotion(promotion, _adminCredentials);
+        _promotionRepository.Add(promotion);
     }
 
     [TestMethod]
@@ -77,7 +58,7 @@ public class DepositServiceTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionRepository.Get(1) };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
 
         // Act
@@ -92,7 +73,7 @@ public class DepositServiceTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionRepository.Get(1) };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
         _depositService.AddDeposit(deposit, _adminCredentials);
 
@@ -119,7 +100,7 @@ public class DepositServiceTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionRepository.Get(1) };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
 
         // Act
@@ -136,7 +117,7 @@ public class DepositServiceTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionRepository.Get(1) };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
         _depositService.AddDeposit(deposit, _adminCredentials);
 
@@ -154,7 +135,7 @@ public class DepositServiceTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionRepository.Get(1) };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
         _depositService.AddDeposit(deposit, _adminCredentials);
 
@@ -176,7 +157,7 @@ public class DepositServiceTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionRepository.Get(1) };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
         _depositService.AddDeposit(deposit, _adminCredentials);
 
@@ -193,18 +174,20 @@ public class DepositServiceTest
     {
         // Arrange
         var promotionList = new List<Promotion>
-            { _promotionService.GetAllPromotions(_adminCredentials).ToList()[0] };
+            { _promotionRepository.Get(1) };
         var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
         var dateRange = new DateRange(DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         _depositService.AddDeposit(deposit, _adminCredentials);
         _depositService.AddAvailabilityPeriod(Name, dateRange, _adminCredentials);
-        _bookingService.AddBooking(new Booking(1, deposit, new User(
-                "Name Surname",
-                "client@client.com",
-                "12345678@mE"
-            ), DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator()));
+        var client = new User(
+            "Name Surname",
+            "client@client.com",
+            "12345678@mE"
+        );
+        var booking = new Booking(1, deposit, client, DateOnly.FromDateTime(DateTime.Now),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
+        _bookingRepository.Add(booking);
 
 
         // Act

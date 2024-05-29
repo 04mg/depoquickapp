@@ -1,4 +1,3 @@
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Repositories;
 using BusinessLogic.Services;
@@ -11,24 +10,35 @@ public class UserServiceTest
     private const string NameSurname = "Name Surname";
     private const string Email = "test@test.com";
     private const string Password = "12345678@mE";
-    private User Client { get; set; } = new User(NameSurname, Email, Password);
-    private IUserRepository UserRepository { get; set; } = new UserRepository();
+
+    private readonly LoginDto _loginDto = new()
+    {
+        Email = Email,
+        Password = Password
+    };
+
+    private readonly RegisterDto _registerDto = new()
+    {
+        NameSurname = NameSurname,
+        Email = Email,
+        Password = Password,
+        PasswordConfirmation = Password,
+        Rank = "Client"
+    };
+
+    private UserService _userService = new(new UserRepository());
 
     [TestInitialize]
-    public void SetUp()
+    public void Initialize()
     {
-        Client = new User(NameSurname, Email, Password);
-        UserRepository = new UserRepository();
+        _userService = new UserService(new UserRepository());
     }
 
     [TestMethod]
     public void TestCanRegisterWithValidCredentials()
     {
-        // Arrange
-        var authService = new UserService(UserRepository);
-
         // Act
-        var credentials = authService.Register(Client, Password);
+        var credentials = _userService.Register(_registerDto);
 
         // Assert
         Assert.AreSame(credentials.Email, Email);
@@ -38,11 +48,10 @@ public class UserServiceTest
     public void TestCanLoginWithValidCredentials()
     {
         // Arrange
-        var authService = new UserService(UserRepository);
-        authService.Register(Client, Password);
+        _userService.Register(_registerDto);
 
         // Act
-        var credentials = authService.Login(Email, Password);
+        var credentials = _userService.Login(_loginDto);
 
         // Assert
         Assert.AreSame(credentials.Email, Email);
@@ -52,38 +61,46 @@ public class UserServiceTest
     public void TestCantRegisterWithSameEmail()
     {
         // Arrange
-        var authService = new UserService(UserRepository);
-        var otherClient = new User("Other Name", Email, "OtherP@ssw0rd");
-
-        authService.Register(Client, Password);
+        _userService.Register(_registerDto);
 
         // Act & Assert
-        Assert.ThrowsException<ArgumentException>(() => { authService.Register(otherClient, "OtherP@ssw0rd"); });
+        Assert.ThrowsException<ArgumentException>(() => { _userService.Register(_registerDto); });
     }
 
     [TestMethod]
     public void TestCantRegisterWithNonMatchingPasswords()
     {
         // Arrange
-        var authService = new UserService(UserRepository);
+        var wrongRegisterDto = new RegisterDto
+        {
+            NameSurname = NameSurname,
+            Email = Email,
+            Password = Password,
+            PasswordConfirmation = "wrong",
+            Rank = "Client"
+        };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => { authService.Register(Client, "wrong"); });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { _userService.Register(wrongRegisterDto); });
 
         // Assert
-        Assert.IsTrue(exception.Message.Contains("Passwords do not match."));
+        Assert.AreEqual("Passwords do not match.", exception.Message);
     }
 
     [TestMethod]
     public void TestCantLoginWithWrongPassword()
     {
         // Arrange
-        var authService = new UserService(UserRepository);
-        authService.Register(Client, Password);
+        _userService.Register(_registerDto);
+        var wrongLoginDto = new LoginDto
+        {
+            Email = Email,
+            Password = "wrong"
+        };
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => { authService.Login(Email, "wrong"); });
+            Assert.ThrowsException<ArgumentException>(() => { _userService.Login(wrongLoginDto); });
 
         // Assert
         Assert.IsTrue(exception.Message.Contains("Wrong password."));
@@ -92,11 +109,8 @@ public class UserServiceTest
     [TestMethod]
     public void TestCantLoginWithNonExistingUser()
     {
-        // Arrange
-        var authService = new UserService(UserRepository);
-
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => { authService.Login(Email, Password); });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { _userService.Login(_loginDto); });
 
         // Assert
         Assert.AreSame(exception.Message, "User does not exist.");
@@ -106,23 +120,29 @@ public class UserServiceTest
     public void TestCantRegisterMoreThanOneAdmin()
     {
         // Arrange
-        var authService = new UserService(UserRepository);
-        var admin = new User(
-            NameSurname,
-            Email,
-            Password,
-            "Administrator"
-        );
-        var otherAdmin = new User(
-            "Other Name",
-            "test2@test.com",
-            Password,
-            "Administrator"
-        );
+        var adminRegisterDto = new RegisterDto
+        {
+            NameSurname = NameSurname,
+            Email = Email,
+            Password = Password,
+            PasswordConfirmation = Password,
+            Rank = "Administrator"
+        };
+        var otherAdminRegisterDto = new RegisterDto
+        {
+            NameSurname = "Another Name",
+            Email = "another@test.com",
+            Password = Password,
+            PasswordConfirmation = Password,
+            Rank = "Administrator"
+        };
 
         // Act
-        authService.Register(admin, Password);
-        var exception = Assert.ThrowsException<ArgumentException>(() => { authService.Register(otherAdmin, Password); });
+        _userService.Register(adminRegisterDto);
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            _userService.Register(otherAdminRegisterDto);
+        });
 
         // Assert
         Assert.AreSame(exception.Message, "There can only be one administrator.");
@@ -132,7 +152,6 @@ public class UserServiceTest
     public void TestCantGetUserByEmailIfUserDoesNotExist()
     {
         // Arrange
-        var authService = new UserService(UserRepository);
         var credentials = new Credentials
         {
             Email = "test@test.com",
@@ -140,7 +159,7 @@ public class UserServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => { authService.GetUser(Email, credentials); });
+        var exception = Assert.ThrowsException<ArgumentException>(() => { _userService.GetUser(Email, credentials); });
 
         // Assert
         Assert.AreSame(exception.Message, "User does not exist.");
@@ -150,19 +169,27 @@ public class UserServiceTest
     public void TestCantGetUserByEmailOfAnotherUserIfNotAdministrator()
     {
         // Arrange
-        var authService = new UserService(UserRepository);
-        authService.Register(Client, Password);
-        var otherClient = new User(
-            "Other Name",
-            "other@test.com",
-            "OtherP@ssw0rd");
-        authService.Register(otherClient, "OtherP@ssw0rd");
-        var credentials = authService.Login(otherClient.Email, otherClient.Password);
+        _userService.Register(_registerDto);
+        var otherRegisterDto = new RegisterDto
+        {
+            NameSurname = "Other Name",
+            Email = "other@email.com",
+            Password = Password,
+            PasswordConfirmation = Password,
+            Rank = "Client"
+        };
+        var otherLoginDto = new LoginDto
+        {
+            Email = otherRegisterDto.Email,
+            Password = Password
+        };
+        _userService.Register(otherRegisterDto);
+        var credentials = _userService.Login(otherLoginDto);
 
         // Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
         {
-            authService.GetUser(Email, credentials);
+            _userService.GetUser(Email, credentials);
         });
 
         // Assert
@@ -172,16 +199,8 @@ public class UserServiceTest
     [TestMethod]
     public void TestFirstUserIsAdmin()
     {
-        // Arrange
-        var authService = new UserService(UserRepository);
-        var admin = new User(
-            NameSurname,
-            Email,
-            Password
-        );
-
         // Act
-        var credentials = authService.Register(admin, Password);
+        var credentials = _userService.Register(_registerDto);
 
         // Assert
         Assert.AreEqual("Administrator", credentials.Rank);

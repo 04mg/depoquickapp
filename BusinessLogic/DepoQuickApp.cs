@@ -24,17 +24,12 @@ public class DepoQuickApp
 
     public void RegisterUser(RegisterDto registerDto)
     {
-        var user = new User(
-            registerDto.NameSurname,
-            registerDto.Email,
-            registerDto.Password,
-            registerDto.Rank);
-        _userService.Register(user, registerDto.PasswordConfirmation);
+        _userService.Register(registerDto);
     }
 
     public Credentials Login(LoginDto loginDto)
     {
-        return _userService.Login(loginDto.Email, loginDto.Password);
+        return _userService.Login(loginDto);
     }
 
     public void AddPromotion(AddPromotionDto addPromotionDto, Credentials credentials)

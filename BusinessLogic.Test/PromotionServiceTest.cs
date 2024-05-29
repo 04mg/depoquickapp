@@ -15,41 +15,28 @@ public class PromotionServiceTest
     private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
+    private PromotionRepository _promotionRepository = new();
+    private DepositRepository _depositRepository = new();
     private PromotionService _promotionService = new(new PromotionRepository(), new DepositRepository());
-
-    private DepositService _depositService =
-        new(new DepositRepository(), new BookingRepository(), new PromotionRepository());
 
     [TestInitialize]
     public void Initialize()
     {
-        var promotionRepository = new PromotionRepository();
-        var depositRepository = new DepositRepository();
-        _depositService = new DepositService(depositRepository, new BookingRepository(), promotionRepository);
-        _promotionService = new PromotionService(promotionRepository, depositRepository);
-        RegisterUsers();
+        InitializePromotionService();
+        SetCredentials();
     }
 
-    private void RegisterUsers()
+    private void InitializePromotionService()
     {
-        var authManager = new UserService(new UserRepository());
+        _promotionRepository = new PromotionRepository();
+        _depositRepository = new DepositRepository();
+        _promotionService = new PromotionService(_promotionRepository, _depositRepository);
+    }
 
-        const string passwordConfirmation = "12345678@mE";
-        var admin = new User(
-            "Name Surname",
-            "admin@admin.com",
-            "12345678@mE",
-            "Administrator"
-        );
-        var client = new User(
-            "Name Surname",
-            "client@client.com",
-            "12345678@mE"
-        );
-        authManager.Register(admin, passwordConfirmation);
-        authManager.Register(client, passwordConfirmation);
-        _adminCredentials = authManager.Login(admin.Email, admin.Password);
-        _clientCredentials = authManager.Login(client.Email, client.Password);
+    private void SetCredentials()
+    {
+        _adminCredentials = new Credentials() { Email = "admin@admin.com", Rank = "Administrator" };
+        _clientCredentials = new Credentials() { Email = "client@client.com", Rank = "Client" };
     }
 
     [TestMethod]
@@ -194,10 +181,11 @@ public class PromotionServiceTest
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
         _promotionService.AddPromotion(promotion, _adminCredentials);
         var deposit = new Deposit("Deposit", "A", "Large", true, new List<Promotion>() { promotion });
-        _depositService.AddDeposit(deposit, _adminCredentials);
+        _depositRepository.Add(deposit);
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => _promotionService.DeletePromotion(1, _adminCredentials));
+        var exception =
+            Assert.ThrowsException<ArgumentException>(() => _promotionService.DeletePromotion(1, _adminCredentials));
 
         // Assert
         Assert.AreEqual("There are existing deposits for this promotion.", exception.Message);
