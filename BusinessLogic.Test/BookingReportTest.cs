@@ -28,6 +28,20 @@ public class BookingReportTest
         _deposit = new Deposit("Deposit", "A", "Small", true, Promotions);
         _deposit.AddAvailabilityPeriod(new DateRange(Today, Today.AddDays(100)));
     }
+    
+    [TestCleanup]
+    public void Cleanup()
+    {
+        if (File.Exists("BookingReport_1.txt"))
+        {
+            File.Delete("BookingReport_1.txt");
+        }
+
+        if (File.Exists("BookingReport_1.csv"))
+        {
+            File.Delete("BookingReport_1.csv");
+        }
+    }
 
     [TestMethod]
     public void TestCanGenerateTxtBookingReportContent()
@@ -61,5 +75,39 @@ public class BookingReportTest
         Assert.AreEqual("Deposit,Client,StartDate,EndDate,Price,Confirmed\n" +
                         "Deposit,client@client.com," +
                         $"{Today:yyyy-MM-dd},{Tomorrow:yyyy-MM-dd},35$,Yes\n", reportContent);
+    }
+
+    [TestMethod]
+    public void TestCanCreateTxtBookingReportFile()
+    {
+        // Arrange
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
+        const string path = $"BookingReport_1.txt";
+        var bookingReport = new BookingReport(booking);
+        var reportContent = bookingReport.GenerateTxtReportContent();
+        
+        // Act
+        bookingReport.CreateTxtReportFile();
+
+        // Assert
+        Assert.IsTrue(File.Exists(path));
+        Assert.AreEqual(File.ReadAllText(path), reportContent);
+    }
+    
+    [TestMethod]
+    public void TestCanCreateCsvBookingReportFile()
+    {
+        // Arrange
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
+        const string path = $"BookingReport_1.csv";
+        var bookingReport = new BookingReport(booking);
+        var reportContent = bookingReport.GenerateCsvReportContent();
+        
+        // Act
+        bookingReport.CreateCsvReportFile();
+
+        // Assert
+        Assert.IsTrue(File.Exists(path));
+        Assert.AreEqual(File.ReadAllText(path), reportContent);
     }
 }

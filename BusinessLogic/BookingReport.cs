@@ -32,4 +32,16 @@ public class BookingReport
                $"{Booking.CalculatePrice()}$," +
                $"{(Booking.Deposit.Promotions.Count > 0 ? "Yes" : "No")}\n";
     }
+
+    public void CreateTxtReportFile()
+    {
+        var path = $"BookingReport_{Booking.Id}.txt";
+        File.WriteAllText(path, GenerateTxtReportContent());
+    }
+    
+    public void CreateCsvReportFile()
+    {
+        var path = $"BookingReport_{Booking.Id}.csv";
+        File.WriteAllText(path, GenerateCsvReportContent());
+    }
 }
