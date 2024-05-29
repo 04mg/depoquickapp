@@ -32,27 +32,14 @@ public class DepoQuickApp
         return _userService.Login(loginDto);
     }
 
-    public void AddPromotion(AddPromotionDto addPromotionDto, Credentials credentials)
+    public void AddPromotion(PromotionDto promotionDto, Credentials credentials)
     {
-        var promotion = new Promotion(
-            1,
-            addPromotionDto.Label,
-            addPromotionDto.Discount,
-            addPromotionDto.DateFrom,
-            addPromotionDto.DateTo);
-        _promotionService.AddPromotion(promotion, credentials);
+        _promotionService.AddPromotion(promotionDto, credentials);
     }
 
-    public AddPromotionDto GetPromotion(int promotionId)
+    public PromotionDto GetPromotion(int promotionId)
     {
-        var promotion = _promotionService.GetPromotion(promotionId);
-        return new AddPromotionDto
-        {
-            Label = promotion.Label,
-            Discount = promotion.Discount,
-            DateFrom = promotion.Validity.Item1,
-            DateTo = promotion.Validity.Item2
-        };
+        return _promotionService.GetPromotion(promotionId);
     }
 
     public void DeletePromotion(int promotionId, Credentials credentials)
@@ -60,27 +47,14 @@ public class DepoQuickApp
         _promotionService.DeletePromotion(promotionId, credentials);
     }
 
-    public List<PromotionDto> ListAllPromotions(Credentials credentials)
+    public IEnumerable<PromotionDto> ListAllPromotions(Credentials credentials)
     {
-        return _promotionService.GetAllPromotions(credentials).Select(p => new PromotionDto
-        {
-            Id = p.Id,
-            Label = p.Label,
-            Discount = p.Discount,
-            DateFrom = p.Validity.Item1,
-            DateTo = p.Validity.Item2
-        }).ToList();
+        return _promotionService.GetAllPromotions(credentials);
     }
 
     public void ModifyPromotion(int promotionId, PromotionDto promotionDto, Credentials credentials)
     {
-        var promotion = new Promotion(
-            promotionId,
-            promotionDto.Label,
-            promotionDto.Discount,
-            promotionDto.DateFrom,
-            promotionDto.DateTo);
-        _promotionService.ModifyPromotion(promotionId, promotion, credentials);
+        _promotionService.ModifyPromotion(promotionId, promotionDto, credentials);
     }
 
     public void AddDeposit(AddDepositDto depositDto, Credentials credentials)
@@ -98,7 +72,11 @@ public class DepoQuickApp
 
     private List<Promotion> CreatePromotionListFromDto(AddDepositDto depositDto)
     {
-        return depositDto.PromotionList.Select(promotion => _promotionService.GetPromotion(promotion)).ToList();
+        return depositDto.PromotionList.Select(p =>
+        {
+            var dto = _promotionService.GetPromotion(p);
+            return new Promotion(dto.Id, dto.Label, dto.Discount, dto.DateFrom, dto.DateTo);
+        }).ToList();
     }
 
     public List<DepositDto> ListAllDeposits()

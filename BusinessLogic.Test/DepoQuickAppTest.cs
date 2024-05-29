@@ -9,7 +9,7 @@ public class DepoQuickAppTest
     private AddBookingDto _addBookingDto = new();
     private AddDepositDto _addDepositDto;
     private DateRangeDto _dateRangeDto;
-    private AddPromotionDto _addPromotionDto;
+    private PromotionDto _addPromotionDto;
 
     private DepoQuickApp _app = new(new UserRepository(), new PromotionRepository(), new DepositRepository(),
         new BookingRepository());
@@ -46,7 +46,7 @@ public class DepoQuickAppTest
             Rank = "Administrator"
         };
 
-        _addPromotionDto = new AddPromotionDto
+        _addPromotionDto = new PromotionDto
         {
             Label = "Test Promotion",
             Discount = 10,
@@ -126,7 +126,7 @@ public class DepoQuickAppTest
         var promotions = _app.ListAllPromotions(_credentials);
 
         // Assert
-        Assert.AreEqual(0, promotions.Count);
+        Assert.AreEqual(0, promotions.Count());
     }
 
     [TestMethod]
