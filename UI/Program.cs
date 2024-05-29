@@ -1,4 +1,5 @@
 using BusinessLogic;
+using BusinessLogic.Repositories;
 using UI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,10 @@ builder.Services.AddSingleton<AuthController>();
 builder.Services.AddSingleton<DepositController>();
 builder.Services.AddSingleton<PromotionController>();
 builder.Services.AddSingleton<BookingController>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IDepositRepository, DepositRepository>();
+builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
+builder.Services.AddSingleton<IPromotionRepository, PromotionRepository>();
 
 var app = builder.Build();
 

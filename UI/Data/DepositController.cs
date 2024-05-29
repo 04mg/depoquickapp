@@ -31,4 +31,14 @@ public class DepositController
     {
         _app.DeleteDeposit(name, credentials);
     }
+
+    public void AddAvailabilityPeriod(string name, DateOnly startDate, DateOnly endDate, Credentials authCurrentCredentials)
+    {
+        var dateRange = new DateRangeDto
+        {
+            StartDate = startDate,
+            EndDate = endDate
+        };
+        _app.AddAvailabilityPeriod(name, dateRange, authCurrentCredentials);
+    }
 }
