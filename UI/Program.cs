@@ -1,4 +1,5 @@
-using BusinessLogic;
+using BusinessLogic.Repositories;
+using BusinessLogic.Services;
 using UI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,11 +8,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<NotificationService>();
-builder.Services.AddSingleton<DepoQuickApp>();
-builder.Services.AddSingleton<AuthController>();
-builder.Services.AddSingleton<DepositController>();
-builder.Services.AddSingleton<PromotionController>();
-builder.Services.AddSingleton<BookingController>();
+
+builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
+builder.Services.AddSingleton<IDepositRepository, DepositRepository>();
+builder.Services.AddSingleton<IPromotionRepository, PromotionRepository>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
+builder.Services.AddSingleton<BookingService>();
+builder.Services.AddSingleton<DepositService>();
+builder.Services.AddSingleton<PromotionService>();
+builder.Services.AddSingleton<UserService>();
+
+builder.Services.AddSingleton<UserController>();
 
 var app = builder.Build();
 

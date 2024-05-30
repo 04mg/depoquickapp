@@ -1,6 +1,6 @@
 @page "/Logout"
 @using UI.Data
-@inject AuthController Auth
+@inject UserController User
 @inject NavigationManager NavigationManager
 
 @code {
@@ -8,7 +8,7 @@
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        Auth.LogOut();
+        User.LogOut();
         NavigationManager.NavigateTo("/Login", true);
     }
 

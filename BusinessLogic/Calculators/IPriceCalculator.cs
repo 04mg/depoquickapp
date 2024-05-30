@@ -4,5 +4,5 @@ namespace BusinessLogic.Calculators;
 
 public interface IPriceCalculator
 {
-    double CalculatePrice(Deposit deposit, Tuple<DateOnly, DateOnly> duration);
+    double CalculatePrice(Deposit deposit, DateOnly from, DateOnly to);
 }

@@ -15,11 +15,16 @@ public class UserService
         _userRepository = userRepository;
     }
 
-    public Credentials Register(User user, string passwordConfirmation)
+    public Credentials Register(RegisterDto registerDto)
     {
+        var user = new User(
+            registerDto.NameSurname,
+            registerDto.Email,
+            registerDto.Password,
+            registerDto.Rank);
         SetRankAsAdminIfFirstUser(user);
         EnsureUserIsNotRegistered(user.Email);
-        EnsurePasswordConfirmationMatch(user.Password, passwordConfirmation);
+        EnsurePasswordConfirmationMatch(user.Password, registerDto.PasswordConfirmation);
         EnsureSingleAdmin(user.Rank);
         SetAdminRegisteredIfAdmin(user.Rank);
         _userRepository.Add(user);
@@ -63,25 +68,12 @@ public class UserService
         if (!_isAdminRegistered) user.Rank = UserRank.Administrator;
     }
 
-    public Credentials Login(string email, string password)
+    public Credentials Login(LoginDto loginDto)
     {
-        EnsureUserIsRegistered(email);
-        EnsurePasswordMatchWithEmail(email, password);
-        var user = _userRepository.Get(email);
-        var credentials = new Credentials { Email = email, Rank = user.Rank.ToString() };
+        EnsureUserIsRegistered(loginDto.Email);
+        EnsurePasswordMatchWithEmail(loginDto.Email, loginDto.Password);
+        var user = _userRepository.Get(loginDto.Email);
+        var credentials = new Credentials { Email = loginDto.Email, Rank = user.Rank.ToString() };
         return credentials;
-    }
-
-    public User GetUser(string email, Credentials credentials)
-    {
-        EnsureUserIsRegistered(email);
-        EnsureUserIsAdminOrSameUser(email, credentials);
-        return _userRepository.Get(email);
-    }
-
-    private static void EnsureUserIsAdminOrSameUser(string requestedEmail, Credentials credentials)
-    {
-        if (credentials.Rank != "Administrator" && credentials.Email != requestedEmail)
-            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
     }
 }
