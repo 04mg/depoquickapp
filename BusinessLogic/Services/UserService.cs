@@ -76,17 +76,4 @@ public class UserService
         var credentials = new Credentials { Email = loginDto.Email, Rank = user.Rank.ToString() };
         return credentials;
     }
-
-    public User GetUser(string email, Credentials credentials)
-    {
-        EnsureUserIsRegistered(email);
-        EnsureUserIsAdminOrSameUser(email, credentials);
-        return _userRepository.Get(email);
-    }
-
-    private static void EnsureUserIsAdminOrSameUser(string requestedEmail, Credentials credentials)
-    {
-        if (credentials.Rank != "Administrator" && credentials.Email != requestedEmail)
-            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
-    }
 }

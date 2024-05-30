@@ -19,11 +19,19 @@ public class BookingService
         _userRepository = userRepository;
     }
 
-    public void AddBooking(Booking booking)
+    public void AddBooking(BookingDto bookingDto, Credentials credentials)
     {
-        EnsureUserExists(booking.Client.Email);
-        EnsureDepositExists(booking.Deposit.Name);
-        _bookingRepository.Add(booking);
+        EnsureUserExists(bookingDto.Email);
+        EnsureEmailMatches(bookingDto.Email, credentials);
+        EnsureDepositExists(bookingDto.DepositName);
+        _bookingRepository.Add(BookingFromDto(bookingDto));
+    }
+
+    private Booking BookingFromDto(BookingDto bookingDto)
+    {
+        return new Booking(bookingDto.Id, _depositRepository.Get(bookingDto.DepositName),
+            _userRepository.Get(bookingDto.Email),
+            bookingDto.DateFrom, bookingDto.DateTo);
     }
 
     private void EnsureDepositExists(string name)
@@ -36,10 +44,24 @@ public class BookingService
         if (!_userRepository.Exists(email)) throw new ArgumentException("User not found.");
     }
 
-    public List<Booking> GetBookingsByEmail(string email, Credentials credentials)
+    public IEnumerable<BookingDto> GetBookingsByEmail(string email, Credentials credentials)
     {
         EnsureUserIsAdministratorOrEmailMatches(email, credentials);
-        return AllBookings.Where(b => b.Client.Email == email).ToList();
+        return AllBookings.Where(b => b.Client.Email == email).Select(BookingDtoFromBooking);
+    }
+
+    private static BookingDto BookingDtoFromBooking(Booking booking)
+    {
+        return new BookingDto
+        {
+            Id = booking.Id,
+            DateFrom = booking.Duration.Item1,
+            DateTo = booking.Duration.Item2,
+            DepositName = booking.Deposit.Name,
+            Email = booking.Client.Email,
+            Stage = booking.Stage.ToString(),
+            Message = booking.Message
+        };
     }
 
     private static void EnsureUserIsAdministrator(Credentials credentials)
@@ -54,16 +76,23 @@ public class BookingService
             throw new UnauthorizedAccessException("You are not authorized to perform this action.");
     }
 
-    public IEnumerable<Booking> GetAllBookings(Credentials credentials)
+    private static void EnsureEmailMatches(string email, Credentials credentials)
+    {
+        if (credentials.Email != email)
+            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+    }
+
+    public IEnumerable<BookingDto> GetAllBookings(Credentials credentials)
     {
         EnsureUserIsAdministrator(credentials);
-        return AllBookings;
+        return AllBookings.Select(BookingDtoFromBooking);
     }
 
     public void ApproveBooking(int id, Credentials credentials)
     {
         EnsureUserIsAdministrator(credentials);
-        var booking = GetBooking(id);
+        EnsureBookingExists(id);
+        var booking = _bookingRepository.Get(id);
         booking.Approve();
     }
 
@@ -71,7 +100,8 @@ public class BookingService
     {
         EnsureMessageIsNotEmpty(message);
         EnsureUserIsAdministrator(credentials);
-        var booking = GetBooking(id);
+        EnsureBookingExists(id);
+        var booking = _bookingRepository.Get(id);
         booking.Reject(message);
     }
 
@@ -80,10 +110,10 @@ public class BookingService
         if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be empty.");
     }
 
-    public Booking GetBooking(int id)
+    public BookingDto GetBooking(int id)
     {
         EnsureBookingExists(id);
-        return _bookingRepository.Get(id);
+        return BookingDtoFromBooking(_bookingRepository.Get(id));
     }
 
     private void EnsureBookingExists(int id)

@@ -13,37 +13,52 @@ public class PriceCalculator : IPriceCalculator
     private const int DurationThresholdForFirstDiscount = 7;
     private const int DurationThresholdForSecondDiscount = 14;
 
-    public double CalculatePrice(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
+    public double CalculatePrice(Deposit deposit, DateOnly dateFrom, DateOnly dateTo)
     {
-        var pricePerDay = GetPricePerDay(deposit.Size, deposit.ClimateControl);
-        var discount = GetTotalDiscount(deposit, duration);
-        var days = duration.Item2.DayNumber - duration.Item1.DayNumber;
-        var basePrice = pricePerDay * days;
-        var finalPrice = basePrice - basePrice * discount / 100;
+        var pricePerDay = GetPricePerDay(deposit);
+        var discount = GetTotalDiscount(deposit,dateFrom, dateTo);
+        var days = GetTotalDays(dateFrom, dateTo);
+        var basePrice = GetBasePrice(pricePerDay, days);
+        var finalPrice = GetFinalPrice(basePrice, discount);
         return finalPrice;
     }
 
-    private static double GetPricePerDay(string size, bool climateControl)
+    private static double GetFinalPrice(double basePrice, int discount)
     {
-        var pricePerDay = size switch
+        return basePrice - basePrice * discount / 100;
+    }
+
+    private static double GetBasePrice(double pricePerDay, int days)
+    {
+        return pricePerDay * days;
+    }
+
+    private static int GetTotalDays(DateOnly dateFrom, DateOnly dateTo)
+    {
+        return dateTo.DayNumber - dateFrom.DayNumber;
+    }
+
+    private double GetPricePerDay(Deposit deposit)
+    {
+        var pricePerDay = deposit.Size switch
         {
             "Small" => SmallPricePerDay,
             "Medium" => MediumPricePerDay,
             "Large" => LargePricePerDay,
-            _ => throw new ArgumentOutOfRangeException(nameof(size))
+            _ => throw new ArgumentOutOfRangeException()
         };
-        pricePerDay += GetClimateControlExtraPerDay(climateControl);
+        pricePerDay += GetClimateControlExtraPerDay(deposit);
         return pricePerDay;
     }
 
-    private static double GetClimateControlExtraPerDay(bool climateControl)
+    private static double GetClimateControlExtraPerDay(Deposit deposit)
     {
-        return climateControl ? ClimateControlPrice : 0;
+        return deposit.ClimateControl ? ClimateControlPrice : 0;
     }
 
-    private static int GetDurationDiscount(Tuple<DateOnly, DateOnly> duration)
+    private static int GetDurationDiscount(DateOnly dateFrom, DateOnly dateTo)
     {
-        var days = duration.Item2.DayNumber - duration.Item1.DayNumber;
+        var days = GetTotalDays(dateFrom, dateTo);
         return days switch
         {
             < DurationThresholdForFirstDiscount => 0,
@@ -52,9 +67,9 @@ public class PriceCalculator : IPriceCalculator
         };
     }
 
-    private static int GetTotalDiscount(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
+    private static int GetTotalDiscount(Deposit deposit, DateOnly dateFrom, DateOnly dateTo)
     {
-        var durationDiscount = GetDurationDiscount(duration);
+        var durationDiscount = GetDurationDiscount(dateFrom, dateTo);
         var promotionsDiscount = deposit.SumPromotions();
         var totalDiscount = durationDiscount + promotionsDiscount;
         return totalDiscount > 100 ? 100 : totalDiscount;

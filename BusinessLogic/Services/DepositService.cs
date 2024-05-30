@@ -1,3 +1,4 @@
+using BusinessLogic.Calculators;
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Repositories;
@@ -77,11 +78,18 @@ public class DepositService
         if (_bookingRepository.GetAll().Any(b => b.Deposit.Name == depositName))
             throw new ArgumentException("There are existing bookings for this deposit.");
     }
-    
+
     public void AddAvailabilityPeriod(string deposit, DateRange availabilityPeriod, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
         EnsureDepositExists(deposit);
         GetDeposit(deposit).AddAvailabilityPeriod(availabilityPeriod);
+    }
+
+    public double CalculateDepositPrice(PriceDto priceDto)
+    {
+        EnsureDepositExists(priceDto.Deposit.Name);
+        var deposit = _depositRepository.Get(priceDto.Deposit.Name);
+        return new PriceCalculator().CalculatePrice(deposit, priceDto.DateFrom, priceDto.DateTo);
     }
 }

@@ -1,4 +1,3 @@
-using BusinessLogic.Calculators;
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Repositories;
@@ -186,7 +185,7 @@ public class DepositServiceTest
             "12345678@mE"
         );
         var booking = new Booking(1, deposit, client, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new PriceCalculator());
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         _bookingRepository.Add(booking);
 
 
@@ -216,5 +215,36 @@ public class DepositServiceTest
 
         // Assert
         Assert.IsTrue(exception.Message.Contains("Promotion not found."));
+    }
+
+    [TestMethod]
+    public void TestCanCalculateDepositPrice()
+    {
+        // Arrange
+        var promotionList = new List<Promotion>
+            { _promotionRepository.Get(1) };
+        var promotionsDto = promotionList.Select(p => p.Id).ToList();
+        var deposit = new Deposit(Name, Area, Size, ClimateControl, promotionList);
+        var depositDto = new DepositDto
+        {
+            Name = Name,
+            Area = Area,
+            Size = Size,
+            ClimateControl = ClimateControl,
+            PromotionList = promotionsDto
+        };
+        _depositService.AddDeposit(deposit, _adminCredentials);
+        var priceDto = new PriceDto
+        {
+            Deposit = depositDto,
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+
+        // Act
+        var price = _depositService.CalculateDepositPrice(priceDto);
+
+        // Assert
+        Assert.AreEqual(35, price);
     }
 }

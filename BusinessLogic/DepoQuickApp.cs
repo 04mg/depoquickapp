@@ -57,7 +57,7 @@ public class DepoQuickApp
         _promotionService.ModifyPromotion(promotionId, promotionDto, credentials);
     }
 
-    public void AddDeposit(AddDepositDto depositDto, Credentials credentials)
+    public void AddDeposit(DepositDto depositDto, Credentials credentials)
     {
         var promotions = CreatePromotionListFromDto(depositDto);
         var deposit = new Deposit(depositDto.Name, depositDto.Area, depositDto.Size, depositDto.ClimateControl,
@@ -70,7 +70,7 @@ public class DepoQuickApp
         _depositService.DeleteDeposit(depositName, credentials);
     }
 
-    private List<Promotion> CreatePromotionListFromDto(AddDepositDto depositDto)
+    private List<Promotion> CreatePromotionListFromDto(DepositDto depositDto)
     {
         return depositDto.PromotionList.Select(p =>
         {
@@ -114,64 +114,24 @@ public class DepoQuickApp
         };
     }
 
-    public void AddBooking(AddBookingDto addBookingDto, Credentials credentials)
+    public void AddBooking(BookingDto bookingDto, Credentials credentials)
     {
-        var deposit = _depositService.GetDeposit(addBookingDto.DepositName);
-        var user = _userService.GetUser(addBookingDto.Email, credentials);
-        var priceCalculator = new PriceCalculator();
-        var booking = new Booking(1, deposit, user, addBookingDto.DateFrom, addBookingDto.DateTo, priceCalculator);
-        _bookingService.AddBooking(booking);
-    }
-
-    public double CalculateBookingPrice(AddBookingDto addBookingDto)
-    {
-        var priceCalculator = new PriceCalculator();
-        var deposit = _depositService.GetDeposit(addBookingDto.DepositName);
-        return priceCalculator.CalculatePrice(deposit,
-            new Tuple<DateOnly, DateOnly>(addBookingDto.DateFrom, addBookingDto.DateTo));
+        _bookingService.AddBooking(bookingDto, credentials);
     }
 
     public List<BookingDto> ListAllBookings(Credentials credentials)
     {
-        return _bookingService.GetAllBookings(credentials).Select(b => new BookingDto
-        {
-            Id = b.Id,
-            DepositName = b.Deposit.Name,
-            Email = b.Client.Email,
-            DateFrom = b.Duration.Item1,
-            DateTo = b.Duration.Item2,
-            Stage = b.Stage.ToString(),
-            Message = b.Message
-        }).ToList();
+        return _bookingService.GetAllBookings(credentials).ToList();
     }
 
     public List<BookingDto> ListAllBookingsByEmail(string email, Credentials credentials)
     {
-        return _bookingService.GetBookingsByEmail(email, credentials).Select(b => new BookingDto
-        {
-            Id = b.Id,
-            DepositName = b.Deposit.Name,
-            Email = b.Client.Email,
-            DateFrom = b.Duration.Item1,
-            DateTo = b.Duration.Item2,
-            Stage = b.Stage.ToString(),
-            Message = b.Message
-        }).ToList();
+        return _bookingService.GetBookingsByEmail(email, credentials).ToList();
     }
 
     public BookingDto GetBooking(int bookingId)
     {
-        var booking = _bookingService.GetBooking(bookingId);
-        return new BookingDto
-        {
-            Id = booking.Id,
-            DepositName = booking.Deposit.Name,
-            Email = booking.Client.Email,
-            DateFrom = booking.Duration.Item1,
-            DateTo = booking.Duration.Item2,
-            Stage = booking.Stage.ToString(),
-            Message = booking.Message
-        };
+        return _bookingService.GetBooking(bookingId);
     }
 
     public void ApproveBooking(int bookingId, Credentials credentials)
@@ -188,5 +148,10 @@ public class DepoQuickApp
     {
         var period = new DateRange(dateRange.StartDate, dateRange.EndDate);
         _depositService.AddAvailabilityPeriod(name, period, credentials);
+    }
+
+    public double CalculateDepositPrice(PriceDto priceDto)
+    {
+        return _depositService.CalculateDepositPrice(priceDto);
     }
 }

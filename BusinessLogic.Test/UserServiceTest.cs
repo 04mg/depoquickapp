@@ -147,55 +147,7 @@ public class UserServiceTest
         // Assert
         Assert.AreSame(exception.Message, "There can only be one administrator.");
     }
-
-    [TestMethod]
-    public void TestCantGetUserByEmailIfUserDoesNotExist()
-    {
-        // Arrange
-        var credentials = new Credentials
-        {
-            Email = "test@test.com",
-            Rank = "Administrator"
-        };
-
-        // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => { _userService.GetUser(Email, credentials); });
-
-        // Assert
-        Assert.AreSame(exception.Message, "User does not exist.");
-    }
-
-    [TestMethod]
-    public void TestCantGetUserByEmailOfAnotherUserIfNotAdministrator()
-    {
-        // Arrange
-        _userService.Register(_registerDto);
-        var otherRegisterDto = new RegisterDto
-        {
-            NameSurname = "Other Name",
-            Email = "other@email.com",
-            Password = Password,
-            PasswordConfirmation = Password,
-            Rank = "Client"
-        };
-        var otherLoginDto = new LoginDto
-        {
-            Email = otherRegisterDto.Email,
-            Password = Password
-        };
-        _userService.Register(otherRegisterDto);
-        var credentials = _userService.Login(otherLoginDto);
-
-        // Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
-        {
-            _userService.GetUser(Email, credentials);
-        });
-
-        // Assert
-        Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
-    }
-
+    
     [TestMethod]
     public void TestFirstUserIsAdmin()
     {
