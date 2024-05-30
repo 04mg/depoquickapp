@@ -4,44 +4,37 @@ namespace BusinessLogic;
 
 public class BookingReport
 {
-    private Booking Booking { get; }
-    
-    public BookingReport(Booking booking)
+    public static string GenerateTxtReportContent(Booking booking)
     {
-        Booking = booking;
+        return $"{booking.Deposit.Name}\t" +
+               $"{booking.Duration.Item1}-{booking.Duration.Item2}\t" +
+               $"{booking.Client.Email}\t" +
+               $"{booking.CalculatePrice()}$\t" +
+               $"{(booking.Deposit.Promotions.Count > 0 ? "Yes" : "No")}\n";
     }
 
-    public string GenerateTxtReportContent()
-    {
-        return $"{Booking.Deposit.Name}\t" +
-               $"{Booking.Duration.Item1}-{Booking.Duration.Item2}\t" +
-               $"{Booking.Client.Email}\t" +
-               $"{Booking.CalculatePrice()}$\t" +
-               $"{(Booking.Deposit.Promotions.Count > 0 ? "Yes" : "No")}\n";
-    }
-    
-    public string GenerateCsvReportContent()
+    public static string GenerateCsvReportContent(Booking booking)
     {
         const string tableHeader = "Deposit,Client,StartDate,EndDate,Price,Confirmed\n";
 
         return tableHeader +
-               $"{Booking.Deposit.Name}," +
-               $"{Booking.Client.Email}," +
-               $"{Booking.Duration.Item1:yyyy-MM-dd}," +
-               $"{Booking.Duration.Item2:yyyy-MM-dd}," +
-               $"{Booking.CalculatePrice()}$," +
-               $"{(Booking.Deposit.Promotions.Count > 0 ? "Yes" : "No")}\n";
+               $"{booking.Deposit.Name}," +
+               $"{booking.Client.Email}," +
+               $"{booking.Duration.Item1:yyyy-MM-dd}," +
+               $"{booking.Duration.Item2:yyyy-MM-dd}," +
+               $"{booking.CalculatePrice()}$," +
+               $"{(booking.Deposit.Promotions.Count > 0 ? "Yes" : "No")}\n";
     }
 
-    public void CreateTxtReportFile()
+    public static void CreateTxtReportFile(Booking booking)
     {
-        var path = $"BookingReport_{Booking.Id}.txt";
-        File.WriteAllText(path, GenerateTxtReportContent());
+        var path = $"BookingReport_{booking.Id}.txt";
+        File.WriteAllText(path, GenerateTxtReportContent(booking));
     }
-    
-    public void CreateCsvReportFile()
+
+    public static void CreateCsvReportFile(Booking booking)
     {
-        var path = $"BookingReport_{Booking.Id}.csv";
-        File.WriteAllText(path, GenerateCsvReportContent());
+        var path = $"BookingReport_{booking.Id}.csv";
+        File.WriteAllText(path, GenerateCsvReportContent(booking));
     }
 }
