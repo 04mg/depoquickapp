@@ -96,13 +96,13 @@ public class BookingService
         booking.Approve();
     }
 
-    public void RejectBooking(int id, Credentials credentials, string message = "")
+    public void RejectBooking(BookingDto bookingDto, Credentials credentials)
     {
-        EnsureMessageIsNotEmpty(message);
+        EnsureMessageIsNotEmpty(bookingDto.Message);
         EnsureUserIsAdministrator(credentials);
-        EnsureBookingExists(id);
-        var booking = _bookingRepository.Get(id);
-        booking.Reject(message);
+        EnsureBookingExists(bookingDto.Id);
+        var booking = _bookingRepository.Get(bookingDto.Id);
+        booking.Reject(bookingDto.Message);
     }
 
     private static void EnsureMessageIsNotEmpty(string message)

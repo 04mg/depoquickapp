@@ -207,9 +207,14 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
+        var rejectBookingDto = new BookingDto()
+        {
+            Id = 1,
+            Message = "message"
+        };
 
         // Act
-        _bookingService.RejectBooking(1, _adminCredentials, "Message");
+        _bookingService.RejectBooking(rejectBookingDto, _adminCredentials);
         var bookings = _bookingService.GetAllBookings(_adminCredentials).ToList();
 
         // Assert
@@ -230,9 +235,14 @@ public class BookingServiceTest
         };
         const string message = "example";
         _bookingService.AddBooking(bookingDto, _clientCredentials);
+        var rejectBookingDto = new BookingDto()
+        {
+            Id = 1,
+            Message = message
+        };
 
         //Act
-        _bookingService.RejectBooking(1, _adminCredentials, message);
+        _bookingService.RejectBooking(rejectBookingDto, _adminCredentials);
         var bookings = _bookingService.GetAllBookings(_adminCredentials).ToList();
 
         //Assert
@@ -339,10 +349,15 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
+        var rejectBookingDto = new BookingDto()
+        {
+            Id = 1,
+            Message = "message"
+        };
 
         //Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
-            _bookingService.RejectBooking(1, _clientCredentials, "message"));
+            _bookingService.RejectBooking(rejectBookingDto, _clientCredentials));
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
@@ -360,10 +375,17 @@ public class BookingServiceTest
     [TestMethod]
     public void TestCantRejectNonExistentBooking()
     {
-        //Act
+        // Arrange
+        var rejectBookingDto = new BookingDto()
+        {
+            Id = 1,
+            Message = "message"
+        };
+
+        // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            _bookingService.RejectBooking(1, _adminCredentials, "message"));
-        //Assert
+            _bookingService.RejectBooking(rejectBookingDto, _adminCredentials));
+        // Assert
         Assert.AreEqual("Booking not found.", exception.Message);
     }
 
@@ -380,10 +402,15 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
+        var rejectBookingDto = new BookingDto()
+        {
+            Id = 1,
+            Message = ""
+        };
 
         //Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            _bookingService.RejectBooking(1, _adminCredentials));
+            _bookingService.RejectBooking(rejectBookingDto, _adminCredentials));
         //Assert
         Assert.AreEqual("Message cannot be empty.", exception.Message);
     }

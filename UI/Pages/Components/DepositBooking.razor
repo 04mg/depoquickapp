@@ -56,12 +56,20 @@
 
     private void ChangeDateFrom(ChangeEventArgs e)
     {
-        ChangeDate(e, date => _priceDto.DateFrom = date);
+        ChangeDate(e, date =>
+        {
+            _priceDto.DateFrom = date;
+            _bookingDto.DateFrom = date;
+        });
     }
 
     private void ChangeDateTo(ChangeEventArgs e)
     {
-        ChangeDate(e, date => _priceDto.DateTo = date);
+        ChangeDate(e, date =>
+        {
+            _priceDto.DateTo = date;
+            _bookingDto.DateTo = date;
+        });
     }
 
 }

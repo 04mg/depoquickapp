@@ -10,8 +10,6 @@
 
 @code {
     private BookingDto BookingDto { get; set; } = new();
-    private string _message = string.Empty;
-
     private int? _id;
 
     [Parameter]
@@ -47,7 +45,7 @@
 
     private void RejectBooking()
     {
-        BookingService.RejectBooking(Id, User.CurrentCredentials, _message);
+        BookingService.RejectBooking(BookingDto, User.CurrentCredentials);
         BookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
         NotificationService.ShowMessage("Booking rejected successfully.");
         StateHasChanged();
@@ -115,7 +113,7 @@
         </div>
         <form @onsubmit="RejectBooking">
             <div class="field label border textarea">
-                <textarea type="text" @bind="_message" required></textarea>
+                <textarea type="text" @bind="BookingDto.Message" required></textarea>
                 <label>Message</label>
             </div>
             <nav class="right-align no-space no-margin">

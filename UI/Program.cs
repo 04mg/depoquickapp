@@ -9,10 +9,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<NotificationService>();
 
-builder.Services.AddSingleton<BookingRepository>();
-builder.Services.AddSingleton<DepositRepository>();
-builder.Services.AddSingleton<PromotionRepository>();
-builder.Services.AddSingleton<UserRepository>();
+builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
+builder.Services.AddSingleton<IDepositRepository, DepositRepository>();
+builder.Services.AddSingleton<IPromotionRepository, PromotionRepository>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
 builder.Services.AddSingleton<BookingService>();
 builder.Services.AddSingleton<DepositService>();
