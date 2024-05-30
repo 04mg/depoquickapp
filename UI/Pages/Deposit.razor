@@ -30,9 +30,9 @@
             DepositDto = DepositService.GetDeposit(Name);
             Promotions = DepositDto.Promotions;
         }
-        catch (InvalidOperationException)
+        catch (ArgumentException e)
         {
-            NotificationService.ShowError("Deposit was not found.");
+            NotificationService.ShowError(e.Message);
             NavigationManager.NavigateTo("/Deposits");
         }
 

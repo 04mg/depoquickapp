@@ -30,9 +30,9 @@
             SetPromotionDto(promotion);
             SetPromotionLabel(promotion);
         }
-        catch (InvalidOperationException)
+        catch (ArgumentException e)
         {
-            NotificationService.ShowError("Promotion was not found");
+            NotificationService.ShowError(e.Message);
             NavigationManager.NavigateTo("/Promotions");
         }
 
