@@ -110,10 +110,12 @@ public class BookingService
         if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be empty.");
     }
 
-    public BookingDto GetBooking(int id)
+    public BookingDto GetBooking(int id, Credentials credentials)
     {
         EnsureBookingExists(id);
-        return BookingDtoFromBooking(_bookingRepository.Get(id));
+        var booking = _bookingRepository.Get(id);
+        EnsureUserIsAdministratorOrEmailMatches(booking.Client.Email, credentials);
+        return BookingDtoFromBooking(booking);
     }
 
     private void EnsureBookingExists(int id)

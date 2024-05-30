@@ -28,7 +28,7 @@
         try
         {
             DepositDto = DepositController.GetDeposit(Name, Auth.CurrentCredentials);
-            Promotions = DepositDto.PromotionList.Select(p => PromotionController.GetPromotion(p)).ToList();
+            Promotions = DepositDto.Promotions.Select(p => PromotionController.GetPromotion(p)).ToList();
         }
         catch (InvalidOperationException)
         {

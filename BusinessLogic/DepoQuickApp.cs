@@ -1,5 +1,3 @@
-using BusinessLogic.Calculators;
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Repositories;
 using BusinessLogic.Services;
@@ -59,10 +57,7 @@ public class DepoQuickApp
 
     public void AddDeposit(DepositDto depositDto, Credentials credentials)
     {
-        var promotions = CreatePromotionListFromDto(depositDto);
-        var deposit = new Deposit(depositDto.Name, depositDto.Area, depositDto.Size, depositDto.ClimateControl,
-            promotions);
-        _depositService.AddDeposit(deposit, credentials);
+        _depositService.AddDeposit(depositDto, credentials);
     }
 
     public void DeleteDeposit(string depositName, Credentials credentials)
@@ -70,48 +65,14 @@ public class DepoQuickApp
         _depositService.DeleteDeposit(depositName, credentials);
     }
 
-    private List<Promotion> CreatePromotionListFromDto(DepositDto depositDto)
-    {
-        return depositDto.PromotionList.Select(p =>
-        {
-            var dto = _promotionService.GetPromotion(p);
-            return new Promotion(dto.Id, dto.Label, dto.Discount, dto.DateFrom, dto.DateTo);
-        }).ToList();
-    }
-
     public List<DepositDto> ListAllDeposits()
     {
-        return _depositService.GetAllDeposits().Select(d => new DepositDto
-        {
-            Name = d.Name,
-            Area = d.Area,
-            Size = d.Size,
-            ClimateControl = d.ClimateControl,
-            PromotionList = d.Promotions.Select(p => p.Id).ToList(),
-            AvailabilityPeriods = d.GetAvailablePeriods().Select(p => new DateRangeDto
-            {
-                StartDate = p.StartDate,
-                EndDate = p.EndDate
-            }).ToList()
-        }).ToList();
+        return _depositService.GetAllDeposits().ToList();
     }
 
     public DepositDto GetDeposit(string depositName)
     {
-        var deposit = _depositService.GetDeposit(depositName);
-        return new DepositDto
-        {
-            Name = deposit.Name,
-            Area = deposit.Area,
-            Size = deposit.Size,
-            ClimateControl = deposit.ClimateControl,
-            PromotionList = deposit.Promotions.Select(p => p.Id).ToList(),
-            AvailabilityPeriods = deposit.GetAvailablePeriods().Select(p => new DateRangeDto
-            {
-                StartDate = p.StartDate,
-                EndDate = p.EndDate
-            }).ToList()
-        };
+        return _depositService.GetDeposit(depositName);
     }
 
     public void AddBooking(BookingDto bookingDto, Credentials credentials)
@@ -129,9 +90,9 @@ public class DepoQuickApp
         return _bookingService.GetBookingsByEmail(email, credentials).ToList();
     }
 
-    public BookingDto GetBooking(int bookingId)
+    public BookingDto GetBooking(int bookingId, Credentials credentials)
     {
-        return _bookingService.GetBooking(bookingId);
+        return _bookingService.GetBooking(bookingId, credentials);
     }
 
     public void ApproveBooking(int bookingId, Credentials credentials)
@@ -146,8 +107,7 @@ public class DepoQuickApp
 
     public void AddAvailabilityPeriod(string name, DateRangeDto dateRange, Credentials credentials)
     {
-        var period = new DateRange(dateRange.StartDate, dateRange.EndDate);
-        _depositService.AddAvailabilityPeriod(name, period, credentials);
+        _depositService.AddAvailabilityPeriod(name, dateRange, credentials);
     }
 
     public double CalculateDepositPrice(PriceDto priceDto)

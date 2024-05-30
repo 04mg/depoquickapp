@@ -69,7 +69,7 @@ public class DepoQuickAppTest
             Area = "A",
             Size = "Small",
             ClimateControl = true,
-            PromotionList = new List<int> { 1 }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
 
         _dateRangeDto = new DateRangeDto
@@ -165,8 +165,8 @@ public class DepoQuickAppTest
         Assert.AreEqual(_depositDto.Area, deposit.Area);
         Assert.AreEqual(_depositDto.Size, deposit.Size);
         Assert.AreEqual(_depositDto.ClimateControl, deposit.ClimateControl);
-        Assert.AreEqual(_depositDto.PromotionList[0], deposit.PromotionList[0]);
-        Assert.AreEqual(_depositDto.PromotionList.Count, deposit.PromotionList.Count);
+        Assert.AreEqual(_depositDto.Promotions[0], deposit.Promotions[0]);
+        Assert.AreEqual(_depositDto.Promotions.Count, deposit.Promotions.Count);
     }
 
     [TestMethod]
@@ -331,10 +331,11 @@ public class DepoQuickAppTest
         var credentials = _app.Login(_loginDto);
         var wrongAddDepositDto = new DepositDto
         {
+            Name = "Deposit",
             Area = "A",
             Size = "Small",
             ClimateControl = true,
-            PromotionList = new List<int> { 1 }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
 
         // Act
@@ -344,7 +345,7 @@ public class DepoQuickAppTest
         });
 
         // Assert
-        Assert.IsTrue(exception.Message.Contains("Promotion not found."));
+        Assert.AreEqual("Promotion not found.", exception.Message);
     }
 
     [TestMethod]
@@ -363,8 +364,8 @@ public class DepoQuickAppTest
         Assert.AreEqual(_depositDto.Area, deposit.Area);
         Assert.AreEqual(_depositDto.Size, deposit.Size);
         Assert.AreEqual(_depositDto.ClimateControl, deposit.ClimateControl);
-        Assert.AreEqual(_depositDto.PromotionList[0], deposit.PromotionList[0]);
-        Assert.AreEqual(_depositDto.PromotionList.Count, deposit.PromotionList.Count);
+        Assert.AreEqual(_depositDto.Promotions[0], deposit.Promotions[0]);
+        Assert.AreEqual(_depositDto.Promotions.Count, deposit.Promotions.Count);
     }
 
     [TestMethod]
@@ -379,7 +380,7 @@ public class DepoQuickAppTest
         _app.AddBooking(_bookingDto, credentials);
 
         // Act
-        var booking = _app.GetBooking(1);
+        var booking = _app.GetBooking(1, credentials);
 
         // Assert
         Assert.IsNotNull(booking);
