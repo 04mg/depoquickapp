@@ -1,10 +1,11 @@
 @page "/Promotion/{Id:int}"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Services
 @using UI.Data
 @inherits AuthEnforce
-@inject AuthController Auth
+@inject UserController User
 @inject NavigationManager NavigationManager
-@inject PromotionController PromotionController
+@inject PromotionService PromotionService
 @inject NotificationService NotificationService
 
 @code {
@@ -25,7 +26,7 @@
         if (!firstRender) return;
         try
         {
-            var promotion = PromotionController.GetPromotion(Id);
+            var promotion = PromotionService.GetPromotion(Id);
             SetPromotionDto(promotion);
             SetPromotionLabel(promotion);
         }
@@ -38,12 +39,12 @@
         StateHasChanged();
     }
 
-    private void SetPromotionLabel(AddPromotionDto promotion)
+    private void SetPromotionLabel(PromotionDto promotion)
     {
         _promotionLabel = promotion.Label;
     }
 
-    private void SetPromotionDto(AddPromotionDto promotion)
+    private void SetPromotionDto(PromotionDto promotion)
     {
         _promotionDto = new PromotionDto
         {
@@ -59,7 +60,7 @@
     {
         try
         {
-            PromotionController.ModifyPromotion(Id, _promotionDto, Auth.CurrentCredentials);
+            PromotionService.ModifyPromotion(Id, _promotionDto, User.CurrentCredentials);
             NotificationService.ShowMessage($"Promotion \"{_promotionLabel}\" modified successfully.");
         }
         catch (ArgumentException e)
@@ -72,7 +73,7 @@
     {
         try
         {
-            PromotionController.DeletePromotion(Id, Auth.CurrentCredentials);
+            PromotionService.DeletePromotion(Id, User.CurrentCredentials);
             NotificationService.ShowMessage($"Promotion \"{_promotionLabel}\" deleted successfully.");
             NavigationManager.NavigateTo("/Promotions");
         }
@@ -84,7 +85,7 @@
 
 }
 
-@if (!Auth.IsAdmin)
+@if (!User.IsAdmin)
 {
     <Forbidden/>
 }

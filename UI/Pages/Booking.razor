@@ -1,9 +1,10 @@
 @page "/Booking/{Id:int}"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Services
 @using UI.Data
 @inherits AuthEnforce
-@inject AuthController Auth
-@inject BookingController BookingController
+@inject UserController User
+@inject BookingService BookingService
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
 
@@ -25,7 +26,7 @@
         if (!firstRender) return;
         try
         {
-            BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
+            BookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
         }
         catch (ArgumentException e)
         {
@@ -38,16 +39,16 @@
 
     private void ApproveBooking()
     {
-        BookingController.ApproveBooking(Id, Auth.CurrentCredentials);
-        BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
+        BookingService.ApproveBooking(Id, User.CurrentCredentials);
+        BookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
         NotificationService.ShowMessage("Booking approved successfully.");
         StateHasChanged();
     }
 
     private void RejectBooking()
     {
-        BookingController.RejectBooking(Id, _message, Auth.CurrentCredentials);
-        BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
+        BookingService.RejectBooking(Id, User.CurrentCredentials, _message);
+        BookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
         NotificationService.ShowMessage("Booking rejected successfully.");
         StateHasChanged();
     }
@@ -61,7 +62,7 @@
     <h6 class="vertical-margin">
         Booking
         <span class="circle primary center-align middle-align left-margin">@Id</span>
-        @if (Auth.IsAdmin && BookingDto.Stage == "Pending")
+        @if (User.IsAdmin && BookingDto.Stage == "Pending")
         {
             <div class="absolute right">
                 <button class="extend square round primary no-margin" @onclick="ApproveBooking">
@@ -85,7 +86,7 @@
             </a>
         </h6>
         <div class="divider"></div>
-        @if (Auth.IsAdmin)
+        @if (User.IsAdmin)
         {
             <h6 class="small padding">Email:&nbsp; <b>@BookingDto.Email</b></h6>
             <div class="divider"></div>
@@ -103,7 +104,7 @@
     </article>
 </main>
 
-@if (Auth.IsAdmin && BookingDto.Stage == "Pending")
+@if (User.IsAdmin && BookingDto.Stage == "Pending")
 {
     <div class="medium-space"></div>
     <div class="overlay blur"></div>
