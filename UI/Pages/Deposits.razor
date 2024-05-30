@@ -1,34 +1,35 @@
 @page "/Deposits"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Services
 @using UI.Data
 @using UI.Pages.Components
 @inherits AuthEnforce
-@inject AuthController Auth
-@inject DepositController DepositController
+@inject UserController User
+@inject DepositService DepositService
 @inject NotificationService NotificationService
 
 @code {
 
-    private AddDepositDto _addDepositDto = new()
+    private DepositDto _depositDto = new()
     {
         Name = "",
         Area = "A",
         Size = "Small",
         ClimateControl = false,
-        PromotionList = new List<int>()
+        Promotions = new List<PromotionDto>()
     };
 
     private List<DepositDto> DepositsDto { get; set; } = new();
 
     protected override void OnAfterRender(bool firstRender)
     {
-        DepositsDto = DepositController.ListAllDeposits(Auth.CurrentCredentials);
+        DepositsDto = DepositService.GetAllDeposits().ToList();
         StateHasChanged();
     }
 
     private void AddDeposit()
     {
-        if (string.IsNullOrEmpty(_addDepositDto.Name))
+        if (string.IsNullOrEmpty(_depositDto.Name))
         {
             NotificationService.ShowError("Name of Deposit is required.");
             return;
@@ -36,7 +37,7 @@
         
         try
         {
-            DepositController.AddDeposit(_addDepositDto, Auth.CurrentCredentials);
+            DepositService.AddDeposit(_depositDto, User.CurrentCredentials);
             NotificationService.ShowMessage("Deposit added successfully.");
             StateHasChanged();
         }
@@ -51,7 +52,7 @@
 <main class="responsive">
     <h6 class="vertical-margin">
         Deposits
-        @if (Auth.IsAdmin)
+        @if (User.IsAdmin)
         {
             <button class="extend square round no-margin absolute right" data-ui="#add-deposit">
                 <i>add</i>
@@ -86,7 +87,7 @@
     </article>
 </main>
 
-@if (Auth.IsAdmin)
+@if (User.IsAdmin)
 {
     <div class="medium-space"></div>
     <div class="overlay blur"></div>
@@ -97,11 +98,11 @@
         </div>
         <div class="field label prefix border left-align">
             <i>garage_door</i>
-            <input type="text" @bind="_addDepositDto.Name" required>
+            <input type="text" @bind="_depositDto.Name" required>
             <label>Name of Deposit</label>
             </div>
         <div class="field label suffix border">
-            <select @bind="_addDepositDto.Area">
+            <select @bind="_depositDto.Area">
                 <option>A</option>
                 <option>B</option>
                 <option>C</option>
@@ -112,7 +113,7 @@
             <i>arrow_drop_down</i>
         </div>
         <div class="field label suffix border">
-            <select @bind="_addDepositDto.Size">
+            <select @bind="_depositDto.Size">
                 <option>Small</option>
                 <option>Medium</option>
                 <option>Large</option>
@@ -120,11 +121,11 @@
             <label>Size</label>
             <i>arrow_drop_down</i>
         </div>
-        <PromotionSelect @bind-Promotions="_addDepositDto.PromotionList"/>
+        <PromotionSelect @bind-Promotions="_depositDto.Promotions"/>
         <div class="divider"></div>
         <div class="field no-margin top-padding">
             <label class="checkbox">
-                <input type="checkbox" @bind="_addDepositDto.ClimateControl">
+                <input type="checkbox" @bind="_depositDto.ClimateControl">
                 <span>Climate Control</span>
             </label>
         </div>

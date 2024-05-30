@@ -6,16 +6,13 @@ namespace BusinessLogic.Domain;
 public class Booking
 {
     private readonly Tuple<DateOnly, DateOnly> _duration = new(new DateOnly(), new DateOnly());
-    private readonly IPriceCalculator _priceCalculator;
 
-    public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo,
-        IPriceCalculator priceCalculator)
+    public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo)
     {
         Id = id;
         Deposit = deposit;
         Client = client;
         Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
-        _priceCalculator = priceCalculator;
         EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit, Duration);
         MakeDurationUnavailable(_duration);
     }
@@ -69,11 +66,6 @@ public class Booking
     {
         if (dateFrom < DateOnly.FromDateTime(DateTime.Now))
             throw new ArgumentException("The starting date of the booking must not be earlier than today.");
-    }
-
-    public double CalculatePrice()
-    {
-        return _priceCalculator.CalculatePrice(Deposit, Duration);
     }
 
     public void Approve()

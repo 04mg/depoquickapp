@@ -1,18 +1,19 @@
 @page "/Bookings"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Services
 @using UI.Data
 @inherits AuthEnforce
-@inject AuthController Auth
-@inject BookingController BookingController
+@inject UserController User
+@inject BookingService BookingService
 
 @code {
     private List<BookingDto> BookingsDto { get; set; } = new();
 
     protected override void OnAfterRender(bool firstRender)
     {
-        BookingsDto = Auth.IsAdmin
-            ? BookingController.ListAllBookings(Auth.CurrentCredentials)
-            : BookingController.ListAllBookingsByEmail(Auth.CurrentCredentials);
+        BookingsDto = User.IsAdmin
+            ? BookingService.GetAllBookings(User.CurrentCredentials).ToList()
+            : BookingService.GetBookingsByEmail(User.CurrentCredentials.Email, User.CurrentCredentials).ToList();
         StateHasChanged();
     }
 

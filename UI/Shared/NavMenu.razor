@@ -1,6 +1,6 @@
 ﻿@using UI.Data
-@inject AuthController Auth;
-@if (Auth.IsLoggedIn)
+@inject UserController User;
+@if (User.IsLoggedIn)
 {
     <NavLink href="Deposits">
         <i>garage_door</i>
@@ -11,7 +11,7 @@
         <span>Bookings</span>
     </NavLink>
 
-    @if (Auth.IsAdmin)
+    @if (User.IsAdmin)
     {
         <NavLink href="Promotions">
             <i>sell</i>

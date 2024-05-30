@@ -1,16 +1,16 @@
-using BusinessLogic;
 using BusinessLogic.DTOs;
+using BusinessLogic.Services;
 
 namespace UI.Data;
 
-public class AuthController
+public class UserController
 {
-    private readonly DepoQuickApp _app;
+    private readonly UserService _userService;
     private Credentials? _currentCredentials;
 
-    public AuthController(DepoQuickApp app)
+    public UserController(UserService userService)
     {
-        _app = app;
+        _userService = userService;
     }
 
     public Credentials CurrentCredentials
@@ -25,12 +25,12 @@ public class AuthController
 
     public void LogIn(LoginDto loginDto)
     {
-        CurrentCredentials = _app.Login(loginDto);
+        CurrentCredentials = _userService.Login(loginDto);
     }
 
     public void Register(RegisterDto registerDto)
     {
-        _app.RegisterUser(registerDto);
+        _userService.Register(registerDto);
     }
 
     public void LogOut()
