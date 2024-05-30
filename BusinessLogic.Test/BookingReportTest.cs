@@ -36,16 +36,6 @@ public class BookingReportTest
     [TestCleanup]
     public void Cleanup()
     {
-        if (File.Exists("BookingReport_1.txt"))
-        {
-            File.Delete("BookingReport_1.txt");
-        }
-
-        if (File.Exists("BookingReport_1.csv"))
-        {
-            File.Delete("BookingReport_1.csv");
-        }
-        
         if (File.Exists("BookingsReport.txt"))
         {
             File.Delete("BookingsReport.txt");
@@ -58,107 +48,13 @@ public class BookingReportTest
     }
 
     [TestMethod]
-    public void TestCanGenerateTxtBookingReportContent()
-    {
-        // Arrange
-        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
-
-        // Act
-        var reportContent = BookingReport.GenerateTxtReportContent(booking);
-
-        // Assert
-        Assert.AreEqual("Deposit\t" +
-                        $"{Today}-{Tomorrow}\t" +
-                        "client@client.com\t" +
-                        "35$\t" +
-                        "Yes\n", reportContent);
-    }
-
-    [TestMethod]
-    public void TestCanGenerateTxtBookingReportContentWithoutPromotions()
-    {
-        // Arrange
-        var booking = new Booking(1, _depositNoPromotions, Client, Today, Tomorrow, new PriceCalculator());
-
-        // Act
-        var reportContent = BookingReport.GenerateTxtReportContent(booking);
-
-        // Assert
-        Assert.AreEqual("Deposit\t" +
-                        $"{Today}-{Tomorrow}\t" +
-                        "client@client.com\t" +
-                        "70$\t" +
-                        "No\n", reportContent);
-    }
-
-    [TestMethod]
-    public void TestCanGenerateCsvBookingReportContent()
-    {
-        // Arrange
-        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
-
-        // Act
-        var reportContent = BookingReport.GenerateCsvReportContent(booking);
-
-        // Assert
-        Assert.AreEqual("Deposit,client@client.com," +
-                        $"{Today:yyyy-MM-dd},{Tomorrow:yyyy-MM-dd},35$,Yes\n", reportContent);
-    }
-
-    [TestMethod]
-    public void TestCanGenerateCsvBookingReportContentWithoutPromotions()
-    {
-        // Arrange
-        var booking = new Booking(1, _depositNoPromotions, Client, Today, Tomorrow, new PriceCalculator());
-
-        // Act
-        var reportContent = BookingReport.GenerateCsvReportContent(booking);
-
-        // Assert
-        Assert.AreEqual("Deposit,client@client.com," +
-                        $"{Today:yyyy-MM-dd},{Tomorrow:yyyy-MM-dd},70$,No\n", reportContent);
-    }
-
-    [TestMethod]
-    public void TestCanCreateTxtBookingReportFile()
-    {
-        // Arrange
-        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
-        const string path = $"BookingReport_1.txt";
-        var reportContent = BookingReport.GenerateTxtReportContent(booking);
-
-        // Act
-        BookingReport.CreateTxtReportFile(booking);
-
-        // Assert
-        Assert.IsTrue(File.Exists(path));
-        Assert.AreEqual(reportContent, File.ReadAllText(path));
-    }
-
-    [TestMethod]
-    public void TestCanCreateCsvBookingReportFile()
-    {
-        // Arrange
-        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, new PriceCalculator());
-        const string path = $"BookingReport_1.csv";
-        var reportContent = BookingReport.GenerateCsvReportContent(booking);
-
-        // Act
-        BookingReport.CreateCsvReportFile(booking);
-
-        // Assert
-        Assert.IsTrue(File.Exists(path));
-        Assert.AreEqual(reportContent, File.ReadAllText(path));
-    }
-    
-    [TestMethod]
     public void TestCanCreateTxtBookingsReportFile()
     {
         // Arrange
         var bookings = new List<Booking>
         {
-            new(1, _deposit, Client, Today, Tomorrow, new PriceCalculator()),
-            new(2, _depositNoPromotions, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new PriceCalculator())
+            new(1, _deposit, Client, Today, Tomorrow),
+            new(2, _depositNoPromotions, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2))
         };
         const string path = $"BookingsReport.txt";
         var reportContent = "Deposit\t" +
@@ -171,9 +67,10 @@ public class BookingReportTest
                             "client@client.com\t" +
                             "70$\t" +
                             "No\n";
-
+        var reportGenerator = new BookingReportGenerator(new TxtBookingReport());
+        
         // Act
-        BookingReport.CreateBookingsReportFileTxt(bookings);
+        reportGenerator.GenerateReport(bookings);
 
         // Assert
         Assert.IsTrue(File.Exists(path));
@@ -186,8 +83,8 @@ public class BookingReportTest
         // Arrange
         var bookings = new List<Booking>
         {
-            new(1, _deposit, Client, Today, Tomorrow, new PriceCalculator()),
-            new(2, _depositNoPromotions, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new PriceCalculator())
+            new(1, _deposit, Client, Today, Tomorrow),
+            new(2, _depositNoPromotions, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2))
         };
         const string path = $"BookingsReport.csv";
         var reportContent = "Deposit,Client,StartDate,EndDate,Price,Promotions\n" +
@@ -195,9 +92,10 @@ public class BookingReportTest
                             $"{Today:yyyy-MM-dd},{Tomorrow:yyyy-MM-dd},35$,Yes\n" +
                             "Deposit,client@client.com," +
                             $"{Tomorrow.AddDays(1):yyyy-MM-dd},{Tomorrow.AddDays(2):yyyy-MM-dd},70$,No\n";
+        var reportGenerator = new BookingReportGenerator(new CsvBookingReport());
 
         // Act
-        BookingReport.CreateBookingsReportFileCsv(bookings);
+        reportGenerator.GenerateReport(bookings);
 
         // Assert
         Assert.IsTrue(File.Exists(path));
