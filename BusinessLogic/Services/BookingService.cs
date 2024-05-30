@@ -123,8 +123,9 @@ public class BookingService
         if (!_bookingRepository.Exists(id)) throw new ArgumentException("Booking not found.");
     }
 
-    public void GenerateReport(string type)
+    public void GenerateReport(string type, Credentials credentials)
     {
+        EnsureUserIsAdministrator(credentials);
         switch (type)
         {
             case "txt":
