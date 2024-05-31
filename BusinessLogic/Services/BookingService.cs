@@ -122,4 +122,20 @@ public class BookingService
     {
         if (!_bookingRepository.Exists(id)) throw new ArgumentException("Booking not found.");
     }
+
+    public void GenerateReport(string type, Credentials credentials)
+    {
+        EnsureUserIsAdministrator(credentials);
+        switch (type)
+        {
+            case "txt":
+                new BookingReportGenerator(new TxtBookingReport()).GenerateReport(_bookingRepository.GetAll());
+                break;
+            case "csv":
+                new BookingReportGenerator(new CsvBookingReport()).GenerateReport(_bookingRepository.GetAll());
+                break;
+            default:
+                throw new ArgumentException("Invalid format. Supported formats: txt, csv.");
+        }
+    }
 }

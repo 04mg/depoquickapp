@@ -487,4 +487,75 @@ public class BookingServiceTest
         // Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
+
+    [TestMethod]
+    public void TestCanGenerateTxtBookingReportFile()
+    {
+        //Arrange
+        var bookingDto = new BookingDto()
+        {
+            Id = 1,
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
+            DepositName = _deposit!.Name,
+            Email = _client!.Email
+        };
+        _bookingService.AddBooking(bookingDto, _clientCredentials);
+        
+        //Act
+        _bookingService.GenerateReport("txt", _adminCredentials);
+        _bookingService.GenerateReport("csv", _adminCredentials);
+        
+        //Assert
+        Assert.IsTrue(File.Exists("BookingsReport.txt"));
+        Assert.IsTrue(File.Exists("BookingsReport.csv"));
+    }
+    
+    [TestMethod]
+    public void TestCantGenerateReportIfInvalidFormat()
+    {
+        //Arrange
+        var bookingDto = new BookingDto()
+        {
+            Id = 1,
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
+            DepositName = _deposit!.Name,
+            Email = _client!.Email
+        };
+        _bookingService.AddBooking(bookingDto, _clientCredentials);
+        
+        //Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            _bookingService.GenerateReport("invalid", _adminCredentials);
+        });
+        
+        //Assert
+        Assert.AreEqual("Invalid format. Supported formats: txt, csv.", exception.Message);
+    }
+    
+    [TestMethod]
+    public void TestCantGenerateBookingsReportIfNotAdministrator()
+    {
+        //Arrange
+        var bookingDto = new BookingDto()
+        {
+            Id = 1,
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
+            DepositName = _deposit!.Name,
+            Email = _client!.Email
+        };
+        _bookingService.AddBooking(bookingDto, _clientCredentials);
+        
+        //Act
+        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        {
+            _bookingService.GenerateReport("txt", _clientCredentials);
+        });
+        
+        //Assert
+        Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
+    }
 }

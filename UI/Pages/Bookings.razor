@@ -5,9 +5,12 @@
 @inherits AuthEnforce
 @inject UserController User
 @inject BookingService BookingService
+@inject NotificationService NotificationService
+@inject IJSRuntime Js
 
 @code {
     private List<BookingDto> BookingsDto { get; set; } = new();
+    private string _fileFormat = "Txt";
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -17,12 +20,48 @@
         StateHasChanged();
     }
 
+    private async Task GenerateReport()
+    {
+        try
+        {
+            BookingService.GenerateReport(_fileFormat.ToLower(), User.CurrentCredentials);
+            await DownloadFileFromStream(_fileFormat);
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+    }
+
+    private Stream GetFileStream(string fileFormat)
+    {
+        var path = Path.Combine(Environment.CurrentDirectory, "BookingsReport." + fileFormat);        return File.OpenRead(path);
+    }
+
+    private async Task DownloadFileFromStream(string fileFormat)
+    {
+        var fileStream = GetFileStream(fileFormat);
+        var fileName = "BookingsReport." + fileFormat.ToLower();
+
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+        await Js.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+    }
+
 }
 
 <main class="responsive">
-    <h6 class="vertical-margin">
+    <h6 class="vertical-margin" id="list-bookings">
         Bookings
         <div class="medium-space"></div>
+        @if (User.IsAdmin)
+                {
+                    <button class="extend square round no-margin absolute right" data-ui="#generate-report">
+                        <i>summarize</i>
+                        <span>Generate Report</span>
+                    </button>
+                    <div class="medium-space"></div>
+                }
     </h6>
     <article>
         @if (BookingsDto.Count == 0)
@@ -48,4 +87,31 @@
             }
         }
     </article>
+    
+    <dialog class="medium-width no-elevate" id="generate-report">
+            <div class="field label suffix border">
+                <select @bind="_fileFormat">
+                    <option>Txt</option>
+                    <option>Csv</option>
+                </select>
+                <label>Select file format</label>
+                <i>arrow_drop_down</i>
+            </div>
+            <button class="transparent link" data-ui="#list-bookings">Cancel</button>
+            <button class="transparent link" @onclick="GenerateReport">Confirm</button>
+        </dialog>
 </main>
+
+<script>
+  window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+    const arrayBuffer = await contentStreamReference.arrayBuffer();
+    const blob = new Blob([arrayBuffer]);
+    const url = URL.createObjectURL(blob);
+    const anchorElement = document.createElement('a');
+    anchorElement.href = url;
+    anchorElement.download = fileName ?? '';
+    anchorElement.click();
+    anchorElement.remove();
+    URL.revokeObjectURL(url);
+  }
+</script>
