@@ -6,15 +6,20 @@
 @inherits AuthEnforce
 @inject UserController User
 @inject DepositService DepositService
+@inject PromotionService PromotionService
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
 
 @code {
     private DepositDto DepositDto { get; set; }
     private List<PromotionDto> Promotions { get; set; } = new();
+    private List<DateRangeDto> AvailabilityPeriods { get; set; } = new();
+
+   private DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+   private DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
 
     private string? _name;
-
+    
     [Parameter]
     public string Name
     {
@@ -28,15 +33,23 @@
         try
         {
             DepositDto = DepositService.GetDeposit(Name);
-            Promotions = DepositDto.Promotions;
+            Promotions = DepositDto.Promotions.Select(p => PromotionService.GetPromotion(p.Id)).ToList();
+            AvailabilityPeriods = DepositDto.AvailabilityPeriods;
+            AvailabilityPeriods.Sort((a, b) => a.StartDate.CompareTo(b.StartDate));
         }
         catch (ArgumentException e)
         {
             NotificationService.ShowError(e.Message);
             NavigationManager.NavigateTo("/Deposits");
         }
-
         StateHasChanged();
+    }
+
+    private void UpdateDepositAndPeriods()
+    {
+        DepositDto = DepositService.GetDeposit(Name);
+        AvailabilityPeriods = DepositDto.AvailabilityPeriods;
+        AvailabilityPeriods.Sort((a, b) => a.StartDate.CompareTo(b.StartDate));
     }
 
     private void DeleteDeposit()
@@ -53,13 +66,34 @@
         }
     }
 
+    private void AddAvailability()
+    {
+        try
+        {
+            var dateRange = new DateRangeDto { StartDate = StartDate, EndDate = EndDate };
+            DepositService.AddAvailabilityPeriod(Name, dateRange, User.CurrentCredentials);
+            NotificationService.ShowMessage("Deposit availability period added successfully.");
+            UpdateDepositAndPeriods();
+            StateHasChanged();
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+    }
+    
+    private void OnBookingCompleted()
+        {
+            UpdateDepositAndPeriods();
+        }
+
 }
 
 <main class="responsive">
     <NavLink class="extra transparent vertical-margin left-align" href="/Deposits">
         <i>arrow_back</i>
     </NavLink>
-    <h6 class="vertical-margin">
+    <h6 class="vertical-margin" id="deposit">
         Deposit
         <span class="button inverse-primary center-align middle-align left-margin">@Name</span>
         @if (User.IsAdmin)
@@ -67,6 +101,11 @@
             <button class="extend square round error no-margin absolute right" @onclick="DeleteDeposit">
                 <i>delete</i>
                 <span>Delete</span>
+            </button>
+            <div class="medium-space"></div>
+            <button class="extend square round no-margin right" data-ui="#add-availability">
+                <i>add</i>
+                <span>Add Availability</span>
             </button>
             <div class="medium-space"></div>
         }
@@ -95,8 +134,49 @@
                 </div>
             }
         }
+        <div class="divider"></div>
+        @if (AvailabilityPeriods.Count == 0)
+                {
+                    <h6 class="small padding">There are no available periods for this deposit</h6>
+                }
+                else
+                {
+                    <h6 class="small padding">There are the following periods available for this deposit:</h6>
+                    @foreach (var period in AvailabilityPeriods)
+                    {
+                        <div class="button no-wave margin">
+                            @period.StartDate.ToString("dd/MM/yyyy") - @period.EndDate.ToString("dd/MM/yyyy")
+                        </div>
+                    }
+                }
     </article>
     <div class="small-space"></div>
     <h6 class="vertical-margin">Book now</h6>
-    <DepositBooking DepositName="@Name"/>
+    <DepositBooking DepositName="@Name" OnBookingCompleted="OnBookingCompleted"/>
 </main>
+
+@if (User.IsAdmin)
+{
+    <div class="medium-space"></div>
+    <div class="overlay blur"></div>
+    <dialog class="medium-width no-elevate" id="add-availability">
+        <div class="s12 m6 padding">
+            <h6 class="small">Select the dates you want to add availability for:</h6>
+            <div class="small-space"></div>
+            <div class="field label suffix border">
+                <input type="date" @bind=StartDate>
+                <label>From</label>
+                <i>calendar_today</i>
+            </div>
+            <div class="field label suffix border">
+                <input type="date" @bind=EndDate>
+                <label>To</label>
+                <i>event_upcoming</i>
+            </div>
+        </div>
+        <nav class="right-align no-space no-margin">
+            <button class="transparent link" data-ui="#add-availability">Cancel</button>
+            <button class="transparent link" @onclick="AddAvailability">Confirm</button>
+        </nav>    
+    </dialog>
+}

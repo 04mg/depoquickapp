@@ -12,6 +12,7 @@
     private PriceDto _priceDto = new();
 
     [Parameter] public string DepositName { get; set; } = string.Empty;
+    [Parameter] public EventCallback OnBookingCompleted { get; set; }
 
     private double BookingPrice { get; set; }
 
@@ -33,6 +34,7 @@
         {
             BookingService.AddBooking(_bookingDto, User.CurrentCredentials);
             NotificationService.ShowMessage($"Booked deposit '{DepositName}' from {_bookingDto.DateFrom} to {_bookingDto.DateTo}");
+            OnBookingCompleted.InvokeAsync(null);
         }
         catch (ArgumentException e)
         {
