@@ -38,7 +38,7 @@ public class PriceCalculator : IPriceCalculator
         return dateTo.DayNumber - dateFrom.DayNumber;
     }
 
-    private double GetPricePerDay(Deposit deposit)
+    private static double GetPricePerDay(Deposit deposit)
     {
         var pricePerDay = deposit.Size switch
         {

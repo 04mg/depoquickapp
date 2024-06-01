@@ -558,4 +558,22 @@ public class BookingServiceTest
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCanCalculateBookingPrice()
+    {
+        // Arrange
+        var priceDto = new BookingDto
+        {
+            DepositName = _deposit!.Name,
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+
+        // Act
+        var price = _bookingService.CalculateBookingPrice(priceDto);
+
+        // Assert
+        Assert.AreEqual(35, price);
+    }
 }

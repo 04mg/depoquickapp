@@ -274,31 +274,4 @@ public class DepositServiceTest
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
     }
-
-    [TestMethod]
-    public void TestCanCalculateDepositPrice()
-    {
-        // Arrange
-        var depositDto = new DepositDto
-        {
-            Name = Name,
-            Area = Area,
-            Size = Size,
-            ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
-        };
-        _depositService.AddDeposit(depositDto, _adminCredentials);
-        var priceDto = new PriceDto
-        {
-            DepositName = Name,
-            DateFrom = DateOnly.FromDateTime(DateTime.Now),
-            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
-        };
-
-        // Act
-        var price = _depositService.CalculateDepositPrice(priceDto);
-
-        // Assert
-        Assert.AreEqual(35, price);
-    }
 }

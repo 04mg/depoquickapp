@@ -40,7 +40,7 @@ public class Booking
         }
     }
     
-    private void EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
+    private static void EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
     {
         var dateRange = new DateRange(duration.Item1, duration.Item2);
         if (!deposit.IsAvailable(dateRange))

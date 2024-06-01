@@ -1,3 +1,4 @@
+using BusinessLogic.Calculators;
 using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
 using BusinessLogic.Repositories;
@@ -137,5 +138,13 @@ public class BookingService
             default:
                 throw new ArgumentException("Invalid format. Supported formats: txt, csv.");
         }
+    }
+    
+    public double CalculateBookingPrice(BookingDto bookingDto)
+    {
+        EnsureDepositExists(bookingDto.DepositName);
+        var priceCalculator = new PriceCalculator();
+        var deposit = _depositRepository.Get(bookingDto.DepositName);
+        return priceCalculator.CalculatePrice(deposit, bookingDto.DateFrom, bookingDto.DateTo);
     }
 }

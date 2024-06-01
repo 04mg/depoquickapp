@@ -144,11 +144,4 @@ public class DepositService
     {
         return new DateRange(dateRangeDto.StartDate, dateRangeDto.EndDate);
     }
-
-    public double CalculateDepositPrice(PriceDto priceDto)
-    {
-        EnsureDepositExists(priceDto.DepositName);
-        var deposit = _depositRepository.Get(priceDto.DepositName);
-        return new PriceCalculator().CalculatePrice(deposit, priceDto.DateFrom, priceDto.DateTo);
-    }
 }
