@@ -2,7 +2,7 @@ using BusinessLogic.Enums;
 
 namespace BusinessLogic.Domain;
 
-public class Payment
+public class Payment : IPayment
 {
     public double Amount { get; }
     public PaymentStatus Status { get; private set; }
