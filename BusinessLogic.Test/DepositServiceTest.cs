@@ -233,7 +233,7 @@ public class DepositServiceTest
             "12345678@mE"
         );
         var booking = new Booking(1, deposit, client, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new Payment(50));
         _bookingRepository.Add(booking);
 
 

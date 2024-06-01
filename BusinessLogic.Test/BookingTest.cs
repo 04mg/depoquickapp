@@ -1,4 +1,3 @@
-using BusinessLogic.Calculators;
 using BusinessLogic.Domain;
 
 namespace BusinessLogic.Test;
@@ -8,6 +7,7 @@ public class BookingTest
 {
     private static readonly DateOnly Today = DateOnly.FromDateTime(DateTime.Now);
     private static readonly DateOnly Tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+    private Payment _payment = new(50);
 
     private static readonly User Client = new(
         "Name Surname",
@@ -25,6 +25,7 @@ public class BookingTest
     [TestInitialize]
     public void Initialize()
     {
+        _payment = new Payment(50);
         _deposit = new Deposit("Deposit", "A", "Small", true, Promotions);
         _deposit.AddAvailabilityPeriod(new DateRange(Today, Today.AddDays(100)));
     }
@@ -33,7 +34,7 @@ public class BookingTest
     public void TestCanCreateBookingWithValidData()
     {
         // Act
-        var booking = new Booking(1, _deposit, Client, Today, Tomorrow);
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, _payment);
 
         // Assert
         Assert.IsNotNull(booking);
@@ -45,7 +46,7 @@ public class BookingTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                new Booking(1, _deposit, Client, Tomorrow, Today));
+                new Booking(1, _deposit, Client, Tomorrow, Today, _payment));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be later than the ending date.",
@@ -58,7 +59,7 @@ public class BookingTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                new Booking(1, _deposit, Client, Today.AddDays(-1), Tomorrow));
+                new Booking(1, _deposit, Client, Today.AddDays(-1), Tomorrow, _payment));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be earlier than today.", exception.Message);
@@ -70,7 +71,7 @@ public class BookingTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                new Booking(1, _deposit, Client, Today, Today));
+                new Booking(1, _deposit, Client, Today, Today, _payment));
 
         // Assert
         Assert.AreEqual("The starting date of the booking must not be the same as the ending date.", exception.Message);
@@ -83,7 +84,7 @@ public class BookingTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                new Booking(1, depositA, Client, Tomorrow, Tomorrow.AddDays(2)));
+                new Booking(1, depositA, Client, Tomorrow, Tomorrow.AddDays(2), _payment));
         // Assert
         Assert.AreEqual("The duration of the booking must be contained in the deposit availability periods.",
             exception.Message);
@@ -93,10 +94,10 @@ public class BookingTest
     public void TestCreatingABookingMakesHisDurationUnavailable()
     {
         // Act
-        var booking = new Booking(1, _deposit, Client, Today, Tomorrow);
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, _payment);
 
         // Assert
-        var isAvailable = _deposit.IsAvailable(new DateRange(Today, Tomorrow));
+        var isAvailable = booking.Deposit.IsAvailable(new DateRange(Today, Tomorrow));
         Assert.IsFalse(isAvailable);
     }
 
@@ -104,7 +105,7 @@ public class BookingTest
     public void TestRejectingABookingMakesTheDurationAvailable()
     {
         // Arrange
-        var booking = new Booking(1, _deposit, Client, Today, Tomorrow);
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, _payment);
 
         // Act
         booking.Reject("rejection");
@@ -119,15 +120,28 @@ public class BookingTest
         // Arrange
         var availabilityPeriod = new DateRange(Today, Tomorrow);
         _deposit.AddAvailabilityPeriod(availabilityPeriod);
-        var booking = new Booking(1, _deposit, Client, Today, Tomorrow);
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, _payment);
         var overlappingPeriod = new DateRange(Today, Tomorrow.AddDays(1));
 
         // Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
-            _deposit.AddAvailabilityPeriod(overlappingPeriod));
+            booking.Deposit.AddAvailabilityPeriod(overlappingPeriod));
 
         // Assert
         Assert.AreEqual($"The availability period overlaps with an already booked period from {Today} to {Tomorrow}.",
             exception.Message);
+    }
+
+    [TestMethod]
+    public void TestPaymentIsCapturedAfterApprovingBooking()
+    {
+        // Arrange
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, _payment);
+
+        // Act
+        booking.Approve();
+
+        // Assert
+        Assert.IsTrue(booking.IsPaymentCaptured());
     }
 }

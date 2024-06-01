@@ -32,7 +32,7 @@ public class BookingService
     {
         return new Booking(bookingDto.Id, _depositRepository.Get(bookingDto.DepositName),
             _userRepository.Get(bookingDto.Email),
-            bookingDto.DateFrom, bookingDto.DateTo);
+            bookingDto.DateFrom, bookingDto.DateTo, new Payment(CalculateBookingPrice(bookingDto)));
     }
 
     private void EnsureDepositExists(string name)
@@ -139,7 +139,7 @@ public class BookingService
                 throw new ArgumentException("Invalid format. Supported formats: txt, csv.");
         }
     }
-    
+
     public double CalculateBookingPrice(BookingDto bookingDto)
     {
         EnsureDepositExists(bookingDto.DepositName);

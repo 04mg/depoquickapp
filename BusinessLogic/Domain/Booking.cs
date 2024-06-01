@@ -6,12 +6,13 @@ public class Booking
 {
     private readonly Tuple<DateOnly, DateOnly> _duration = new(new DateOnly(), new DateOnly());
 
-    public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo)
+    public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo, IPayment payment)
     {
         Id = id;
         Deposit = deposit;
         Client = client;
         Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
+        Payment = payment;
         EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit, Duration);
         MakeDurationUnavailable(_duration);
     }
@@ -27,6 +28,7 @@ public class Booking
     public User Client { get; }
     public string Message { get; private set; } = "";
     public BookingStage Stage { get; private set; } = BookingStage.Pending;
+    public IPayment? Payment { get; private set; }
 
     public Tuple<DateOnly, DateOnly> Duration
     {
@@ -39,13 +41,15 @@ public class Booking
             _duration = value;
         }
     }
-    
-    private static void EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit deposit, Tuple<DateOnly, DateOnly> duration)
+
+    private static void EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit deposit,
+        Tuple<DateOnly, DateOnly> duration)
     {
         var dateRange = new DateRange(duration.Item1, duration.Item2);
         if (!deposit.IsAvailable(dateRange))
         {
-            throw new ArgumentException("The duration of the booking must be contained in the deposit availability periods.");
+            throw new ArgumentException(
+                "The duration of the booking must be contained in the deposit availability periods.");
         }
     }
 
@@ -70,6 +74,7 @@ public class Booking
     public void Approve()
     {
         Stage = BookingStage.Approved;
+        Payment?.Capture();
     }
 
     public void Reject(string message)
@@ -83,5 +88,10 @@ public class Booking
     {
         var dateRange = new DateRange(duration.Item1, duration.Item2);
         Deposit.MakeAvailable(dateRange);
+    }
+
+    public bool IsPaymentCaptured()
+    {
+        return Payment != null && Payment.IsCaptured();
     }
 }

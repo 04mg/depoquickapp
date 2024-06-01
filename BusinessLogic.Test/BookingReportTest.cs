@@ -1,4 +1,3 @@
-using BusinessLogic.Calculators;
 using BusinessLogic.Domain;
 
 namespace BusinessLogic.Test;
@@ -40,7 +39,7 @@ public class BookingReportTest
         {
             File.Delete("BookingsReport.txt");
         }
-        
+
         if (File.Exists("BookingsReport.csv"))
         {
             File.Delete("BookingsReport.csv");
@@ -53,22 +52,22 @@ public class BookingReportTest
         // Arrange
         var bookings = new List<Booking>
         {
-            new(1, _deposit, Client, Today, Tomorrow),
-            new(2, _depositNoPromotions, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2))
+            new(1, _deposit!, Client, Today, Tomorrow, new Payment(50)),
+            new(2, _depositNoPromotions!, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new Payment(70))
         };
         const string path = $"BookingsReport.txt";
         var reportContent = "Deposit\t" +
                             $"{Today}-{Tomorrow}\t" +
                             "client@client.com\t" +
                             "35$\t" +
-                            "Yes\n"+ 
+                            "Yes\n" +
                             "Deposit\t" +
                             $"{Tomorrow.AddDays(1)}-{Tomorrow.AddDays(2)}\t" +
                             "client@client.com\t" +
                             "70$\t" +
                             "No\n";
         var reportGenerator = new BookingReportGenerator(new TxtBookingReport());
-        
+
         // Act
         reportGenerator.GenerateReport(bookings);
 
@@ -83,8 +82,8 @@ public class BookingReportTest
         // Arrange
         var bookings = new List<Booking>
         {
-            new(1, _deposit, Client, Today, Tomorrow),
-            new(2, _depositNoPromotions, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2))
+            new(1, _deposit!, Client, Today, Tomorrow, new Payment(35)),
+            new(2, _depositNoPromotions!, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new Payment(70))
         };
         const string path = $"BookingsReport.csv";
         var reportContent = "Deposit,Client,StartDate,EndDate,Price,Promotions\n" +
