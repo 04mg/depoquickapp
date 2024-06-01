@@ -4,7 +4,7 @@ namespace BusinessLogic.Domain;
 
 public class Payment : IPayment
 {
-    public double Amount { get; }
+    private double Amount { get; }
     private PaymentStatus Status { get; set; } = PaymentStatus.Reserved;
 
     public Payment(double amount)
@@ -20,5 +20,10 @@ public class Payment : IPayment
     public bool IsCaptured()
     {
         return Status == PaymentStatus.Captured;
+    }
+
+    public double GetAmount()
+    {
+        return Amount;
     }
 }

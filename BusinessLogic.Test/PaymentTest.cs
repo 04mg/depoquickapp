@@ -14,7 +14,7 @@ public class PaymentTest
         var payment = new Payment(Amount);
 
         // Assert
-        Assert.AreEqual(Amount, payment.Amount);
+        Assert.IsNotNull(payment);
     }
 
     [TestMethod]
@@ -28,5 +28,18 @@ public class PaymentTest
 
         // Assert
         Assert.IsTrue(payment.IsCaptured());
+    }
+
+    [TestMethod]
+    public void TestCanGetPaymentAmount()
+    {
+        // Arrange
+        var payment = new Payment(Amount);
+
+        // Act
+        var amount = payment.GetAmount();
+
+        // Assert
+        Assert.AreEqual(Amount, amount);
     }
 }
