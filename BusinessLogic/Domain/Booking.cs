@@ -82,6 +82,7 @@ public class Booking
         MakeDurationAvailable(Duration);
         Stage = BookingStage.Rejected;
         Message = message;
+        Payment = null;
     }
 
     private void MakeDurationAvailable(Tuple<DateOnly, DateOnly> duration)

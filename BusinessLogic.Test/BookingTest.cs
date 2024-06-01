@@ -144,4 +144,17 @@ public class BookingTest
         // Assert
         Assert.IsTrue(booking.IsPaymentCaptured());
     }
+    
+    [TestMethod]
+    public void TestPaymentIsUnsetAfterRejectingBooking()
+    {
+        // Arrange
+        var booking = new Booking(1, _deposit, Client, Today, Tomorrow, _payment);
+
+        // Act
+        booking.Reject("rejection");
+
+        // Assert
+        Assert.IsNull(booking.Payment);
+    }
 }
