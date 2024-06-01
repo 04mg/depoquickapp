@@ -94,25 +94,23 @@
         <i>arrow_back</i>
     </NavLink>
     <h6 class="vertical-margin" id="deposit">
-        Deposit
-        <span class="button inverse-primary center-align middle-align left-margin">@Name</span>
+        @Name
         @if (User.IsAdmin)
         {
-            <button class="extend square round error no-margin absolute right" @onclick="DeleteDeposit">
-                <i>delete</i>
-                <span>Delete</span>
-            </button>
-            <div class="medium-space"></div>
-            <button class="extend square round no-margin right" data-ui="#add-availability">
-                <i>add</i>
-                <span>Add Availability</span>
-            </button>
-            <div class="medium-space"></div>
+            <div class="absolute right">
+                <button class="extend square round no-margin" data-ui="#add-availability">
+                    <i>add</i>
+                    <span>Add Availability</span>
+                </button>
+                <button class="extend square round error no-margin" @onclick="DeleteDeposit">
+                    <i>delete</i>
+                    <span>Delete</span>
+                </button>
+                <div class="medium-space"></div>
+            </div>
         }
     </h6>
     <article>
-        <h6 class="small padding">Name:&nbsp; <b>@DepositDto.Name</b></h6>
-        <div class="divider"></div>
         <h6 class="small padding">Area:&nbsp; <b>@DepositDto.Area</b></h6>
         <div class="divider"></div>
         <h6 class="small padding">Size:&nbsp; <b>@DepositDto.Size</b></h6>

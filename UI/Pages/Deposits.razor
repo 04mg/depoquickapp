@@ -34,7 +34,7 @@
             NotificationService.ShowError("Name of Deposit is required.");
             return;
         }
-        
+
         try
         {
             DepositService.AddDeposit(_depositDto, User.CurrentCredentials);
@@ -96,42 +96,45 @@
             <i>garage_door</i>
             <h6 class="center-align">Add new deposit</h6>
         </div>
-        <div class="field label prefix border left-align">
-            <i>garage_door</i>
-            <input type="text" @bind="_depositDto.Name" required>
-            <label>Name of Deposit</label>
+        <form @onsubmit="AddDeposit">
+            <div class="field label prefix border left-align">
+                <i>garage_door</i>
+                <input type="text" @bind="_depositDto.Name" required>
+                <label>Name of Deposit</label>
             </div>
-        <div class="field label suffix border">
-            <select @bind="_depositDto.Area">
-                <option>A</option>
-                <option>B</option>
-                <option>C</option>
-                <option>D</option>
-                <option>E</option>
-            </select>
-            <label>Area</label>
-            <i>arrow_drop_down</i>
-        </div>
-        <div class="field label suffix border">
-            <select @bind="_depositDto.Size">
-                <option>Small</option>
-                <option>Medium</option>
-                <option>Large</option>
-            </select>
-            <label>Size</label>
-            <i>arrow_drop_down</i>
-        </div>
-        <PromotionSelect @bind-Promotions="_depositDto.Promotions"/>
-        <div class="divider"></div>
-        <div class="field no-margin top-padding">
-            <label class="checkbox">
-                <input type="checkbox" @bind="_depositDto.ClimateControl">
-                <span>Climate Control</span>
-            </label>
-        </div>
-        <nav class="right-align no-space no-margin">
-            <button class="transparent link" data-ui="#add-deposit">Cancel</button>
-            <button class="transparent link" @onclick="AddDeposit">Confirm</button>
-        </nav>
+            <div class="field label suffix border">
+                <select @bind="_depositDto.Area">
+                    <option>A</option>
+                    <option>B</option>
+                    <option>C</option>
+                    <option>D</option>
+                    <option>E</option>
+                </select>
+                <label>Area</label>
+                <i>arrow_drop_down</i>
+            </div>
+            <div class="field label suffix border">
+                <select @bind="_depositDto.Size">
+                    <option>Small</option>
+                    <option>Medium</option>
+                    <option>Large</option>
+                </select>
+                <label>Size</label>
+                <i>arrow_drop_down</i>
+            </div>
+            <PromotionSelect @bind-Promotions="_depositDto.Promotions"/>
+            <div class="divider"></div>
+            <div class="field no-margin top-padding">
+                <label class="checkbox">
+                    <input type="checkbox" @bind="_depositDto.ClimateControl">
+                    <span>Climate Control</span>
+                </label>
+            </div>
+
+            <nav class="right-align no-space no-margin">
+                <button class="transparent link" data-ui="#add-deposit">Cancel</button>
+                <button type="submit" class="transparent link">Confirm</button>
+            </nav>
+        </form>
     </dialog>
 }

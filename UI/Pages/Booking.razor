@@ -9,7 +9,7 @@
 @inject NavigationManager NavigationManager
 
 @code {
-    private BookingDto BookingDto { get; set; } = new();
+    private BookingDto _bookingDto;
     private int? _id;
 
     [Parameter]
@@ -24,7 +24,7 @@
         if (!firstRender) return;
         try
         {
-            BookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
+            _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
         }
         catch (ArgumentException e)
         {
@@ -38,15 +38,15 @@
     private void ApproveBooking()
     {
         BookingService.ApproveBooking(Id, User.CurrentCredentials);
-        BookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
+        _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
         NotificationService.ShowMessage("Booking approved successfully.");
         StateHasChanged();
     }
 
     private void RejectBooking()
     {
-        BookingService.RejectBooking(BookingDto, User.CurrentCredentials);
-        BookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
+        BookingService.RejectBooking(_bookingDto, User.CurrentCredentials);
+        _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
         NotificationService.ShowMessage("Booking rejected successfully.");
         StateHasChanged();
     }
@@ -60,7 +60,7 @@
     <h6 class="vertical-margin">
         Booking
         <span class="circle primary center-align middle-align left-margin">@Id</span>
-        @if (User.IsAdmin && BookingDto.Stage == "Pending")
+        @if (User.IsAdmin && _bookingDto.Stage == "Pending")
         {
             <div class="absolute right">
                 <button class="extend square round primary no-margin" @onclick="ApproveBooking">
@@ -77,32 +77,58 @@
     </h6>
     <article>
         <h6 class="small padding">
-            Deposit ID:&nbsp;
-            <a href="/Deposit/@BookingDto.DepositName">
+            Deposit:&nbsp;
+            <a href="/Deposit/@_bookingDto.DepositName">
                 <i>link</i>
-                <b>@BookingDto.DepositName</b>
+                <b>@_bookingDto.DepositName</b>
             </a>
         </h6>
         <div class="divider"></div>
         @if (User.IsAdmin)
         {
-            <h6 class="small padding">Email:&nbsp; <b>@BookingDto.Email</b></h6>
+            <h6 class="small padding">Email:&nbsp; <b>@_bookingDto.Email</b></h6>
             <div class="divider"></div>
         }
-        <h6 class="small padding">From:&nbsp; <b>@BookingDto.DateFrom</b></h6>
+        <h6 class="small padding">From:&nbsp; <b>@_bookingDto.DateFrom</b></h6>
         <div class="divider"></div>
-        <h6 class="small padding">To:&nbsp; <b>@BookingDto.DateTo</b></h6>
+        <h6 class="small padding">To:&nbsp; <b>@_bookingDto.DateTo</b></h6>
         <div class="divider"></div>
-        <h6 class="small padding">Stage:&nbsp; <b>@BookingDto.Stage</b></h6>
-        @if (BookingDto.Stage == "Rejected")
+        <h6 class="small padding">Stage:&nbsp; <b>@_bookingDto.Stage</b></h6>
+        <div class="divider"></div>
+        @if (_bookingDto.Stage == "Rejected")
         {
+            <h6 class="small padding">Message:&nbsp; <b>@_bookingDto.Message</b></h6>
+        }
+    </article>
+    <h6 class="vertical-margin large-margin">
+        Payment
+        <span class="circle primary center-align middle-align left-margin"><i>payments</i></span>
+    </h6> 
+    <article>
+        @if (_bookingDto.Payment.HasValue)
+        {
+            <h6 class="small padding">Amount:&nbsp; <b>@_bookingDto.Payment.Value.Amount$</b></h6>
             <div class="divider"></div>
-            <h6 class="small padding">Message:&nbsp; <b>@BookingDto.Message</b></h6>
+            <h6 class="small padding">
+                Status:&nbsp;
+                @if (@_bookingDto.Payment.Value.Captured)
+                {
+                    <b>Captured</b>
+                }
+                else
+                {
+                    <b>Reserved</b>
+                }
+            </h6>
+        }
+        else
+        {
+            <h6 class="small padding">No payment has been made yet.</h6>
         }
     </article>
 </main>
 
-@if (User.IsAdmin && BookingDto.Stage == "Pending")
+@if (User.IsAdmin && _bookingDto.Stage == "Pending")
 {
     <div class="medium-space"></div>
     <div class="overlay blur"></div>
@@ -113,7 +139,7 @@
         </div>
         <form @onsubmit="RejectBooking">
             <div class="field label border textarea">
-                <textarea type="text" @bind="BookingDto.Message" required></textarea>
+                <textarea type="text" @bind="_bookingDto.Message" required></textarea>
                 <label>Message</label>
             </div>
             <nav class="right-align no-space no-margin">

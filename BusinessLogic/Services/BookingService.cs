@@ -61,7 +61,18 @@ public class BookingService
             DepositName = booking.Deposit.Name,
             Email = booking.Client.Email,
             Stage = booking.Stage.ToString(),
-            Message = booking.Message
+            Message = booking.Message,
+            Payment = PaymentDtoFromPayment(booking.Payment)
+        };
+    }
+
+    private static PaymentDto? PaymentDtoFromPayment(IPayment? payment)
+    {
+        if (payment == null) return null;
+        return new PaymentDto
+        {
+            Amount = payment.GetAmount(),
+            Captured = payment.IsCaptured()
         };
     }
 

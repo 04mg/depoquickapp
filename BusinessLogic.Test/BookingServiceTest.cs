@@ -501,16 +501,16 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
-        
+
         //Act
         _bookingService.GenerateReport("txt", _adminCredentials);
         _bookingService.GenerateReport("csv", _adminCredentials);
-        
+
         //Assert
         Assert.IsTrue(File.Exists("BookingsReport.txt"));
         Assert.IsTrue(File.Exists("BookingsReport.csv"));
     }
-    
+
     [TestMethod]
     public void TestCantGenerateReportIfInvalidFormat()
     {
@@ -524,17 +524,17 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
-        
+
         //Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
             _bookingService.GenerateReport("invalid", _adminCredentials);
         });
-        
+
         //Assert
         Assert.AreEqual("Invalid format. Supported formats: txt, csv.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantGenerateBookingsReportIfNotAdministrator()
     {
@@ -548,17 +548,17 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
-        
+
         //Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
         {
             _bookingService.GenerateReport("txt", _clientCredentials);
         });
-        
+
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCanCalculateBookingPrice()
     {
@@ -575,5 +575,27 @@ public class BookingServiceTest
 
         // Assert
         Assert.AreEqual(35, price);
+    }
+
+    [TestMethod]
+    public void TestPaymentIsAddedToBooking()
+    {
+        // Arrange
+        var bookingDto = new BookingDto()
+        {
+            Id = 1,
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
+            DepositName = _deposit!.Name,
+            Email = _client!.Email
+        };
+
+        // Act
+        _bookingService.AddBooking(bookingDto, _clientCredentials);
+
+        // Assert
+        var booking = _bookingService.GetAllBookings(_adminCredentials).First();
+        Assert.AreEqual(35, booking.Payment!.Value.Amount);
+        Assert.IsFalse(booking.Payment!.Value.Captured);
     }
 }
