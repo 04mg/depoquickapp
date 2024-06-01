@@ -1,5 +1,4 @@
 using BusinessLogic.Domain;
-using BusinessLogic.Enums;
 
 namespace BusinessLogic.Test;
 
@@ -28,6 +27,6 @@ public class PaymentTest
         payment.Capture();
 
         // Assert
-        Assert.AreEqual(PaymentStatus.Captured, payment.Status);
+        Assert.IsTrue(payment.IsCaptured());
     }
 }
