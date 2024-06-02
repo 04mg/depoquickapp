@@ -1,5 +1,5 @@
 using BusinessLogic.DTOs;
-using DataAccess;
+using DataAccess.Repositories;
 using Domain;
 
 namespace BusinessLogic.Services;

@@ -1,6 +1,6 @@
 using Domain;
 
-namespace DataAccess;
+namespace DataAccess.Repositories;
 
 public interface IUserRepository : IRepository<string, User>
 {

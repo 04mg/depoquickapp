@@ -1,6 +1,6 @@
 using BusinessLogic.DTOs;
 using Calculator;
-using DataAccess;
+using DataAccess.Repositories;
 using Domain;
 using ReportGenerator;
 

@@ -1,6 +1,6 @@
 using Domain;
 
-namespace DataAccess;
+namespace DataAccess.Repositories;
 
 public interface IDepositRepository : IRepository<string, Deposit>
 {

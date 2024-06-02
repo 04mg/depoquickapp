@@ -1,6 +1,8 @@
 using BusinessLogic.DTOs;
 using BusinessLogic.Services;
 using DataAccess;
+using DataAccess.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogic.Test;
 
@@ -26,12 +28,16 @@ public class UserServiceTest
         Rank = "Client"
     };
 
-    private UserService _userService = new(new UserRepository());
+    private UserService _userService = null!;
 
     [TestInitialize]
     public void Initialize()
     {
-        _userService = new UserService(new UserRepository());
+        var testsContext = new ProgramTest();
+        using var scope = testsContext.ServiceProvider.CreateScope();
+        scope.ServiceProvider.GetRequiredService<UserRepository>();
+        var userRepository = scope.ServiceProvider.GetRequiredService<UserRepository>();
+        _userService = new UserService(userRepository);
     }
 
     [TestMethod]
@@ -147,7 +153,7 @@ public class UserServiceTest
         // Assert
         Assert.AreSame(exception.Message, "There can only be one administrator.");
     }
-    
+
     [TestMethod]
     public void TestFirstUserIsAdmin()
     {

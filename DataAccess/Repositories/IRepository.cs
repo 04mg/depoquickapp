@@ -1,4 +1,4 @@
-namespace DataAccess;
+namespace DataAccess.Repositories;
 
 public interface IRepository<in TKey, TValue>
 {

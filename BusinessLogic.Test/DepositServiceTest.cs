@@ -1,7 +1,10 @@
 using BusinessLogic.DTOs;
 using BusinessLogic.Services;
 using DataAccess;
+using DataAccess.Repositories;
 using Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogic.Test;
 
@@ -15,12 +18,10 @@ public class DepositServiceTest
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
     private PromotionDto _promotionDto;
-    private DepositRepository _depositRepository = new();
-    private BookingRepository _bookingRepository = new();
-    private PromotionRepository _promotionRepository = new();
-
-    private DepositService _depositService =
-        new(new DepositRepository(), new BookingRepository(), new PromotionRepository());
+    private DepositRepository _depositRepository = null!;
+    private BookingRepository _bookingRepository = null!;
+    private PromotionRepository _promotionRepository = null!;
+    private DepositService _depositService = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -32,9 +33,12 @@ public class DepositServiceTest
 
     private void InitializeDepositService()
     {
-        _depositRepository = new DepositRepository();
-        _bookingRepository = new BookingRepository();
-        _promotionRepository = new PromotionRepository();
+        var testsContext = new ProgramTest();
+        using var scope = testsContext.ServiceProvider.CreateScope();
+        scope.ServiceProvider.GetRequiredService<IDbContextFactory<Context>>();
+        _depositRepository = scope.ServiceProvider.GetRequiredService<DepositRepository>();
+        _bookingRepository = scope.ServiceProvider.GetRequiredService<BookingRepository>();
+        _promotionRepository = scope.ServiceProvider.GetRequiredService<PromotionRepository>();
         _depositService = new DepositService(_depositRepository, _bookingRepository, _promotionRepository);
     }
 

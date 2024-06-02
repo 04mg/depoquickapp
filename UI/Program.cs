@@ -1,5 +1,5 @@
 using BusinessLogic.Services;
-using DataAccess;
+using DataAccess.Repositories;
 using UI.Data;
 
 var builder = WebApplication.CreateBuilder(args);

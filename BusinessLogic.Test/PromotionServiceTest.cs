@@ -1,7 +1,9 @@
 using BusinessLogic.DTOs;
 using BusinessLogic.Services;
 using DataAccess;
+using DataAccess.Repositories;
 using Domain;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogic.Test;
 
@@ -14,9 +16,9 @@ public class PromotionServiceTest
     private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
-    private PromotionRepository _promotionRepository = new();
-    private DepositRepository _depositRepository = new();
-    private PromotionService _promotionService = new(new PromotionRepository(), new DepositRepository());
+    private PromotionRepository _promotionRepository = null!;
+    private DepositRepository _depositRepository = null!;
+    private PromotionService _promotionService = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -27,8 +29,10 @@ public class PromotionServiceTest
 
     private void InitializePromotionService()
     {
-        _promotionRepository = new PromotionRepository();
-        _depositRepository = new DepositRepository();
+        var testsContext = new ProgramTest();
+        using var scope = testsContext.ServiceProvider.CreateScope();
+        _promotionRepository = scope.ServiceProvider.GetRequiredService<PromotionRepository>();
+        _depositRepository = scope.ServiceProvider.GetRequiredService<DepositRepository>();
         _promotionService = new PromotionService(_promotionRepository, _depositRepository);
     }
 

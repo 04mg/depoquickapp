@@ -1,7 +1,9 @@
 using BusinessLogic.DTOs;
 using BusinessLogic.Services;
 using DataAccess;
+using DataAccess.Repositories;
 using Domain;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogic.Test;
 
@@ -15,12 +17,10 @@ public class BookingServiceTest
     private Credentials _clientCredentials;
     private Credentials _otherClientCredentials;
     private Deposit? _deposit;
-    private BookingRepository _bookingRepository = new();
-    private DepositRepository _depositRepository = new();
-    private UserRepository _userRepository = new();
-
-    private BookingService _bookingService =
-        new(new BookingRepository(), new DepositRepository(), new UserRepository());
+    private BookingRepository _bookingRepository = null!;
+    private DepositRepository _depositRepository = null!;
+    private UserRepository _userRepository = null!;
+    private BookingService _bookingService = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -32,11 +32,12 @@ public class BookingServiceTest
 
     private void InitializeBookingService()
     {
-        _bookingRepository = new BookingRepository();
-        _depositRepository = new DepositRepository();
-        _userRepository = new UserRepository();
-        _bookingService =
-            new BookingService(_bookingRepository, _depositRepository, _userRepository);
+        var testsContext = new ProgramTest();
+        using var scope = testsContext.ServiceProvider.CreateScope();
+        _userRepository = scope.ServiceProvider.GetRequiredService<UserRepository>();
+        _depositRepository = scope.ServiceProvider.GetRequiredService<DepositRepository>();
+        _bookingRepository = scope.ServiceProvider.GetRequiredService<BookingRepository>();
+        _bookingService = new BookingService(_bookingRepository, _depositRepository, _userRepository);
     }
 
     private void RegisterUsers()
