@@ -1,7 +1,7 @@
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
 using BusinessLogic.Services;
+using DataAccess;
+using Domain;
 
 namespace BusinessLogic.Test;
 
@@ -75,7 +75,7 @@ public class BookingServiceTest
         var promotionList = new List<Promotion> { promotion };
 
         _deposit = new Deposit("Deposit", "A", "Small", true, promotionList);
-        _deposit.AddAvailabilityPeriod(new DateRange(DateOnly.FromDateTime(DateTime.Now),
+        _deposit.AddAvailabilityPeriod(new DateRange.DateRange(DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(100))));
         _depositRepository.Add(_deposit);
     }
@@ -420,7 +420,7 @@ public class BookingServiceTest
     {
         // Arrange
         var deposit = new Deposit("Deposit Two", "A", "Small", true, new List<Promotion>());
-        var dateRange = new DateRange(DateOnly.FromDateTime(DateTime.Now),
+        var dateRange = new DateRange.DateRange(DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         deposit.AddAvailabilityPeriod(dateRange);
         var bookingDto = new BookingDto()

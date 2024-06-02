@@ -1,7 +1,6 @@
-using BusinessLogic.Calculators;
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
+using DataAccess;
+using Domain;
 
 namespace BusinessLogic.Services;
 
@@ -50,7 +49,7 @@ public class DepositService
         };
     }
 
-    private static List<DateRangeDto> DateRangeToDto(IEnumerable<DateRange> dateRanges)
+    private static List<DateRangeDto> DateRangeToDto(IEnumerable<DateRange.DateRange> dateRanges)
     {
         return dateRanges.Select(dr => new DateRangeDto() { StartDate = dr.StartDate, EndDate = dr.EndDate }).ToList();
     }
@@ -140,8 +139,8 @@ public class DepositService
         deposit.AddAvailabilityPeriod(DateRangeFromDto(dateRange));
     }
 
-    private static DateRange DateRangeFromDto(DateRangeDto dateRangeDto)
+    private static DateRange.DateRange DateRangeFromDto(DateRangeDto dateRangeDto)
     {
-        return new DateRange(dateRangeDto.StartDate, dateRangeDto.EndDate);
+        return new DateRange.DateRange(dateRangeDto.StartDate, dateRangeDto.EndDate);
     }
 }

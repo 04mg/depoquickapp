@@ -1,6 +1,6 @@
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
+using DataAccess;
+using Domain;
 
 namespace BusinessLogic.Services;
 

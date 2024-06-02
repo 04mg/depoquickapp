@@ -1,7 +1,7 @@
-﻿using BusinessLogic.Domain;
-using BusinessLogic.DTOs;
-using BusinessLogic.Enums;
-using BusinessLogic.Repositories;
+﻿using BusinessLogic.DTOs;
+using DataAccess;
+using Domain;
+using Domain.Enums;
 
 namespace BusinessLogic.Services;
 

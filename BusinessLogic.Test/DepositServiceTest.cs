@@ -1,7 +1,7 @@
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
 using BusinessLogic.Services;
+using DataAccess;
+using Domain;
 
 namespace BusinessLogic.Test;
 
@@ -217,7 +217,7 @@ public class DepositServiceTest
             ClimateControl = ClimateControl,
             Promotions = new List<PromotionDto>() { _promotionDto }
         };
-        var dateRange = new DateRange(DateOnly.FromDateTime(DateTime.Now),
+        var dateRange = new DateRange.DateRange(DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         var dateRangeDto = new DateRangeDto
         {
