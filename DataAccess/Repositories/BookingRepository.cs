@@ -15,6 +15,8 @@ public class BookingRepository : IBookingRepository
     public void Add(Booking booking)
     {
         using var context = _contextFactory.CreateDbContext();
+        context.Attach(booking.Deposit);
+        context.Attach(booking.Client);
         context.Bookings.Add(booking);
         context.SaveChanges();
     }
@@ -35,5 +37,12 @@ public class BookingRepository : IBookingRepository
     {
         using var context = _contextFactory.CreateDbContext();
         return context.Bookings.ToList();
+    }
+    
+    public void Update(Booking booking)
+    {
+        using var context = _contextFactory.CreateDbContext();
+        context.Bookings.Update(booking);
+        context.SaveChanges();
     }
 }

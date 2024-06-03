@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Domain.Enums;
 
@@ -14,6 +15,10 @@ public class User
     private string _nameSurname = "";
     private string _password = "";
 
+    public User()
+    {
+    }
+
     public User(string nameSurname, string email, string password, string rank = "Client")
     {
         NameSurname = nameSurname;
@@ -23,7 +28,7 @@ public class User
         Rank = Enum.Parse<UserRank>(rank);
     }
 
-
+    [Key]
     public string Email
     {
         get => _email;
@@ -32,7 +37,7 @@ public class User
             value = value.ToLower();
             EnsureEmailIsValidFormat(value);
             EnsureEmailHasValidLength(value);
-            _email = value; 
+            _email = value;
         }
     }
 

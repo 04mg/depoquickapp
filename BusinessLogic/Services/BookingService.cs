@@ -31,6 +31,7 @@ public class BookingService
 
     private Booking BookingFromDto(BookingDto bookingDto)
     {
+        
         return new Booking(bookingDto.Id, _depositRepository.Get(bookingDto.DepositName),
             _userRepository.Get(bookingDto.Email),
             bookingDto.DateFrom, bookingDto.DateTo, new Payment(CalculateBookingPrice(bookingDto)));
@@ -57,8 +58,8 @@ public class BookingService
         return new BookingDto
         {
             Id = booking.Id,
-            DateFrom = booking.Duration.Item1,
-            DateTo = booking.Duration.Item2,
+            DateFrom = booking.Duration.StartDate,
+            DateTo = booking.Duration.EndDate,
             DepositName = booking.Deposit.Name,
             Email = booking.Client.Email,
             Stage = booking.Stage.ToString(),
@@ -107,6 +108,7 @@ public class BookingService
         EnsureBookingExists(id);
         var booking = _bookingRepository.Get(id);
         booking.Approve();
+        _bookingRepository.Update(booking);
     }
 
     public void RejectBooking(BookingDto bookingDto, Credentials credentials)
@@ -116,6 +118,7 @@ public class BookingService
         EnsureBookingExists(bookingDto.Id);
         var booking = _bookingRepository.Get(bookingDto.Id);
         booking.Reject(bookingDto.Message);
+        _bookingRepository.Update(booking);
     }
 
     private static void EnsureMessageIsNotEmpty(string message)

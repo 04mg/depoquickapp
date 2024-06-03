@@ -39,13 +39,10 @@ public class PromotionRepository : IPromotionRepository
         return context.Promotions.ToList();
     }
 
-    public void Modify(int id, Promotion newPromotion)
+    public void Update(Promotion promotion)
     {
         using var context = _contextFactory.CreateDbContext();
-        var promotion = Get(id);
-        promotion.Label = newPromotion.Label;
-        promotion.Discount = newPromotion.Discount;
-        promotion.Validity = newPromotion.Validity;
+        context.Promotions.Update(promotion);
         context.SaveChanges();
     }
 

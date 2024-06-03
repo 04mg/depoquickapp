@@ -20,6 +20,7 @@ public class BookingServiceTest
     private BookingRepository _bookingRepository = null!;
     private DepositRepository _depositRepository = null!;
     private UserRepository _userRepository = null!;
+    private PromotionRepository _promotionRepository = null!;
     private BookingService _bookingService = null!;
 
     [TestInitialize]
@@ -37,6 +38,7 @@ public class BookingServiceTest
         _userRepository = scope.ServiceProvider.GetRequiredService<UserRepository>();
         _depositRepository = scope.ServiceProvider.GetRequiredService<DepositRepository>();
         _bookingRepository = scope.ServiceProvider.GetRequiredService<BookingRepository>();
+        _promotionRepository = scope.ServiceProvider.GetRequiredService<PromotionRepository>();
         _bookingService = new BookingService(_bookingRepository, _depositRepository, _userRepository);
     }
 
@@ -74,6 +76,7 @@ public class BookingServiceTest
         var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         var promotionList = new List<Promotion> { promotion };
+        _promotionRepository.Add(promotion);
 
         _deposit = new Deposit("Deposit", "A", "Small", true, promotionList);
         _deposit.AddAvailabilityPeriod(new DateRange.DateRange(DateOnly.FromDateTime(DateTime.Now),
@@ -595,8 +598,9 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _clientCredentials);
 
         // Assert
-        var booking = _bookingService.GetAllBookings(_adminCredentials).First();
-        Assert.AreEqual(35, booking.Payment!.Value.Amount);
+        var booking = _bookingService.GetBooking(1, _clientCredentials);
+        _bookingService.ApproveBooking(1, _adminCredentials);
         Assert.IsFalse(booking.Payment!.Value.Captured);
+        Assert.AreEqual(35, booking.Payment!.Value.Amount);
     }
 }

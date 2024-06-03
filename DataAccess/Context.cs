@@ -24,4 +24,17 @@ public class Context : DbContext
         else
             Database.Migrate();
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var navigation in entityType.GetNavigations())
+            {
+                navigation.SetIsEagerLoaded(true);
+            }
+        }
+
+        base.OnModelCreating(modelBuilder);
+    }
 }

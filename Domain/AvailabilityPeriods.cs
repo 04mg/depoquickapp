@@ -2,8 +2,15 @@ namespace Domain;
 
 public class AvailabilityPeriods
 {
-    public List<DateRange.DateRange> AvailablePeriods { get;} = new();
-    public List<DateRange.DateRange> UnavailablePeriods { get;} = new();
+    public int Id { get; set; }
+    public List<DateRange.DateRange> AvailablePeriods { get; set; }
+    public List<DateRange.DateRange> UnavailablePeriods { get; set; }
+
+    public AvailabilityPeriods()
+    {
+        AvailablePeriods = new List<DateRange.DateRange>();
+        UnavailablePeriods = new List<DateRange.DateRange>();
+    }
 
     public void AddAvailabilityPeriod(DateRange.DateRange newPeriod)
     {
@@ -14,11 +21,13 @@ public class AvailabilityPeriods
             if (period.IsOverlapped(newPeriod))
             {
                 MergeOverlappingPeriod(newPeriod);
-            } else if (period.IsAdjacent(newPeriod))
+            }
+            else if (period.IsAdjacent(newPeriod))
             {
                 MergeAdjacentPeriod(newPeriod);
             }
         }
+
         AvailablePeriods.Add(newPeriod);
     }
 
@@ -26,7 +35,8 @@ public class AvailabilityPeriods
     {
         if (!UnavailablePeriods.Any(newPeriod.IsOverlapped)) return;
         var overlappingPeriod = UnavailablePeriods.First(newPeriod.IsOverlapped);
-        throw new ArgumentException($"The availability period overlaps with an already booked period from {overlappingPeriod.StartDate} to {overlappingPeriod.EndDate}.");
+        throw new ArgumentException(
+            $"The availability period overlaps with an already booked period from {overlappingPeriod.StartDate} to {overlappingPeriod.EndDate}.");
     }
 
     private void MergeOverlappingPeriod(DateRange.DateRange newPeriod)
@@ -35,7 +45,7 @@ public class AvailabilityPeriods
         newPeriod.Merge(overlappingPeriod);
         AvailablePeriods.Remove(overlappingPeriod);
     }
-    
+
     private void MergeAdjacentPeriod(DateRange.DateRange newPeriod)
     {
         var overlappingPeriod = AvailablePeriods.First(p => p.IsAdjacent(newPeriod));

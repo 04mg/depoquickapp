@@ -95,6 +95,7 @@ public class PromotionServiceTest
         _promotionService.AddPromotion(promotionDto, _adminCredentials);
         var modifiedPromotionDto = new PromotionDto()
         {
+            Id = 1,
             Label = "new label",
             Discount = 20,
             DateFrom = DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
@@ -102,10 +103,10 @@ public class PromotionServiceTest
         };
 
         // Act
-        _promotionService.ModifyPromotion(1, modifiedPromotionDto, _adminCredentials);
+        _promotionService.ModifyPromotion(modifiedPromotionDto, _adminCredentials);
 
         // Assert
-        Assert.IsFalse(_promotionService.GetAllPromotions(_adminCredentials).Contains(modifiedPromotionDto));
+        Assert.IsTrue(_promotionService.GetPromotion(1).Label == "new label");
     }
 
     [TestMethod]
@@ -165,6 +166,7 @@ public class PromotionServiceTest
         _promotionService.AddPromotion(promotionDto, _adminCredentials);
         var modifiedPromotionDto = new PromotionDto()
         {
+            Id = 1,
             Label = "new label",
             Discount = 20,
             DateFrom = DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
@@ -174,7 +176,7 @@ public class PromotionServiceTest
         // Act
         var exception =
             Assert.ThrowsException<UnauthorizedAccessException>(() =>
-                _promotionService.ModifyPromotion(1, modifiedPromotionDto, _clientCredentials));
+                _promotionService.ModifyPromotion(modifiedPromotionDto, _clientCredentials));
 
         // Assert
         Assert.AreEqual("Only administrators can manage promotions.", exception.Message);
@@ -186,6 +188,7 @@ public class PromotionServiceTest
         // Arrange
         var modifiedPromotionDto = new PromotionDto()
         {
+            Id = 1,
             Label = "new label",
             Discount = 20,
             DateFrom = DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
@@ -195,7 +198,7 @@ public class PromotionServiceTest
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>
-                _promotionService.ModifyPromotion(1, modifiedPromotionDto, _adminCredentials));
+                _promotionService.ModifyPromotion(modifiedPromotionDto, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);

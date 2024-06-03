@@ -47,7 +47,7 @@ public class BookingTest
                 new Booking(1, _deposit, Client, Tomorrow, Today, _payment));
 
         // Assert
-        Assert.AreEqual("The starting date of the booking must not be later than the ending date.",
+        Assert.AreEqual("Date range is invalid.",
             exception.Message);
     }
 

@@ -21,6 +21,7 @@ public class DepositServiceTest
     private DepositRepository _depositRepository = null!;
     private BookingRepository _bookingRepository = null!;
     private PromotionRepository _promotionRepository = null!;
+    private UserRepository _userRepository = null!;
     private DepositService _depositService = null!;
 
     [TestInitialize]
@@ -39,6 +40,7 @@ public class DepositServiceTest
         _depositRepository = scope.ServiceProvider.GetRequiredService<DepositRepository>();
         _bookingRepository = scope.ServiceProvider.GetRequiredService<BookingRepository>();
         _promotionRepository = scope.ServiceProvider.GetRequiredService<PromotionRepository>();
+        _userRepository = scope.ServiceProvider.GetRequiredService<UserRepository>();
         _depositService = new DepositService(_depositRepository, _bookingRepository, _promotionRepository);
     }
 
@@ -57,8 +59,8 @@ public class DepositServiceTest
             Id = 1,
             Label = promotion.Label,
             Discount = promotion.Discount,
-            DateFrom = promotion.Validity.Item1,
-            DateTo = promotion.Validity.Item2
+            DateFrom = promotion.Validity.StartDate,
+            DateTo = promotion.Validity.EndDate
         };
 
         _promotionRepository.Add(promotion);
@@ -236,10 +238,10 @@ public class DepositServiceTest
             "client@client.com",
             "12345678@mE"
         );
+        _userRepository.Add(client);
         var booking = new Booking(1, deposit, client, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new Payment(50));
         _bookingRepository.Add(booking);
-
 
         // Act
         var exception =

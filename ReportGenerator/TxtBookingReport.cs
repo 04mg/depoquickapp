@@ -8,9 +8,9 @@ public class TxtBookingReport : IBookingReport
     public string GenerateReportContent(Booking booking)
     {
         return $"{booking.Deposit.Name}\t" +
-               $"{booking.Duration.Item1}-{booking.Duration.Item2}\t" +
+               $"{booking.Duration.StartDate}-{booking.Duration.EndDate}\t" +
                $"{booking.Client.Email}\t" +
-               $"{new PriceCalculator().CalculatePrice(booking.Deposit, booking.Duration.Item1, booking.Duration.Item2)}$\t" +
+               $"{new PriceCalculator().CalculatePrice(booking.Deposit, booking.Duration.StartDate, booking.Duration.EndDate)}$\t" +
                $"{(booking.Deposit.Promotions.Count > 0 ? "Yes" : "No")}\n";
     }
 

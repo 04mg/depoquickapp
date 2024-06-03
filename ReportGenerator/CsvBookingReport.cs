@@ -9,9 +9,9 @@ public class CsvBookingReport : IBookingReport
     {
         return $"{booking.Deposit.Name}," +
                $"{booking.Client.Email}," +
-               $"{booking.Duration.Item1:yyyy-MM-dd}," +
-               $"{booking.Duration.Item2:yyyy-MM-dd}," +
-               $"{new PriceCalculator().CalculatePrice(booking.Deposit, booking.Duration.Item1, booking.Duration.Item2)}$," +
+               $"{booking.Duration.StartDate:yyyy-MM-dd}," +
+               $"{booking.Duration.EndDate:yyyy-MM-dd}," +
+               $"{new PriceCalculator().CalculatePrice(booking.Deposit, booking.Duration.StartDate, booking.Duration.EndDate)}$," +
                $"{(booking.Deposit.Promotions.Count > 0 ? "Yes" : "No")}\n";
     }
     

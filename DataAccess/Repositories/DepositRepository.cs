@@ -15,6 +15,7 @@ public class DepositRepository : IDepositRepository
     public void Add(Deposit deposit)
     {
         using var context = _contextFactory.CreateDbContext();
+        context.AttachRange(deposit.Promotions);
         context.Deposits.Add(deposit);
         context.SaveChanges();
     }
@@ -22,14 +23,14 @@ public class DepositRepository : IDepositRepository
     public Deposit Get(string name)
     {
         using var context = _contextFactory.CreateDbContext();
-        return context.Deposits.First(d => string.Equals(d.Name, name, StringComparison.CurrentCultureIgnoreCase));
+        return context.Deposits.First(d => string.Equals(d.Name.ToUpper(), name.ToUpper()));
     }
 
     public void Delete(string name)
     {
         using var context = _contextFactory.CreateDbContext();
         var deposit =
-            context.Deposits.First(d => string.Equals(d.Name, name, StringComparison.CurrentCultureIgnoreCase));
+            context.Deposits.First(d => string.Equals(d.Name.ToUpper(), name.ToUpper()));
         context.Deposits.Remove(deposit);
         context.SaveChanges();
     }
@@ -43,6 +44,6 @@ public class DepositRepository : IDepositRepository
     public bool Exists(string name)
     {
         using var context = _contextFactory.CreateDbContext();
-        return context.Deposits.Any(d => string.Equals(d.Name, name, StringComparison.CurrentCultureIgnoreCase));
+        return context.Deposits.Any(d => string.Equals(d.Name.ToUpper(), name.ToUpper()));
     }
 }

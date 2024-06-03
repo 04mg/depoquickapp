@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Domain.Enums;
 
 namespace Domain;
@@ -7,6 +8,10 @@ public class Deposit
     private readonly string _area = "";
     private readonly string _size = "";
     private readonly string _name = "";
+
+    public Deposit()
+    {
+    }
 
     public Deposit(string name, string area, string size, bool climateControl, List<Promotion> promotions)
     {
@@ -18,10 +23,11 @@ public class Deposit
         AvailabilityPeriods = new AvailabilityPeriods();
     }
 
-    private AvailabilityPeriods AvailabilityPeriods { get;}
+    public AvailabilityPeriods AvailabilityPeriods { get; set; }
     public bool ClimateControl { get; set; }
     public List<Promotion> Promotions { get; set; }
 
+    [Key]
     public string Name
     {
         get => _name;
@@ -94,7 +100,7 @@ public class Deposit
     {
         AvailabilityPeriods.RemoveAvailabilityPeriod(dateRange);
     }
-    
+
     public List<DateRange.DateRange> GetAvailablePeriods()
     {
         return AvailabilityPeriods.AvailablePeriods;

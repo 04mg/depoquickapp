@@ -50,7 +50,7 @@ public class PromotionTest
             Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, Discount, _tomorrow, _today));
 
         // Assert
-        Assert.AreEqual("The starting date of the promotion must not be later than the ending date.",
+        Assert.AreEqual("Date range is invalid.",
             exception.Message);
     }
 

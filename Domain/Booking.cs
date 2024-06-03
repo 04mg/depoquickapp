@@ -4,48 +4,53 @@ namespace Domain;
 
 public class Booking
 {
-    private readonly Tuple<DateOnly, DateOnly> _duration = new(new DateOnly(), new DateOnly());
+    private readonly DateRange.DateRange _duration = new(new DateOnly(), new DateOnly());
 
-    public Booking(int id, Deposit deposit, User client, DateOnly dateFrom, DateOnly dateTo, IPayment payment)
+    public Booking()
+    {
+    }
+
+    public Booking(int id, Deposit deposit, User client, DateOnly startDate, DateOnly dateTo, Payment payment)
     {
         Id = id;
         Deposit = deposit;
         Client = client;
-        Duration = new Tuple<DateOnly, DateOnly>(dateFrom, dateTo);
+        Duration = new DateRange.DateRange(startDate, dateTo);
         Payment = payment;
         EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit, Duration);
         MakeDurationUnavailable(_duration);
     }
 
-    private void MakeDurationUnavailable(Tuple<DateOnly, DateOnly> duration)
+    private void MakeDurationUnavailable(DateRange.DateRange duration)
     {
-        var dateRange = new DateRange.DateRange(duration.Item1, duration.Item2);
+        var dateRange = new DateRange.DateRange(duration.StartDate, duration.EndDate);
         Deposit.MakeUnavailable(dateRange);
     }
 
-    public int Id { get; set; }
-    public Deposit Deposit { get; }
-    public User Client { get; }
-    public string Message { get; private set; } = "";
-    public BookingStage Stage { get; private set; } = BookingStage.Pending;
-    public IPayment? Payment { get; private set; }
+    public int Id { get; init; }
+    public int DepositId { get; set; }
+    public Deposit Deposit { get; set; }
+    public int ClientId { get; set; }
+    public User Client { get; set; }
+    public string Message { get; set; } = "";
+    public BookingStage Stage { get; set; } = BookingStage.Pending;
+    public Payment? Payment { get; set; }
 
-    public Tuple<DateOnly, DateOnly> Duration
+    public DateRange.DateRange Duration
     {
         get => _duration;
         private init
         {
-            EnsureDateFromIsLesserThanDateTo(value.Item1, value.Item2);
-            EnsureDateFromIsNotEqualToDateTo(value.Item1, value.Item2);
-            EnsureDateFromIsGreaterThanToday(value.Item1);
+            EnsureDateFromIsLesserThanDateTo(value.StartDate, value.EndDate);
+            EnsureDateFromIsNotEqualToDateTo(value.StartDate, value.EndDate);
+            EnsureDateFromIsGreaterThanToday(value.StartDate);
             _duration = value;
         }
     }
 
     private static void EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit deposit,
-        Tuple<DateOnly, DateOnly> duration)
+        DateRange.DateRange dateRange)
     {
-        var dateRange = new DateRange.DateRange(duration.Item1, duration.Item2);
         if (!deposit.IsAvailable(dateRange))
         {
             throw new ArgumentException(
@@ -53,21 +58,21 @@ public class Booking
         }
     }
 
-    private static void EnsureDateFromIsNotEqualToDateTo(DateOnly dateFrom, DateOnly dateTo)
+    private static void EnsureDateFromIsNotEqualToDateTo(DateOnly startDate, DateOnly dateTo)
     {
-        if (dateFrom == dateTo)
+        if (startDate == dateTo)
             throw new ArgumentException("The starting date of the booking must not be the same as the ending date.");
     }
 
-    private static void EnsureDateFromIsLesserThanDateTo(DateOnly dateFrom, DateOnly dateTo)
+    private static void EnsureDateFromIsLesserThanDateTo(DateOnly startDate, DateOnly dateTo)
     {
-        if (dateFrom > dateTo)
+        if (startDate > dateTo)
             throw new ArgumentException("The starting date of the booking must not be later than the ending date.");
     }
 
-    private static void EnsureDateFromIsGreaterThanToday(DateOnly dateFrom)
+    private static void EnsureDateFromIsGreaterThanToday(DateOnly startDate)
     {
-        if (dateFrom < DateOnly.FromDateTime(DateTime.Now))
+        if (startDate < DateOnly.FromDateTime(DateTime.Now))
             throw new ArgumentException("The starting date of the booking must not be earlier than today.");
     }
 
@@ -85,9 +90,9 @@ public class Booking
         Payment = null;
     }
 
-    private void MakeDurationAvailable(Tuple<DateOnly, DateOnly> duration)
+    private void MakeDurationAvailable(DateRange.DateRange duration)
     {
-        var dateRange = new DateRange.DateRange(duration.Item1, duration.Item2);
+        var dateRange = new DateRange.DateRange(duration.StartDate, duration.EndDate);
         Deposit.MakeAvailable(dateRange);
     }
 

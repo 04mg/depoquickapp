@@ -61,8 +61,8 @@ public class DepositService
             Id = promotion.Id,
             Label = promotion.Label,
             Discount = promotion.Discount,
-            DateFrom = promotion.Validity.Item1,
-            DateTo = promotion.Validity.Item2
+            DateFrom = promotion.Validity.StartDate,
+            DateTo = promotion.Validity.EndDate
         };
     }
 
