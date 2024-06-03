@@ -15,7 +15,6 @@ builder.Services.AddDbContextFactory<Context>(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         providerOptions => providerOptions.EnableRetryOnFailure())
 );
-
 builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
 builder.Services.AddSingleton<IDepositRepository, DepositRepository>();
 builder.Services.AddSingleton<IPromotionRepository, PromotionRepository>();
