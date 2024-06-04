@@ -6,21 +6,23 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AvailabilityPeriods",
+                name: "Deposits",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1")
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ClimateControl = table.Column<bool>(type: "bit", nullable: false),
+                    Area = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Size = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AvailabilityPeriods", x => x.Id);
+                    table.PrimaryKey("PK_Deposits", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,50 +54,68 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DateRange",
+                name: "Deposits_AvailablePeriods",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    AvailabilityPeriodsDepositName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "date", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "date", nullable: false),
-                    AvailabilityPeriodsId = table.Column<int>(type: "int", nullable: true),
-                    AvailabilityPeriodsId1 = table.Column<int>(type: "int", nullable: true)
+                    EndDate = table.Column<DateTime>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DateRange", x => x.Id);
+                    table.PrimaryKey("PK_Deposits_AvailablePeriods", x => new { x.AvailabilityPeriodsDepositName, x.Id });
                     table.ForeignKey(
-                        name: "FK_DateRange_AvailabilityPeriods_AvailabilityPeriodsId",
-                        column: x => x.AvailabilityPeriodsId,
-                        principalTable: "AvailabilityPeriods",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_DateRange_AvailabilityPeriods_AvailabilityPeriodsId1",
-                        column: x => x.AvailabilityPeriodsId1,
-                        principalTable: "AvailabilityPeriods",
-                        principalColumn: "Id");
+                        name: "FK_Deposits_AvailablePeriods_Deposits_AvailabilityPeriodsDepositName",
+                        column: x => x.AvailabilityPeriodsDepositName,
+                        principalTable: "Deposits",
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Deposits",
+                name: "Deposits_UnavailablePeriods",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AvailabilityPeriodsId = table.Column<int>(type: "int", nullable: false),
-                    ClimateControl = table.Column<bool>(type: "bit", nullable: false),
-                    Area = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Size = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AvailabilityPeriodsDepositName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "date", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Deposits", x => x.Name);
+                    table.PrimaryKey("PK_Deposits_UnavailablePeriods", x => new { x.AvailabilityPeriodsDepositName, x.Id });
                     table.ForeignKey(
-                        name: "FK_Deposits_AvailabilityPeriods_AvailabilityPeriodsId",
-                        column: x => x.AvailabilityPeriodsId,
-                        principalTable: "AvailabilityPeriods",
-                        principalColumn: "Id",
+                        name: "FK_Deposits_UnavailablePeriods_Deposits_AvailabilityPeriodsDepositName",
+                        column: x => x.AvailabilityPeriodsDepositName,
+                        principalTable: "Deposits",
+                        principalColumn: "Name",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Promotions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Label = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Validity_Id = table.Column<int>(type: "int", nullable: false),
+                    Validity_StartDate = table.Column<DateTime>(type: "date", nullable: false),
+                    Validity_EndDate = table.Column<DateTime>(type: "date", nullable: false),
+                    Discount = table.Column<int>(type: "int", nullable: false),
+                    DepositName = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Promotions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Promotions_Deposits_DepositName",
+                        column: x => x.DepositName,
+                        principalTable: "Deposits",
+                        principalColumn: "Name");
                 });
 
             migrationBuilder.CreateTable(
@@ -111,17 +131,13 @@ namespace DataAccess.Migrations
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Stage = table.Column<int>(type: "int", nullable: false),
                     PaymentId = table.Column<int>(type: "int", nullable: true),
-                    DurationId = table.Column<int>(type: "int", nullable: false)
+                    Duration_Id = table.Column<int>(type: "int", nullable: false),
+                    Duration_StartDate = table.Column<DateTime>(type: "date", nullable: false),
+                    Duration_EndDate = table.Column<DateTime>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Bookings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Bookings_DateRange_DurationId",
-                        column: x => x.DurationId,
-                        principalTable: "DateRange",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Bookings_Deposits_DepositName",
                         column: x => x.DepositName,
@@ -141,33 +157,6 @@ namespace DataAccess.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Promotions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Label = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ValidityId = table.Column<int>(type: "int", nullable: false),
-                    Discount = table.Column<int>(type: "int", nullable: false),
-                    DepositName = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Promotions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Promotions_DateRange_ValidityId",
-                        column: x => x.ValidityId,
-                        principalTable: "DateRange",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Promotions_Deposits_DepositName",
-                        column: x => x.DepositName,
-                        principalTable: "Deposits",
-                        principalColumn: "Name");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_ClientEmail",
                 table: "Bookings",
@@ -179,39 +168,14 @@ namespace DataAccess.Migrations
                 column: "DepositName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Bookings_DurationId",
-                table: "Bookings",
-                column: "DurationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Bookings_PaymentId",
                 table: "Bookings",
                 column: "PaymentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DateRange_AvailabilityPeriodsId",
-                table: "DateRange",
-                column: "AvailabilityPeriodsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DateRange_AvailabilityPeriodsId1",
-                table: "DateRange",
-                column: "AvailabilityPeriodsId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Deposits_AvailabilityPeriodsId",
-                table: "Deposits",
-                column: "AvailabilityPeriodsId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Promotions_DepositName",
                 table: "Promotions",
                 column: "DepositName");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Promotions_ValidityId",
-                table: "Promotions",
-                column: "ValidityId");
         }
 
         /// <inheritdoc />
@@ -219,6 +183,12 @@ namespace DataAccess.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Bookings");
+
+            migrationBuilder.DropTable(
+                name: "Deposits_AvailablePeriods");
+
+            migrationBuilder.DropTable(
+                name: "Deposits_UnavailablePeriods");
 
             migrationBuilder.DropTable(
                 name: "Promotions");
@@ -230,13 +200,7 @@ namespace DataAccess.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "DateRange");
-
-            migrationBuilder.DropTable(
                 name: "Deposits");
-
-            migrationBuilder.DropTable(
-                name: "AvailabilityPeriods");
         }
     }
 }

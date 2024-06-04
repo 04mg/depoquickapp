@@ -2,7 +2,6 @@ namespace Domain;
 
 public class AvailabilityPeriods
 {
-    public int Id { get; set; }
     public List<DateRange.DateRange> AvailablePeriods { get; set; }
     public List<DateRange.DateRange> UnavailablePeriods { get; set; }
 

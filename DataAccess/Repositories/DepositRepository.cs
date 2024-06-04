@@ -46,4 +46,16 @@ public class DepositRepository : IDepositRepository
         using var context = _contextFactory.CreateDbContext();
         return context.Deposits.Any(d => string.Equals(d.Name.ToUpper(), name.ToUpper()));
     }
+
+    public void Update(Deposit deposit)
+    {
+        using var context = _contextFactory.CreateDbContext();
+        var oldDeposit = context.Deposits.Include(d => d.AvailabilityPeriods)
+            .First(d => string.Equals(d.Name.ToUpper(), deposit.Name.ToUpper()));
+        context.Entry(oldDeposit).CurrentValues.SetValues(deposit);
+        context.Entry(oldDeposit).Collection(d => d.Promotions).CurrentValue = deposit.Promotions;
+        context.Entry(oldDeposit).Reference(d => d.AvailabilityPeriods).CurrentValue = deposit.AvailabilityPeriods;
+        context.Update(oldDeposit);
+        context.SaveChanges();
+    }
 }

@@ -36,6 +36,20 @@ public class Context : DbContext
             }
         }
 
+        modelBuilder.Entity<Deposit>()
+            .OwnsOne(d => d.AvailabilityPeriods)
+            .OwnsMany(a => a.AvailablePeriods);
+
+        modelBuilder.Entity<Deposit>()
+            .OwnsOne(d => d.AvailabilityPeriods)
+            .OwnsMany(a => a.UnavailablePeriods);
+
+        modelBuilder.Entity<Promotion>()
+            .OwnsOne(p => p.Validity);
+
+        modelBuilder.Entity<Booking>()
+            .OwnsOne(b => b.Duration);
+
         base.OnModelCreating(modelBuilder);
     }
 

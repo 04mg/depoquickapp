@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20240603160043_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20240604185800_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,48 +24,6 @@ namespace DataAccess.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("DateRange.DateRange", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AvailabilityPeriodsId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("AvailabilityPeriodsId1")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("date");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("date");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AvailabilityPeriodsId");
-
-                    b.HasIndex("AvailabilityPeriodsId1");
-
-                    b.ToTable("DateRange");
-                });
-
-            modelBuilder.Entity("Domain.AvailabilityPeriods", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AvailabilityPeriods");
-                });
 
             modelBuilder.Entity("Domain.Booking", b =>
                 {
@@ -89,9 +47,6 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("DurationId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -108,8 +63,6 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("DepositName");
 
-                    b.HasIndex("DurationId");
-
                     b.HasIndex("PaymentId");
 
                     b.ToTable("Bookings");
@@ -124,9 +77,6 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("AvailabilityPeriodsId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("ClimateControl")
                         .HasColumnType("bit");
 
@@ -135,8 +85,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Name");
-
-                    b.HasIndex("AvailabilityPeriodsId");
 
                     b.ToTable("Deposits");
                 });
@@ -178,14 +126,9 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ValidityId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DepositName");
-
-                    b.HasIndex("ValidityId");
 
                     b.ToTable("Promotions");
                 });
@@ -211,17 +154,6 @@ namespace DataAccess.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("DateRange.DateRange", b =>
-                {
-                    b.HasOne("Domain.AvailabilityPeriods", null)
-                        .WithMany("AvailablePeriods")
-                        .HasForeignKey("AvailabilityPeriodsId");
-
-                    b.HasOne("Domain.AvailabilityPeriods", null)
-                        .WithMany("UnavailablePeriods")
-                        .HasForeignKey("AvailabilityPeriodsId1");
-                });
-
             modelBuilder.Entity("Domain.Booking", b =>
                 {
                     b.HasOne("Domain.User", "Client")
@@ -236,34 +168,113 @@ namespace DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DateRange.DateRange", "Duration")
-                        .WithMany()
-                        .HasForeignKey("DurationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Payment", "Payment")
                         .WithMany()
                         .HasForeignKey("PaymentId");
+
+                    b.OwnsOne("DateRange.DateRange", "Duration", b1 =>
+                        {
+                            b1.Property<int>("BookingId")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime>("EndDate")
+                                .HasColumnType("date");
+
+                            b1.Property<int>("Id")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime>("StartDate")
+                                .HasColumnType("date");
+
+                            b1.HasKey("BookingId");
+
+                            b1.ToTable("Bookings");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BookingId");
+                        });
 
                     b.Navigation("Client");
 
                     b.Navigation("Deposit");
 
-                    b.Navigation("Duration");
+                    b.Navigation("Duration")
+                        .IsRequired();
 
                     b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("Domain.Deposit", b =>
                 {
-                    b.HasOne("Domain.AvailabilityPeriods", "AvailabilityPeriods")
-                        .WithMany()
-                        .HasForeignKey("AvailabilityPeriodsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.OwnsOne("Domain.AvailabilityPeriods", "AvailabilityPeriods", b1 =>
+                        {
+                            b1.Property<string>("DepositName")
+                                .HasColumnType("nvarchar(450)");
 
-                    b.Navigation("AvailabilityPeriods");
+                            b1.HasKey("DepositName");
+
+                            b1.ToTable("Deposits");
+
+                            b1.WithOwner()
+                                .HasForeignKey("DepositName");
+
+                            b1.OwnsMany("DateRange.DateRange", "AvailablePeriods", b2 =>
+                                {
+                                    b2.Property<string>("AvailabilityPeriodsDepositName")
+                                        .HasColumnType("nvarchar(450)");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("int");
+
+                                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b2.Property<int>("Id"));
+
+                                    b2.Property<DateTime>("EndDate")
+                                        .HasColumnType("date");
+
+                                    b2.Property<DateTime>("StartDate")
+                                        .HasColumnType("date");
+
+                                    b2.HasKey("AvailabilityPeriodsDepositName", "Id");
+
+                                    b2.ToTable("Deposits_AvailablePeriods");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("AvailabilityPeriodsDepositName");
+                                });
+
+                            b1.OwnsMany("DateRange.DateRange", "UnavailablePeriods", b2 =>
+                                {
+                                    b2.Property<string>("AvailabilityPeriodsDepositName")
+                                        .HasColumnType("nvarchar(450)");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("int");
+
+                                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b2.Property<int>("Id"));
+
+                                    b2.Property<DateTime>("EndDate")
+                                        .HasColumnType("date");
+
+                                    b2.Property<DateTime>("StartDate")
+                                        .HasColumnType("date");
+
+                                    b2.HasKey("AvailabilityPeriodsDepositName", "Id");
+
+                                    b2.ToTable("Deposits_UnavailablePeriods");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("AvailabilityPeriodsDepositName");
+                                });
+
+                            b1.Navigation("AvailablePeriods");
+
+                            b1.Navigation("UnavailablePeriods");
+                        });
+
+                    b.Navigation("AvailabilityPeriods")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Promotion", b =>
@@ -272,20 +283,30 @@ namespace DataAccess.Migrations
                         .WithMany("Promotions")
                         .HasForeignKey("DepositName");
 
-                    b.HasOne("DateRange.DateRange", "Validity")
-                        .WithMany()
-                        .HasForeignKey("ValidityId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.OwnsOne("DateRange.DateRange", "Validity", b1 =>
+                        {
+                            b1.Property<int>("PromotionId")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime>("EndDate")
+                                .HasColumnType("date");
+
+                            b1.Property<int>("Id")
+                                .HasColumnType("int");
+
+                            b1.Property<DateTime>("StartDate")
+                                .HasColumnType("date");
+
+                            b1.HasKey("PromotionId");
+
+                            b1.ToTable("Promotions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PromotionId");
+                        });
+
+                    b.Navigation("Validity")
                         .IsRequired();
-
-                    b.Navigation("Validity");
-                });
-
-            modelBuilder.Entity("Domain.AvailabilityPeriods", b =>
-                {
-                    b.Navigation("AvailablePeriods");
-
-                    b.Navigation("UnavailablePeriods");
                 });
 
             modelBuilder.Entity("Domain.Deposit", b =>

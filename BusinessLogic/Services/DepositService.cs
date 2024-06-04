@@ -137,6 +137,7 @@ public class DepositService
         EnsureDepositExists(depositName);
         var deposit = _depositRepository.Get(depositName);
         deposit.AddAvailabilityPeriod(DateRangeFromDto(dateRange));
+        _depositRepository.Update(deposit);
     }
 
     private static DateRange.DateRange DateRangeFromDto(DateRangeDto dateRangeDto)
