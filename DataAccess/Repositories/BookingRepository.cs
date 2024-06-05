@@ -36,22 +36,43 @@ public class BookingRepository : IBookingRepository
 
     public bool Exists(int id)
     {
-        using var context = _contextFactory.CreateDbContext();
-        return context.Bookings.Any(b => b.Id == id);
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return context.Bookings.Any(b => b.Id == id);
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
     }
 
     public Booking Get(int id)
     {
-        using var context = _contextFactory.CreateDbContext();
-        return context.Bookings.Include(b => b.Payment).Include(b => b.Deposit).Include(b => b.Client)
-            .First(b => b.Id == id);
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return context.Bookings.Include(b => b.Payment).Include(b => b.Deposit).Include(b => b.Client)
+                .First(b => b.Id == id);
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
     }
 
     public IEnumerable<Booking> GetAll()
     {
-        using var context = _contextFactory.CreateDbContext();
-        return context.Bookings.Include(b => b.Payment).Include(b => b.Client).Include(b => b.Deposit)
-            .ThenInclude(d => d.Promotions).ToList();
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return context.Bookings.Include(b => b.Payment).Include(b => b.Client).Include(b => b.Deposit)
+                .ThenInclude(d => d.Promotions).ToList();
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
     }
 
     public void Update(Booking booking)
