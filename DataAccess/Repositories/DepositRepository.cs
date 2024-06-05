@@ -16,6 +16,7 @@ public class DepositRepository : IDepositRepository
     {
         using var context = _contextFactory.CreateDbContext();
         context.AttachRange(deposit.Promotions);
+        context.AttachRange(context.Deposits.Include(d => d.AvailabilityPeriods));
         context.Deposits.Add(deposit);
         context.SaveChanges();
     }
@@ -23,8 +24,8 @@ public class DepositRepository : IDepositRepository
     public Deposit Get(string name)
     {
         using var context = _contextFactory.CreateDbContext();
-        context.AttachRange(context.Deposits.Include(d => d.Promotions));
-        return context.Deposits.First(d => string.Equals(d.Name.ToUpper(), name.ToUpper()));
+        return context.Deposits.Include(d => d.Promotions).Include(d => d.AvailabilityPeriods)
+            .First(d => string.Equals(d.Name.ToUpper(), name.ToUpper()));
     }
 
     public void Delete(string name)
@@ -39,8 +40,7 @@ public class DepositRepository : IDepositRepository
     public IEnumerable<Deposit> GetAll()
     {
         using var context = _contextFactory.CreateDbContext();
-        context.AttachRange(context.Deposits.Include(d => d.Promotions));
-        return context.Deposits.ToList();
+        return context.Deposits.Include(d => d.Promotions).Include(d => d.AvailabilityPeriods).ToList();
     }
 
     public bool Exists(string name)
@@ -52,11 +52,11 @@ public class DepositRepository : IDepositRepository
     public void Update(Deposit deposit)
     {
         using var context = _contextFactory.CreateDbContext();
-        var oldDeposit = context.Deposits.Include(d => d.AvailabilityPeriods)
+        var existingDeposit = context.Deposits.Include(d => d.AvailabilityPeriods)
             .First(d => string.Equals(d.Name.ToUpper(), deposit.Name.ToUpper()));
-        context.Entry(oldDeposit).CurrentValues.SetValues(deposit);
-        context.Entry(oldDeposit).Reference(d => d.AvailabilityPeriods).CurrentValue = deposit.AvailabilityPeriods;
-        context.Update(oldDeposit);
+        context.Entry(existingDeposit).CurrentValues.SetValues(deposit);
+        context.Entry(existingDeposit).Reference(d => d.AvailabilityPeriods).CurrentValue = deposit.AvailabilityPeriods;
+        context.Update(existingDeposit);
         context.SaveChanges();
     }
 }

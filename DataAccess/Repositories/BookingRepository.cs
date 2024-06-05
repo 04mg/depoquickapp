@@ -30,39 +30,57 @@ public class BookingRepository : IBookingRepository
     public Booking Get(int id)
     {
         using var context = _contextFactory.CreateDbContext();
-        return context.Bookings.First(b => b.Id == id);
+        return context.Bookings.Include(b => b.Payment).Include(b => b.Deposit).Include(b => b.Client)
+            .First(b => b.Id == id);
     }
 
     public IEnumerable<Booking> GetAll()
     {
         using var context = _contextFactory.CreateDbContext();
-        return context.Bookings.Include(b => b.Deposit).ThenInclude(d => d.Promotions).ToList();
+        return context.Bookings.Include(b => b.Payment).Include(b => b.Client).Include(b => b.Deposit)
+            .ThenInclude(d => d.Promotions).ToList();
     }
 
     public void Update(Booking booking)
     {
         using var context = _contextFactory.CreateDbContext();
-        var existingBooking = context.Bookings.Include(b => b.Payment).First(b => b.Id == booking.Id);
+        var existingBooking = Get(booking.Id);
         context.Entry(existingBooking).CurrentValues.SetValues(booking);
+        HandlePaymentUpdate(booking, existingBooking, context);
+        context.Bookings.Update(existingBooking);
+        context.SaveChanges();
+    }
+
+    private static void HandlePaymentUpdate(Booking booking, Booking existingBooking, Context context)
+    {
         if (booking.Payment == null)
         {
-            if (existingBooking.Payment != null)
-            {
-                context.Remove(existingBooking.Payment);
-            }
+            RemoveExistingPayment(existingBooking, context);
         }
         else
         {
-            if (existingBooking.Payment == null)
-            {
-                context.Add(booking.Payment);
-            }
-            else
-            {
-                context.Entry(existingBooking.Payment).CurrentValues.SetValues(booking.Payment);
-            }
+            AddOrUpdatePayment(booking, existingBooking, context);
         }
-        context.Bookings.Update(existingBooking);
-        context.SaveChanges();
+    }
+
+    private static void AddOrUpdatePayment(Booking booking, Booking existingBooking, DbContext context)
+    {
+        if (booking.Payment == null) return;
+        if (existingBooking.Payment == null)
+        {
+            context.Add(booking.Payment);
+        }
+        else
+        {
+            context.Entry(existingBooking.Payment).CurrentValues.SetValues(booking.Payment);
+        }
+    }
+
+    private static void RemoveExistingPayment(Booking existingBooking, Context context)
+    {
+        if (existingBooking.Payment != null)
+        {
+            context.Remove(existingBooking.Payment);
+        }
     }
 }

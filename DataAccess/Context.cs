@@ -27,14 +27,35 @@ public class Context : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-        {
-            foreach (var navigation in entityType.GetNavigations())
-            {
-                navigation.SetIsEagerLoaded(true);
-            }
-        }
+        ConfigureDepositAvailabilityPeriods(modelBuilder);
+        ConfigurePromotionValidity(modelBuilder);
+        ConfigureBookingDuration(modelBuilder);
+        ConfigureDepositPromotions(modelBuilder);
+        base.OnModelCreating(modelBuilder);
+    }
 
+    private static void ConfigureDepositPromotions(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Deposit>()
+            .HasMany(d => d.Promotions)
+            .WithMany()
+            .UsingEntity(j => j.ToTable("DepositPromotion"));
+    }
+
+    private static void ConfigureBookingDuration(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Booking>()
+            .OwnsOne(b => b.Duration);
+    }
+
+    private static void ConfigurePromotionValidity(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Promotion>()
+            .OwnsOne(p => p.Validity);
+    }
+
+    private static void ConfigureDepositAvailabilityPeriods(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<Deposit>()
             .OwnsOne(d => d.AvailabilityPeriods)
             .OwnsMany(a => a.AvailablePeriods, dr =>
@@ -50,19 +71,6 @@ public class Context : DbContext
                 dr.Property<int>("Id");
                 dr.HasKey("Id");
             });
-
-        modelBuilder.Entity<Promotion>()
-            .OwnsOne(p => p.Validity);
-
-        modelBuilder.Entity<Booking>()
-            .OwnsOne(b => b.Duration);
-        
-        modelBuilder.Entity<Deposit>()
-            .HasMany(d => d.Promotions)
-            .WithMany()
-            .UsingEntity(j => j.ToTable("DepositPromotion"));
-
-        base.OnModelCreating(modelBuilder);
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder builder)
