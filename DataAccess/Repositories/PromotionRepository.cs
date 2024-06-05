@@ -34,8 +34,15 @@ public class PromotionRepository : IPromotionRepository
 
     public Promotion Get(int id)
     {
-        using var context = _contextFactory.CreateDbContext();
-        return context.Promotions.Find(id) ?? throw new NullReferenceException();
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return context.Promotions.Find(id) ?? throw new NullReferenceException();
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
     }
 
     public void Delete(int id)
@@ -59,8 +66,15 @@ public class PromotionRepository : IPromotionRepository
 
     public IEnumerable<Promotion> GetAll()
     {
-        using var context = _contextFactory.CreateDbContext();
-        return context.Promotions.ToList();
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return context.Promotions.ToList();
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
     }
 
     public void Update(Promotion promotion)
@@ -83,7 +97,14 @@ public class PromotionRepository : IPromotionRepository
 
     public bool Exists(int id)
     {
-        using var context = _contextFactory.CreateDbContext();
-        return context.Promotions.Any(p => p.Id == id);
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return context.Promotions.Any(p => p.Id == id);
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
     }
 }
