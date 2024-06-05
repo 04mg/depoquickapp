@@ -1,8 +1,8 @@
+using BusinessLogic.Calculators;
 using BusinessLogic.DTOs;
-using Calculator;
+using BusinessLogic.Reports;
 using DataAccess.Repositories;
 using Domain;
-using ReportGenerator;
 
 namespace BusinessLogic.Services;
 

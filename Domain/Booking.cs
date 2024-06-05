@@ -100,4 +100,24 @@ public class Booking
     {
         return Payment != null && Payment.IsCaptured();
     }
+
+    public string GetPaymentStatus()
+    {
+        return Payment == null ? "Rejected" : Payment.Status.ToString();
+    }
+    
+    public string GetDepositName()
+    {
+        return Deposit.Name;
+    }
+    
+    public string GetClientEmail()
+    {
+        return Client.Email;
+    }
+    
+    public int GetPromotionsCount()
+    {
+        return Deposit.GetPromotionsCount();
+    }
 }

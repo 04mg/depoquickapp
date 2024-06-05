@@ -1,6 +1,6 @@
 using Domain;
 
-namespace ReportGenerator;
+namespace BusinessLogic.Reports;
 
 public interface IBookingReport
 {

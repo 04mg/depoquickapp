@@ -1,24 +1,19 @@
-using Calculator;
+using BusinessLogic.Calculators;
 using Domain;
 
-namespace ReportGenerator;
+namespace BusinessLogic.Reports;
 
 public class CsvBookingReport : IBookingReport
 {
     public string GenerateReportContent(Booking booking)
     {
-        return $"{booking.Deposit.Name}," +
-               $"{booking.Client.Email}," +
+        return $"{booking.GetDepositName()}," +
+               $"{booking.GetClientEmail()}," +
                $"{booking.Duration.StartDate:yyyy-MM-dd}," +
                $"{booking.Duration.EndDate:yyyy-MM-dd}," +
                $"{new PriceCalculator().CalculatePrice(booking.Deposit, booking.Duration.StartDate, booking.Duration.EndDate)}$," +
-               $"{GetPaymentState(booking)}," +
-               $"{(booking.Deposit.Promotions.Count > 0 ? "Yes" : "No")}\n";
-    }
-
-    private static string GetPaymentState(Booking booking)
-    {
-        return booking.Payment == null ? "Rejected" : booking.Payment.Status.ToString();
+               $"{booking.GetPaymentStatus()}," +
+               $"{(booking.GetPromotionsCount() > 0 ? "Yes" : "No")}\n";
     }
 
     public void CreateReportFile(IEnumerable<Booking> bookings)

@@ -120,4 +120,9 @@ public class Deposit
     {
         AvailabilityPeriods.MakePeriodUnavailable(dateRange);
     }
+
+    public int GetPromotionsCount()
+    {
+        return Promotions.Count;
+    }
 }

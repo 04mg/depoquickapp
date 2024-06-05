@@ -1,6 +1,7 @@
+using BusinessLogic.Reports;
 using Domain;
 
-namespace ReportGenerator.Test;
+namespace BusinessLogic.Test;
 
 [TestClass]
 public class BookingReportTest
