@@ -1,4 +1,6 @@
+using DataAccess.Exceptions;
 using Domain;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories;
@@ -14,9 +16,20 @@ public class UserRepository : IUserRepository
 
     public void Add(User user)
     {
-        using var context = _contextFactory.CreateDbContext();
-        context.Users.Add(user);
-        context.SaveChanges();
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            context.Users.Add(user);
+            context.SaveChanges();
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
+        catch (DbUpdateException)
+        {
+            throw new DataAccessException("Changes could not be saved");
+        }
     }
 
     public User Get(string email)

@@ -1,4 +1,6 @@
+using DataAccess.Exceptions;
 using Domain;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories;
@@ -14,11 +16,22 @@ public class BookingRepository : IBookingRepository
 
     public void Add(Booking booking)
     {
-        using var context = _contextFactory.CreateDbContext();
-        context.Attach(booking.Deposit);
-        context.Attach(booking.Client);
-        context.Bookings.Add(booking);
-        context.SaveChanges();
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            context.Attach(booking.Deposit);
+            context.Attach(booking.Client);
+            context.Bookings.Add(booking);
+            context.SaveChanges();
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
+        catch (DbUpdateException)
+        {
+            throw new DataAccessException("Changes could not be saved");
+        }
     }
 
     public bool Exists(int id)
@@ -43,12 +56,23 @@ public class BookingRepository : IBookingRepository
 
     public void Update(Booking booking)
     {
-        using var context = _contextFactory.CreateDbContext();
-        var existingBooking = Get(booking.Id);
-        context.Entry(existingBooking).CurrentValues.SetValues(booking);
-        HandlePaymentUpdate(booking, existingBooking, context);
-        context.Bookings.Update(existingBooking);
-        context.SaveChanges();
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var existingBooking = Get(booking.Id);
+            context.Entry(existingBooking).CurrentValues.SetValues(booking);
+            HandlePaymentUpdate(booking, existingBooking, context);
+            context.Bookings.Update(existingBooking);
+            context.SaveChanges();
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
+        catch (DbUpdateException)
+        {
+            throw new DataAccessException("Changes could not be saved");
+        }
     }
 
     private static void HandlePaymentUpdate(Booking booking, Booking existingBooking, Context context)
