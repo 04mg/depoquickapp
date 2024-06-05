@@ -1,8 +1,8 @@
+using BusinessLogic.Calculators;
 using BusinessLogic.DTOs;
-using Calculator;
+using BusinessLogic.Reports;
 using DataAccess.Repositories;
 using Domain;
-using ReportGenerator;
 
 namespace BusinessLogic.Services;
 
@@ -33,7 +33,6 @@ public class BookingService
 
     private Booking BookingFromDto(BookingDto bookingDto)
     {
-        
         return new Booking(bookingDto.Id, _depositRepository.Get(bookingDto.DepositName),
             _userRepository.Get(bookingDto.Email),
             bookingDto.DateFrom, bookingDto.DateTo, new Payment(CalculateBookingPrice(bookingDto)));
@@ -145,17 +144,8 @@ public class BookingService
     public void GenerateReport(string type, Credentials credentials)
     {
         EnsureUserIsAdministrator(credentials);
-        switch (type)
-        {
-            case "txt":
-                new BookingReportGenerator(new TxtBookingReport()).GenerateReport(_bookingRepository.GetAll());
-                break;
-            case "csv":
-                new BookingReportGenerator(new CsvBookingReport()).GenerateReport(_bookingRepository.GetAll());
-                break;
-            default:
-                throw new ArgumentException("Invalid format. Supported formats: txt, csv.");
-        }
+        var reportGenerator = BookingReportGenerator.CreateReportGenerator(type);
+        reportGenerator.GenerateReport(_bookingRepository.GetAll());
     }
 
     public double CalculateBookingPrice(BookingDto bookingDto)
