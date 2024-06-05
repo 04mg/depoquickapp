@@ -11,9 +11,15 @@ public class TxtBookingReport : IBookingReport
                $"{booking.Duration.StartDate}-{booking.Duration.EndDate}\t" +
                $"{booking.Client.Email}\t" +
                $"{new PriceCalculator().CalculatePrice(booking.Deposit, booking.Duration.StartDate, booking.Duration.EndDate)}$\t" +
+               $"{GetPaymentState(booking)}\t" +
                $"{(booking.Deposit.Promotions.Count > 0 ? "Yes" : "No")}\n";
     }
 
+    private static string GetPaymentState(Booking booking)
+    {
+        return booking.Payment == null ? "Rejected" : booking.Payment.Status.ToString();
+    }
+    
     public void CreateReportFile(IEnumerable<Booking> bookings)
     {
         const string path = $"BookingsReport.txt";

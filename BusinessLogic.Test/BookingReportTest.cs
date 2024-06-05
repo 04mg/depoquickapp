@@ -56,16 +56,19 @@ public class BookingReportTest
             new(2, _depositNoPromotions!, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new Payment(70))
         };
         const string path = $"BookingsReport.txt";
-        var reportContent = "Deposit\t" +
+        var depositReport = "Deposit\t" +
                             $"{Today}-{Tomorrow}\t" +
                             "client@client.com\t" +
                             "35$\t" +
-                            "Yes\n" +
-                            "Deposit\t" +
-                            $"{Tomorrow.AddDays(1)}-{Tomorrow.AddDays(2)}\t" +
-                            "client@client.com\t" +
-                            "70$\t" +
-                            "No\n";
+                            "Reserved\t" +
+                            "Yes\n";
+        var depositNoPromotionsReport = "Deposit\t" +
+                                        $"{Tomorrow.AddDays(1)}-{Tomorrow.AddDays(2)}\t" +
+                                        "client@client.com\t" +
+                                        "70$\t" +
+                                        "Reserved\t" +
+                                        "No\n";
+        var reportContent = depositReport + depositNoPromotionsReport;
         var reportGenerator = new BookingReportGenerator(new TxtBookingReport());
 
         // Act
@@ -86,11 +89,20 @@ public class BookingReportTest
             new(2, _depositNoPromotions!, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new Payment(70))
         };
         const string path = $"BookingsReport.csv";
-        var reportContent = "Deposit,Client,StartDate,EndDate,Price,Promotions\n" +
-                            "Deposit,client@client.com," +
-                            $"{Today:yyyy-MM-dd},{Tomorrow:yyyy-MM-dd},35$,Yes\n" +
-                            "Deposit,client@client.com," +
-                            $"{Tomorrow.AddDays(1):yyyy-MM-dd},{Tomorrow.AddDays(2):yyyy-MM-dd},70$,No\n";
+        var header = "Deposit,Client,StartDate,EndDate,Price,PaymentState,Promotions\n";
+        var depositReport = "Deposit," +
+                            "client@client.com," +
+                            $"{Today:yyyy-MM-dd},{Tomorrow:yyyy-MM-dd}," +
+                            "35$," +
+                            "Reserved," +
+                            "Yes\n";
+        var depositNoPromotionsReport = "Deposit," +
+                                        "client@client.com," +
+                                        $"{Tomorrow.AddDays(1):yyyy-MM-dd},{Tomorrow.AddDays(2):yyyy-MM-dd}," +
+                                        "70$," +
+                                        "Reserved," +
+                                        "No\n";
+        var reportContent = header + depositReport + depositNoPromotionsReport;
         var reportGenerator = new BookingReportGenerator(new CsvBookingReport());
 
         // Act
@@ -100,4 +112,147 @@ public class BookingReportTest
         Assert.IsTrue(File.Exists(path));
         Assert.AreEqual(reportContent, File.ReadAllText(path));
     }
+
+    [TestMethod]
+    public void TestCanCreateTxtBookingsReportFileWithRejectedBookings()
+    {
+        // Arrange
+        var bookings = new List<Booking>
+        {
+            new(1, _deposit!, Client, Today, Tomorrow, new Payment(50)),
+            new(2, _depositNoPromotions!, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new Payment(70))
+        };
+        bookings[0].Reject("Message");
+        bookings[1].Reject("Message");
+        const string path = $"BookingsReport.txt";
+        var depositReport = "Deposit\t" +
+                            $"{Today}-{Tomorrow}\t" +
+                            "client@client.com\t" +
+                            "35$\t" +
+                            "Rejected\t" +
+                            "Yes\n";
+        var depositNoPromotionsReport = "Deposit\t" +
+                                        $"{Tomorrow.AddDays(1)}-{Tomorrow.AddDays(2)}\t" +
+                                        "client@client.com\t" +
+                                        "70$\t" +
+                                        "Rejected\t" +
+                                        "No\n";
+        var reportContent = depositReport + depositNoPromotionsReport;
+        var reportGenerator = new BookingReportGenerator(new TxtBookingReport());
+
+        // Act
+        reportGenerator.GenerateReport(bookings);
+
+        // Assert
+        Assert.IsTrue(File.Exists(path));
+        Assert.AreEqual(reportContent, File.ReadAllText(path));
+    }
+
+    [TestMethod]
+    public void TestCanCreateTxtBookingsReportFileWithApprovedBookings()
+    {
+        // Arrange
+        var bookings = new List<Booking>
+        {
+            new(1, _deposit!, Client, Today, Tomorrow, new Payment(50)),
+            new(2, _depositNoPromotions!, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new Payment(70))
+        };
+        bookings[0].Approve();
+        bookings[1].Approve();
+        const string path = $"BookingsReport.txt";
+        var depositReport = "Deposit\t" +
+                            $"{Today}-{Tomorrow}\t" +
+                            "client@client.com\t" +
+                            "35$\t" +
+                            "Captured\t" +
+                            "Yes\n";
+        var depositNoPromotionsReport = "Deposit\t" +
+                                        $"{Tomorrow.AddDays(1)}-{Tomorrow.AddDays(2)}\t" +
+                                        "client@client.com\t" +
+                                        "70$\t" +
+                                        "Captured\t" +
+                                        "No\n";
+        var reportContent = depositReport + depositNoPromotionsReport;
+        var reportGenerator = new BookingReportGenerator(new TxtBookingReport());
+
+        // Act
+        reportGenerator.GenerateReport(bookings);
+
+        // Assert
+        Assert.IsTrue(File.Exists(path));
+        Assert.AreEqual(reportContent, File.ReadAllText(path));
+    }
+    
+    [TestMethod]
+    public void TestCanCreateCsvBookingsReportFileWithRejectedBookings()
+    {
+        // Arrange
+        var bookings = new List<Booking>
+        {
+            new(1, _deposit!, Client, Today, Tomorrow, new Payment(35)),
+            new(2, _depositNoPromotions!, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new Payment(70))
+        };
+        bookings[0].Reject("Message");
+        bookings[1].Reject("Message");
+        const string path = $"BookingsReport.csv";
+        var header = "Deposit,Client,StartDate,EndDate,Price,PaymentState,Promotions\n";
+        var depositReport = "Deposit," +
+                            "client@client.com," +
+                            $"{Today:yyyy-MM-dd},{Tomorrow:yyyy-MM-dd}," +
+                            "35$," +
+                            "Rejected," +
+                            "Yes\n";
+        var depositNoPromotionsReport = "Deposit," +
+                                        "client@client.com," +
+                                        $"{Tomorrow.AddDays(1):yyyy-MM-dd},{Tomorrow.AddDays(2):yyyy-MM-dd}," +
+                                        "70$," +
+                                        "Rejected," +
+                                        "No\n";
+        var reportContent = header + depositReport + depositNoPromotionsReport;
+        var reportGenerator = new BookingReportGenerator(new CsvBookingReport());
+
+        // Act
+        reportGenerator.GenerateReport(bookings);
+
+        // Assert
+        Assert.IsTrue(File.Exists(path));
+        Assert.AreEqual(reportContent, File.ReadAllText(path));
+    }
+    
+    [TestMethod]
+    public void TestCanCreateCsvBookingsReportFileWithApprovedBookings()
+    {
+        // Arrange
+        var bookings = new List<Booking>
+        {
+            new(1, _deposit!, Client, Today, Tomorrow, new Payment(35)),
+            new(2, _depositNoPromotions!, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new Payment(70))
+        };
+        bookings[0].Approve();
+        bookings[1].Approve();
+        const string path = $"BookingsReport.csv";
+        var header = "Deposit,Client,StartDate,EndDate,Price,PaymentState,Promotions\n";
+        var depositReport = "Deposit," +
+                            "client@client.com," +
+                            $"{Today:yyyy-MM-dd},{Tomorrow:yyyy-MM-dd}," +
+                            "35$," +
+                            "Captured," +
+                            "Yes\n";
+        var depositNoPromotionsReport = "Deposit," +
+                                        "client@client.com," +
+                                        $"{Tomorrow.AddDays(1):yyyy-MM-dd},{Tomorrow.AddDays(2):yyyy-MM-dd}," +
+                                        "70$," +
+                                        "Captured," +
+                                        "No\n";
+        var reportContent = header + depositReport + depositNoPromotionsReport;
+        var reportGenerator = new BookingReportGenerator(new CsvBookingReport());
+
+        // Act
+        reportGenerator.GenerateReport(bookings);
+
+        // Assert
+        Assert.IsTrue(File.Exists(path));
+        Assert.AreEqual(reportContent, File.ReadAllText(path));
+    }
+    
 }
