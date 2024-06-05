@@ -1,6 +1,6 @@
-using BusinessLogic.Domain;
+using Domain;
 
-namespace BusinessLogic.Calculators;
+namespace Calculator;
 
 public interface IPriceCalculator
 {

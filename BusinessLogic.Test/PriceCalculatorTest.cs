@@ -1,7 +1,6 @@
-using BusinessLogic.Calculators;
-using BusinessLogic.Domain;
+using Domain;
 
-namespace BusinessLogic.Test;
+namespace Calculator.Test;
 
 [TestClass]
 public class PriceCalculatorTest

@@ -1,7 +1,9 @@
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
 using BusinessLogic.Services;
+using DataAccess;
+using DataAccess.Repositories;
+using Domain;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogic.Test;
 
@@ -15,12 +17,11 @@ public class BookingServiceTest
     private Credentials _clientCredentials;
     private Credentials _otherClientCredentials;
     private Deposit? _deposit;
-    private BookingRepository _bookingRepository = new();
-    private DepositRepository _depositRepository = new();
-    private UserRepository _userRepository = new();
-
-    private BookingService _bookingService =
-        new(new BookingRepository(), new DepositRepository(), new UserRepository());
+    private BookingRepository _bookingRepository = null!;
+    private DepositRepository _depositRepository = null!;
+    private UserRepository _userRepository = null!;
+    private PromotionRepository _promotionRepository = null!;
+    private BookingService _bookingService = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -32,11 +33,13 @@ public class BookingServiceTest
 
     private void InitializeBookingService()
     {
-        _bookingRepository = new BookingRepository();
-        _depositRepository = new DepositRepository();
-        _userRepository = new UserRepository();
-        _bookingService =
-            new BookingService(_bookingRepository, _depositRepository, _userRepository);
+        var testsContext = new ProgramTest();
+        using var scope = testsContext.ServiceProvider.CreateScope();
+        _userRepository = scope.ServiceProvider.GetRequiredService<UserRepository>();
+        _depositRepository = scope.ServiceProvider.GetRequiredService<DepositRepository>();
+        _bookingRepository = scope.ServiceProvider.GetRequiredService<BookingRepository>();
+        _promotionRepository = scope.ServiceProvider.GetRequiredService<PromotionRepository>();
+        _bookingService = new BookingService(_bookingRepository, _depositRepository, _userRepository);
     }
 
     private void RegisterUsers()
@@ -73,9 +76,10 @@ public class BookingServiceTest
         var promotion = new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         var promotionList = new List<Promotion> { promotion };
+        _promotionRepository.Add(promotion);
 
         _deposit = new Deposit("Deposit", "A", "Small", true, promotionList);
-        _deposit.AddAvailabilityPeriod(new DateRange(DateOnly.FromDateTime(DateTime.Now),
+        _deposit.AddAvailabilityPeriod(new DateRange.DateRange(DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(100))));
         _depositRepository.Add(_deposit);
     }
@@ -420,7 +424,7 @@ public class BookingServiceTest
     {
         // Arrange
         var deposit = new Deposit("Deposit Two", "A", "Small", true, new List<Promotion>());
-        var dateRange = new DateRange(DateOnly.FromDateTime(DateTime.Now),
+        var dateRange = new DateRange.DateRange(DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         deposit.AddAvailabilityPeriod(dateRange);
         var bookingDto = new BookingDto()
@@ -501,16 +505,16 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
-        
+
         //Act
         _bookingService.GenerateReport("txt", _adminCredentials);
         _bookingService.GenerateReport("csv", _adminCredentials);
-        
+
         //Assert
         Assert.IsTrue(File.Exists("BookingsReport.txt"));
         Assert.IsTrue(File.Exists("BookingsReport.csv"));
     }
-    
+
     [TestMethod]
     public void TestCantGenerateReportIfInvalidFormat()
     {
@@ -524,17 +528,17 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
-        
+
         //Act
         var exception = Assert.ThrowsException<ArgumentException>(() =>
         {
             _bookingService.GenerateReport("invalid", _adminCredentials);
         });
-        
+
         //Assert
         Assert.AreEqual("Invalid format. Supported formats: txt, csv.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantGenerateBookingsReportIfNotAdministrator()
     {
@@ -548,14 +552,55 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
-        
+
         //Act
         var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
         {
             _bookingService.GenerateReport("txt", _clientCredentials);
         });
-        
+
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCanCalculateBookingPrice()
+    {
+        // Arrange
+        var priceDto = new BookingDto
+        {
+            DepositName = _deposit!.Name,
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+
+        // Act
+        var price = _bookingService.CalculateBookingPrice(priceDto);
+
+        // Assert
+        Assert.AreEqual(35, price);
+    }
+
+    [TestMethod]
+    public void TestPaymentIsAddedToBooking()
+    {
+        // Arrange
+        var bookingDto = new BookingDto()
+        {
+            Id = 1,
+            DateFrom = DateOnly.FromDateTime(DateTime.Now),
+            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
+            DepositName = _deposit!.Name,
+            Email = _client!.Email
+        };
+
+        // Act
+        _bookingService.AddBooking(bookingDto, _clientCredentials);
+
+        // Assert
+        var booking = _bookingService.GetBooking(1, _clientCredentials);
+        _bookingService.ApproveBooking(1, _adminCredentials);
+        Assert.IsFalse(booking.Payment!.Value.Captured);
+        Assert.AreEqual(35, booking.Payment!.Value.Amount);
     }
 }

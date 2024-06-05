@@ -1,7 +1,6 @@
-using BusinessLogic.Calculators;
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
+using DataAccess.Repositories;
+using Domain;
 
 namespace BusinessLogic.Services;
 
@@ -50,7 +49,7 @@ public class DepositService
         };
     }
 
-    private static List<DateRangeDto> DateRangeToDto(IEnumerable<DateRange> dateRanges)
+    private static List<DateRangeDto> DateRangeToDto(IEnumerable<DateRange.DateRange> dateRanges)
     {
         return dateRanges.Select(dr => new DateRangeDto() { StartDate = dr.StartDate, EndDate = dr.EndDate }).ToList();
     }
@@ -62,8 +61,8 @@ public class DepositService
             Id = promotion.Id,
             Label = promotion.Label,
             Discount = promotion.Discount,
-            DateFrom = promotion.Validity.Item1,
-            DateTo = promotion.Validity.Item2
+            DateFrom = promotion.Validity.StartDate,
+            DateTo = promotion.Validity.EndDate
         };
     }
 
@@ -138,17 +137,11 @@ public class DepositService
         EnsureDepositExists(depositName);
         var deposit = _depositRepository.Get(depositName);
         deposit.AddAvailabilityPeriod(DateRangeFromDto(dateRange));
+        _depositRepository.Update(deposit);
     }
 
-    private static DateRange DateRangeFromDto(DateRangeDto dateRangeDto)
+    private static DateRange.DateRange DateRangeFromDto(DateRangeDto dateRangeDto)
     {
-        return new DateRange(dateRangeDto.StartDate, dateRangeDto.EndDate);
-    }
-
-    public double CalculateDepositPrice(PriceDto priceDto)
-    {
-        EnsureDepositExists(priceDto.DepositName);
-        var deposit = _depositRepository.Get(priceDto.DepositName);
-        return new PriceCalculator().CalculatePrice(deposit, priceDto.DateFrom, priceDto.DateTo);
+        return new DateRange.DateRange(dateRangeDto.StartDate, dateRangeDto.EndDate);
     }
 }
