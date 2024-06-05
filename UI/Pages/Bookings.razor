@@ -35,7 +35,8 @@
 
     private Stream GetFileStream(string fileFormat)
     {
-        var path = Path.Combine(Environment.CurrentDirectory, "BookingsReport." + fileFormat);        return File.OpenRead(path);
+        var path = Path.Combine(Environment.CurrentDirectory, "BookingsReport." + fileFormat);
+        return File.OpenRead(path);
     }
 
     private async Task DownloadFileFromStream(string fileFormat)
@@ -55,13 +56,13 @@
         Bookings
         <div class="medium-space"></div>
         @if (User.IsAdmin)
-                {
-                    <button class="extend square round no-margin absolute right" data-ui="#generate-report">
-                        <i>summarize</i>
-                        <span>Generate Report</span>
-                    </button>
-                    <div class="medium-space"></div>
-                }
+        {
+            <button class="extend square round no-margin absolute right" data-ui="#generate-report">
+                <i>summarize</i>
+                <span>Generate report</span>
+            </button>
+            <div class="medium-space"></div>
+        }
     </h6>
     <article>
         @if (BookingsDto.Count == 0)
@@ -87,17 +88,23 @@
             }
         }
     </article>
-    
+
     <dialog class="medium-width no-elevate" id="generate-report">
-            <div class="field label suffix border">
-                <select @bind="_fileFormat">
-                    <option>Txt</option>
-                    <option>Csv</option>
-                </select>
-                <label>Select file format</label>
-                <i>arrow_drop_down</i>
-            </div>
-            <button class="transparent link" data-ui="#list-bookings">Cancel</button>
+        <div class="padding center-align">
+            <i>summarize</i>
+            <h6 class="center-align">Generate report</h6>
+        </div>
+        <div class="field label suffix border upper">
+            <select class="upper" @bind="_fileFormat">
+                <option>Txt</option>
+                <option>Csv</option>
+            </select>
+            <label class="capitalize">Format</label>
+            <i>arrow_drop_down</i>
+        </div>
+        <nav class="right-align no-space no-margin">
+            <button class="transparent link" data-ui="#generate-report">Cancel</button>
             <button class="transparent link" @onclick="GenerateReport">Confirm</button>
-        </dialog>
+        </nav>
+    </dialog>
 </main>

@@ -1,7 +1,10 @@
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
 using BusinessLogic.Services;
+using DataAccess;
+using DataAccess.Repositories;
+using Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogic.Test;
 
@@ -15,12 +18,11 @@ public class DepositServiceTest
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
     private PromotionDto _promotionDto;
-    private DepositRepository _depositRepository = new();
-    private BookingRepository _bookingRepository = new();
-    private PromotionRepository _promotionRepository = new();
-
-    private DepositService _depositService =
-        new(new DepositRepository(), new BookingRepository(), new PromotionRepository());
+    private DepositRepository _depositRepository = null!;
+    private BookingRepository _bookingRepository = null!;
+    private PromotionRepository _promotionRepository = null!;
+    private UserRepository _userRepository = null!;
+    private DepositService _depositService = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -32,9 +34,13 @@ public class DepositServiceTest
 
     private void InitializeDepositService()
     {
-        _depositRepository = new DepositRepository();
-        _bookingRepository = new BookingRepository();
-        _promotionRepository = new PromotionRepository();
+        var testsContext = new ProgramTest();
+        using var scope = testsContext.ServiceProvider.CreateScope();
+        scope.ServiceProvider.GetRequiredService<IDbContextFactory<Context>>();
+        _depositRepository = scope.ServiceProvider.GetRequiredService<DepositRepository>();
+        _bookingRepository = scope.ServiceProvider.GetRequiredService<BookingRepository>();
+        _promotionRepository = scope.ServiceProvider.GetRequiredService<PromotionRepository>();
+        _userRepository = scope.ServiceProvider.GetRequiredService<UserRepository>();
         _depositService = new DepositService(_depositRepository, _bookingRepository, _promotionRepository);
     }
 
@@ -53,8 +59,8 @@ public class DepositServiceTest
             Id = 1,
             Label = promotion.Label,
             Discount = promotion.Discount,
-            DateFrom = promotion.Validity.Item1,
-            DateTo = promotion.Validity.Item2
+            DateFrom = promotion.Validity.StartDate,
+            DateTo = promotion.Validity.EndDate
         };
 
         _promotionRepository.Add(promotion);
@@ -204,11 +210,6 @@ public class DepositServiceTest
     public void TestCantDeleteDepositIncludedInBookings()
     {
         // Arrange
-        var deposit = new Deposit(Name, Area, Size, ClimateControl, new List<Promotion>
-        {
-            new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
-                DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
-        });
         var depositDto = new DepositDto
         {
             Name = Name,
@@ -217,8 +218,6 @@ public class DepositServiceTest
             ClimateControl = ClimateControl,
             Promotions = new List<PromotionDto>() { _promotionDto }
         };
-        var dateRange = new DateRange(DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         var dateRangeDto = new DateRangeDto
         {
             StartDate = DateOnly.FromDateTime(DateTime.Now),
@@ -226,16 +225,16 @@ public class DepositServiceTest
         };
         _depositService.AddDeposit(depositDto, _adminCredentials);
         _depositService.AddAvailabilityPeriod(Name, dateRangeDto, _adminCredentials);
-        deposit.AddAvailabilityPeriod(dateRange);
         var client = new User(
             "Name Surname",
             "client@client.com",
             "12345678@mE"
         );
+        _userRepository.Add(client);
+        var deposit = _depositRepository.Get(Name);
         var booking = new Booking(1, deposit, client, DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
+            DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new Payment(50));
         _bookingRepository.Add(booking);
-
 
         // Act
         var exception =
@@ -273,32 +272,5 @@ public class DepositServiceTest
 
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
-    }
-
-    [TestMethod]
-    public void TestCanCalculateDepositPrice()
-    {
-        // Arrange
-        var depositDto = new DepositDto
-        {
-            Name = Name,
-            Area = Area,
-            Size = Size,
-            ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
-        };
-        _depositService.AddDeposit(depositDto, _adminCredentials);
-        var priceDto = new PriceDto
-        {
-            DepositName = Name,
-            DateFrom = DateOnly.FromDateTime(DateTime.Now),
-            DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
-        };
-
-        // Act
-        var price = _depositService.CalculateDepositPrice(priceDto);
-
-        // Assert
-        Assert.AreEqual(35, price);
     }
 }

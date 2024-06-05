@@ -1,5 +1,7 @@
-using BusinessLogic.Repositories;
 using BusinessLogic.Services;
+using DataAccess;
+using DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using UI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<NotificationService>();
-
+builder.Services.AddDbContextFactory<Context>(
+    options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        providerOptions => providerOptions.EnableRetryOnFailure())
+);
 builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
 builder.Services.AddSingleton<IDepositRepository, DepositRepository>();
 builder.Services.AddSingleton<IPromotionRepository, PromotionRepository>();

@@ -9,22 +9,22 @@
 @code {
 
     private BookingDto _bookingDto = new();
-    private PriceDto _priceDto = new();
 
     [Parameter] public string DepositName { get; set; } = string.Empty;
+    [Parameter] public EventCallback OnBookingCompleted { get; set; }
 
     private double BookingPrice { get; set; }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        _priceDto.DepositName = DepositName;
+        _bookingDto.DepositName = DepositName;
         _bookingDto.DepositName = DepositName;
         _bookingDto.Email = User.CurrentCredentials.Email;
     }
 
     private void CalculatePrice()
     {
-        BookingPrice = DepositService.CalculateDepositPrice(_priceDto);
+        BookingPrice = BookingService.CalculateBookingPrice(_bookingDto);
     }
 
     private void AddBooking()
@@ -33,6 +33,7 @@
         {
             BookingService.AddBooking(_bookingDto, User.CurrentCredentials);
             NotificationService.ShowMessage($"Booked deposit '{DepositName}' from {_bookingDto.DateFrom} to {_bookingDto.DateTo}");
+            OnBookingCompleted.InvokeAsync(null);
         }
         catch (ArgumentException e)
         {
@@ -56,20 +57,12 @@
 
     private void ChangeDateFrom(ChangeEventArgs e)
     {
-        ChangeDate(e, date =>
-        {
-            _priceDto.DateFrom = date;
-            _bookingDto.DateFrom = date;
-        });
+        ChangeDate(e, date => _bookingDto.DateFrom = date);
     }
 
     private void ChangeDateTo(ChangeEventArgs e)
     {
-        ChangeDate(e, date =>
-        {
-            _priceDto.DateTo = date;
-            _bookingDto.DateTo = date;
-        });
+        ChangeDate(e, date => _bookingDto.DateTo = date);
     }
 
 }

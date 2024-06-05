@@ -60,7 +60,7 @@
     {
         try
         {
-            PromotionService.ModifyPromotion(Id, _promotionDto, User.CurrentCredentials);
+            PromotionService.ModifyPromotion(_promotionDto, User.CurrentCredentials);
             NotificationService.ShowMessage($"Promotion \"{_promotionLabel}\" modified successfully.");
         }
         catch (ArgumentException e)

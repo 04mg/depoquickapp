@@ -1,6 +1,8 @@
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
+using Calculator;
+using DataAccess.Repositories;
+using Domain;
+using ReportGenerator;
 
 namespace BusinessLogic.Services;
 
@@ -24,14 +26,17 @@ public class BookingService
         EnsureUserExists(bookingDto.Email);
         EnsureEmailMatches(bookingDto.Email, credentials);
         EnsureDepositExists(bookingDto.DepositName);
-        _bookingRepository.Add(BookingFromDto(bookingDto));
+        var booking = BookingFromDto(bookingDto);
+        _bookingRepository.Add(booking);
+        _depositRepository.Update(booking.Deposit);
     }
 
     private Booking BookingFromDto(BookingDto bookingDto)
     {
+        
         return new Booking(bookingDto.Id, _depositRepository.Get(bookingDto.DepositName),
             _userRepository.Get(bookingDto.Email),
-            bookingDto.DateFrom, bookingDto.DateTo);
+            bookingDto.DateFrom, bookingDto.DateTo, new Payment(CalculateBookingPrice(bookingDto)));
     }
 
     private void EnsureDepositExists(string name)
@@ -55,12 +60,23 @@ public class BookingService
         return new BookingDto
         {
             Id = booking.Id,
-            DateFrom = booking.Duration.Item1,
-            DateTo = booking.Duration.Item2,
+            DateFrom = booking.Duration.StartDate,
+            DateTo = booking.Duration.EndDate,
             DepositName = booking.Deposit.Name,
             Email = booking.Client.Email,
             Stage = booking.Stage.ToString(),
-            Message = booking.Message
+            Message = booking.Message,
+            Payment = PaymentDtoFromPayment(booking.Payment)
+        };
+    }
+
+    private static PaymentDto? PaymentDtoFromPayment(IPayment? payment)
+    {
+        if (payment == null) return null;
+        return new PaymentDto
+        {
+            Amount = payment.GetAmount(),
+            Captured = payment.IsCaptured()
         };
     }
 
@@ -94,6 +110,7 @@ public class BookingService
         EnsureBookingExists(id);
         var booking = _bookingRepository.Get(id);
         booking.Approve();
+        _bookingRepository.Update(booking);
     }
 
     public void RejectBooking(BookingDto bookingDto, Credentials credentials)
@@ -103,6 +120,8 @@ public class BookingService
         EnsureBookingExists(bookingDto.Id);
         var booking = _bookingRepository.Get(bookingDto.Id);
         booking.Reject(bookingDto.Message);
+        _bookingRepository.Update(booking);
+        _depositRepository.Update(booking.Deposit);
     }
 
     private static void EnsureMessageIsNotEmpty(string message)
@@ -137,5 +156,13 @@ public class BookingService
             default:
                 throw new ArgumentException("Invalid format. Supported formats: txt, csv.");
         }
+    }
+
+    public double CalculateBookingPrice(BookingDto bookingDto)
+    {
+        EnsureDepositExists(bookingDto.DepositName);
+        var priceCalculator = new PriceCalculator();
+        var deposit = _depositRepository.Get(bookingDto.DepositName);
+        return priceCalculator.CalculatePrice(deposit, bookingDto.DateFrom, bookingDto.DateTo);
     }
 }
