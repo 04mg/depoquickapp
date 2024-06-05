@@ -210,11 +210,6 @@ public class DepositServiceTest
     public void TestCantDeleteDepositIncludedInBookings()
     {
         // Arrange
-        var deposit = new Deposit(Name, Area, Size, ClimateControl, new List<Promotion>
-        {
-            new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
-                DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
-        });
         var depositDto = new DepositDto
         {
             Name = Name,
@@ -223,8 +218,6 @@ public class DepositServiceTest
             ClimateControl = ClimateControl,
             Promotions = new List<PromotionDto>() { _promotionDto }
         };
-        var dateRange = new DateRange.DateRange(DateOnly.FromDateTime(DateTime.Now),
-            DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         var dateRangeDto = new DateRangeDto
         {
             StartDate = DateOnly.FromDateTime(DateTime.Now),
@@ -232,13 +225,13 @@ public class DepositServiceTest
         };
         _depositService.AddDeposit(depositDto, _adminCredentials);
         _depositService.AddAvailabilityPeriod(Name, dateRangeDto, _adminCredentials);
-        deposit.AddAvailabilityPeriod(dateRange);
         var client = new User(
             "Name Surname",
             "client@client.com",
             "12345678@mE"
         );
         _userRepository.Add(client);
+        var deposit = _depositRepository.Get(Name);
         var booking = new Booking(1, deposit, client, DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)), new Payment(50));
         _bookingRepository.Add(booking);

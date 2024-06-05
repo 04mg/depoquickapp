@@ -23,6 +23,7 @@ public class DepositRepository : IDepositRepository
     public Deposit Get(string name)
     {
         using var context = _contextFactory.CreateDbContext();
+        context.AttachRange(context.Deposits.Include(d => d.Promotions));
         return context.Deposits.First(d => string.Equals(d.Name.ToUpper(), name.ToUpper()));
     }
 
@@ -38,6 +39,7 @@ public class DepositRepository : IDepositRepository
     public IEnumerable<Deposit> GetAll()
     {
         using var context = _contextFactory.CreateDbContext();
+        context.AttachRange(context.Deposits.Include(d => d.Promotions));
         return context.Deposits.ToList();
     }
 
@@ -53,7 +55,6 @@ public class DepositRepository : IDepositRepository
         var oldDeposit = context.Deposits.Include(d => d.AvailabilityPeriods)
             .First(d => string.Equals(d.Name.ToUpper(), deposit.Name.ToUpper()));
         context.Entry(oldDeposit).CurrentValues.SetValues(deposit);
-        context.Entry(oldDeposit).Collection(d => d.Promotions).CurrentValue = deposit.Promotions;
         context.Entry(oldDeposit).Reference(d => d.AvailabilityPeriods).CurrentValue = deposit.AvailabilityPeriods;
         context.Update(oldDeposit);
         context.SaveChanges();

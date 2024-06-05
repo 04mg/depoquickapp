@@ -119,6 +119,7 @@ public class BookingService
         var booking = _bookingRepository.Get(bookingDto.Id);
         booking.Reject(bookingDto.Message);
         _bookingRepository.Update(booking);
+        _depositRepository.Update(booking.Deposit);
     }
 
     private static void EnsureMessageIsNotEmpty(string message)

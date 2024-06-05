@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20240604185800_Initial")]
+    [Migration("20240604235121_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -24,6 +24,21 @@ namespace DataAccess.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("DepositPromotion", b =>
+                {
+                    b.Property<string>("DepositsName")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PromotionsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DepositsName", "PromotionsId");
+
+                    b.HasIndex("PromotionsId");
+
+                    b.ToTable("DepositPromotion", (string)null);
+                });
 
             modelBuilder.Entity("Domain.Booking", b =>
                 {
@@ -116,9 +131,6 @@ namespace DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DepositName")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Discount")
                         .HasColumnType("int");
 
@@ -127,8 +139,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DepositName");
 
                     b.ToTable("Promotions");
                 });
@@ -152,6 +162,21 @@ namespace DataAccess.Migrations
                     b.HasKey("Email");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("DepositPromotion", b =>
+                {
+                    b.HasOne("Domain.Deposit", null)
+                        .WithMany()
+                        .HasForeignKey("DepositsName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Promotion", null)
+                        .WithMany()
+                        .HasForeignKey("PromotionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Booking", b =>
@@ -220,14 +245,15 @@ namespace DataAccess.Migrations
 
                             b1.OwnsMany("DateRange.DateRange", "AvailablePeriods", b2 =>
                                 {
-                                    b2.Property<string>("AvailabilityPeriodsDepositName")
-                                        .HasColumnType("nvarchar(450)");
-
                                     b2.Property<int>("Id")
                                         .ValueGeneratedOnAdd()
                                         .HasColumnType("int");
 
                                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b2.Property<int>("Id"));
+
+                                    b2.Property<string>("AvailabilityPeriodsDepositName")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(450)");
 
                                     b2.Property<DateTime>("EndDate")
                                         .HasColumnType("date");
@@ -235,7 +261,9 @@ namespace DataAccess.Migrations
                                     b2.Property<DateTime>("StartDate")
                                         .HasColumnType("date");
 
-                                    b2.HasKey("AvailabilityPeriodsDepositName", "Id");
+                                    b2.HasKey("Id");
+
+                                    b2.HasIndex("AvailabilityPeriodsDepositName");
 
                                     b2.ToTable("Deposits_AvailablePeriods");
 
@@ -245,14 +273,15 @@ namespace DataAccess.Migrations
 
                             b1.OwnsMany("DateRange.DateRange", "UnavailablePeriods", b2 =>
                                 {
-                                    b2.Property<string>("AvailabilityPeriodsDepositName")
-                                        .HasColumnType("nvarchar(450)");
-
                                     b2.Property<int>("Id")
                                         .ValueGeneratedOnAdd()
                                         .HasColumnType("int");
 
                                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b2.Property<int>("Id"));
+
+                                    b2.Property<string>("AvailabilityPeriodsDepositName")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(450)");
 
                                     b2.Property<DateTime>("EndDate")
                                         .HasColumnType("date");
@@ -260,7 +289,9 @@ namespace DataAccess.Migrations
                                     b2.Property<DateTime>("StartDate")
                                         .HasColumnType("date");
 
-                                    b2.HasKey("AvailabilityPeriodsDepositName", "Id");
+                                    b2.HasKey("Id");
+
+                                    b2.HasIndex("AvailabilityPeriodsDepositName");
 
                                     b2.ToTable("Deposits_UnavailablePeriods");
 
@@ -279,10 +310,6 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Promotion", b =>
                 {
-                    b.HasOne("Domain.Deposit", null)
-                        .WithMany("Promotions")
-                        .HasForeignKey("DepositName");
-
                     b.OwnsOne("DateRange.DateRange", "Validity", b1 =>
                         {
                             b1.Property<int>("PromotionId")
@@ -307,11 +334,6 @@ namespace DataAccess.Migrations
 
                     b.Navigation("Validity")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Domain.Deposit", b =>
-                {
-                    b.Navigation("Promotions");
                 });
 #pragma warning restore 612, 618
         }

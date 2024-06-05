@@ -40,6 +40,23 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Promotions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Label = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Validity_Id = table.Column<int>(type: "int", nullable: false),
+                    Validity_StartDate = table.Column<DateTime>(type: "date", nullable: false),
+                    Validity_EndDate = table.Column<DateTime>(type: "date", nullable: false),
+                    Discount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Promotions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -59,13 +76,13 @@ namespace DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AvailabilityPeriodsDepositName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "date", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "date", nullable: false)
+                    EndDate = table.Column<DateTime>(type: "date", nullable: false),
+                    AvailabilityPeriodsDepositName = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Deposits_AvailablePeriods", x => new { x.AvailabilityPeriodsDepositName, x.Id });
+                    table.PrimaryKey("PK_Deposits_AvailablePeriods", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Deposits_AvailablePeriods_Deposits_AvailabilityPeriodsDepositName",
                         column: x => x.AvailabilityPeriodsDepositName,
@@ -80,13 +97,13 @@ namespace DataAccess.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AvailabilityPeriodsDepositName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     StartDate = table.Column<DateTime>(type: "date", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "date", nullable: false)
+                    EndDate = table.Column<DateTime>(type: "date", nullable: false),
+                    AvailabilityPeriodsDepositName = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Deposits_UnavailablePeriods", x => new { x.AvailabilityPeriodsDepositName, x.Id });
+                    table.PrimaryKey("PK_Deposits_UnavailablePeriods", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Deposits_UnavailablePeriods_Deposits_AvailabilityPeriodsDepositName",
                         column: x => x.AvailabilityPeriodsDepositName,
@@ -96,26 +113,27 @@ namespace DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Promotions",
+                name: "DepositPromotion",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Label = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Validity_Id = table.Column<int>(type: "int", nullable: false),
-                    Validity_StartDate = table.Column<DateTime>(type: "date", nullable: false),
-                    Validity_EndDate = table.Column<DateTime>(type: "date", nullable: false),
-                    Discount = table.Column<int>(type: "int", nullable: false),
-                    DepositName = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    DepositsName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PromotionsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Promotions", x => x.Id);
+                    table.PrimaryKey("PK_DepositPromotion", x => new { x.DepositsName, x.PromotionsId });
                     table.ForeignKey(
-                        name: "FK_Promotions_Deposits_DepositName",
-                        column: x => x.DepositName,
+                        name: "FK_DepositPromotion_Deposits_DepositsName",
+                        column: x => x.DepositsName,
                         principalTable: "Deposits",
-                        principalColumn: "Name");
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DepositPromotion_Promotions_PromotionsId",
+                        column: x => x.PromotionsId,
+                        principalTable: "Promotions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -173,9 +191,19 @@ namespace DataAccess.Migrations
                 column: "PaymentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Promotions_DepositName",
-                table: "Promotions",
-                column: "DepositName");
+                name: "IX_DepositPromotion_PromotionsId",
+                table: "DepositPromotion",
+                column: "PromotionsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Deposits_AvailablePeriods_AvailabilityPeriodsDepositName",
+                table: "Deposits_AvailablePeriods",
+                column: "AvailabilityPeriodsDepositName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Deposits_UnavailablePeriods_AvailabilityPeriodsDepositName",
+                table: "Deposits_UnavailablePeriods",
+                column: "AvailabilityPeriodsDepositName");
         }
 
         /// <inheritdoc />
@@ -185,19 +213,22 @@ namespace DataAccess.Migrations
                 name: "Bookings");
 
             migrationBuilder.DropTable(
+                name: "DepositPromotion");
+
+            migrationBuilder.DropTable(
                 name: "Deposits_AvailablePeriods");
 
             migrationBuilder.DropTable(
                 name: "Deposits_UnavailablePeriods");
 
             migrationBuilder.DropTable(
-                name: "Promotions");
-
-            migrationBuilder.DropTable(
                 name: "Payments");
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Promotions");
 
             migrationBuilder.DropTable(
                 name: "Deposits");

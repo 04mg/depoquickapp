@@ -36,9 +36,9 @@ public class BookingRepository : IBookingRepository
     public IEnumerable<Booking> GetAll()
     {
         using var context = _contextFactory.CreateDbContext();
-        return context.Bookings.ToList();
+        return context.Bookings.Include(b => b.Deposit).ThenInclude(d => d.Promotions).ToList();
     }
-    
+
     public void Update(Booking booking)
     {
         using var context = _contextFactory.CreateDbContext();

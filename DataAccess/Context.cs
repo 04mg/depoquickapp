@@ -38,17 +38,30 @@ public class Context : DbContext
 
         modelBuilder.Entity<Deposit>()
             .OwnsOne(d => d.AvailabilityPeriods)
-            .OwnsMany(a => a.AvailablePeriods);
+            .OwnsMany(a => a.AvailablePeriods, dr =>
+            {
+                dr.Property<int>("Id");
+                dr.HasKey("Id");
+            });
 
         modelBuilder.Entity<Deposit>()
             .OwnsOne(d => d.AvailabilityPeriods)
-            .OwnsMany(a => a.UnavailablePeriods);
+            .OwnsMany(a => a.UnavailablePeriods, dr =>
+            {
+                dr.Property<int>("Id");
+                dr.HasKey("Id");
+            });
 
         modelBuilder.Entity<Promotion>()
             .OwnsOne(p => p.Validity);
 
         modelBuilder.Entity<Booking>()
             .OwnsOne(b => b.Duration);
+        
+        modelBuilder.Entity<Deposit>()
+            .HasMany(d => d.Promotions)
+            .WithMany(p => p.Deposits)
+            .UsingEntity(j => j.ToTable("DepositPromotion"));
 
         base.OnModelCreating(modelBuilder);
     }
