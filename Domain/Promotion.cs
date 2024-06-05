@@ -23,8 +23,6 @@ public class Promotion
 
     public int Id { get; set; }
     
-    public ICollection<Deposit> Deposits { get; set; }
-
     public string Label
     {
         get => _label;

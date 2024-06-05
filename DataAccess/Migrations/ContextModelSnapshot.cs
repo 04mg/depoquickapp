@@ -24,13 +24,13 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("DepositPromotion", b =>
                 {
-                    b.Property<string>("DepositsName")
+                    b.Property<string>("DepositName")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("PromotionsId")
                         .HasColumnType("int");
 
-                    b.HasKey("DepositsName", "PromotionsId");
+                    b.HasKey("DepositName", "PromotionsId");
 
                     b.HasIndex("PromotionsId");
 
@@ -165,7 +165,7 @@ namespace DataAccess.Migrations
                 {
                     b.HasOne("Domain.Deposit", null)
                         .WithMany()
-                        .HasForeignKey("DepositsName")
+                        .HasForeignKey("DepositName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

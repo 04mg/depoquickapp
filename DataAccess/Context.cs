@@ -10,7 +10,6 @@ public class Context : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<Deposit> Deposits { get; set; }
-    public DbSet<Payment> Payments { get; set; }
     public DbSet<Promotion> Promotions { get; set; }
 
     public Context(DbContextOptions<Context> options) : base(options)
@@ -60,7 +59,7 @@ public class Context : DbContext
         
         modelBuilder.Entity<Deposit>()
             .HasMany(d => d.Promotions)
-            .WithMany(p => p.Deposits)
+            .WithMany()
             .UsingEntity(j => j.ToTable("DepositPromotion"));
 
         base.OnModelCreating(modelBuilder);

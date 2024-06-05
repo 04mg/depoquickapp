@@ -26,7 +26,9 @@ public class BookingService
         EnsureUserExists(bookingDto.Email);
         EnsureEmailMatches(bookingDto.Email, credentials);
         EnsureDepositExists(bookingDto.DepositName);
-        _bookingRepository.Add(BookingFromDto(bookingDto));
+        var booking = BookingFromDto(bookingDto);
+        _bookingRepository.Add(booking);
+        _depositRepository.Update(booking.Deposit);
     }
 
     private Booking BookingFromDto(BookingDto bookingDto)

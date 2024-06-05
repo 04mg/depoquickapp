@@ -116,15 +116,15 @@ namespace DataAccess.Migrations
                 name: "DepositPromotion",
                 columns: table => new
                 {
-                    DepositsName = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DepositName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     PromotionsId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DepositPromotion", x => new { x.DepositsName, x.PromotionsId });
+                    table.PrimaryKey("PK_DepositPromotion", x => new { x.DepositName, x.PromotionsId });
                     table.ForeignKey(
-                        name: "FK_DepositPromotion_Deposits_DepositsName",
-                        column: x => x.DepositsName,
+                        name: "FK_DepositPromotion_Deposits_DepositName",
+                        column: x => x.DepositName,
                         principalTable: "Deposits",
                         principalColumn: "Name",
                         onDelete: ReferentialAction.Cascade);

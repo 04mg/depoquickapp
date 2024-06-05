@@ -12,17 +12,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DateRange", "DateRange\Date
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{A3C7E3DB-C416-4DB5-A0BF-5998F54A127F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator", "Calculator\Calculator.csproj", "{9E03648F-3C6A-47F7-9D95-45FD99747921}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportGenerator", "ReportGenerator\ReportGenerator.csproj", "{F012A141-7DF2-4067-B48A-45281C9464DA}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Test", "Domain.Test\Domain.Test.csproj", "{AB422EE3-C16A-4670-817D-4E7EA580476C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DateRange.Test", "DateRange.Test\DateRange.Test.csproj", "{EA886E91-7F90-42C6-B5C3-32C77B2D6407}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator.Test", "Calculator.Test\Calculator.Test.csproj", "{9F1BE73C-AE94-4BD6-BEA1-F15727868EFB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportGenerator.Test", "ReportGenerator.Test\ReportGenerator.Test.csproj", "{B880D8A2-AE5D-44EC-B5E6-FAA07AC9CB79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,14 +46,6 @@ Global
 		{A3C7E3DB-C416-4DB5-A0BF-5998F54A127F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3C7E3DB-C416-4DB5-A0BF-5998F54A127F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3C7E3DB-C416-4DB5-A0BF-5998F54A127F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9E03648F-3C6A-47F7-9D95-45FD99747921}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9E03648F-3C6A-47F7-9D95-45FD99747921}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9E03648F-3C6A-47F7-9D95-45FD99747921}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9E03648F-3C6A-47F7-9D95-45FD99747921}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F012A141-7DF2-4067-B48A-45281C9464DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F012A141-7DF2-4067-B48A-45281C9464DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F012A141-7DF2-4067-B48A-45281C9464DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F012A141-7DF2-4067-B48A-45281C9464DA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AB422EE3-C16A-4670-817D-4E7EA580476C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AB422EE3-C16A-4670-817D-4E7EA580476C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB422EE3-C16A-4670-817D-4E7EA580476C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -70,13 +54,5 @@ Global
 		{EA886E91-7F90-42C6-B5C3-32C77B2D6407}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA886E91-7F90-42C6-B5C3-32C77B2D6407}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA886E91-7F90-42C6-B5C3-32C77B2D6407}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9F1BE73C-AE94-4BD6-BEA1-F15727868EFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9F1BE73C-AE94-4BD6-BEA1-F15727868EFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9F1BE73C-AE94-4BD6-BEA1-F15727868EFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9F1BE73C-AE94-4BD6-BEA1-F15727868EFB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B880D8A2-AE5D-44EC-B5E6-FAA07AC9CB79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B880D8A2-AE5D-44EC-B5E6-FAA07AC9CB79}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B880D8A2-AE5D-44EC-B5E6-FAA07AC9CB79}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B880D8A2-AE5D-44EC-B5E6-FAA07AC9CB79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

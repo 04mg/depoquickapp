@@ -42,7 +42,27 @@ public class BookingRepository : IBookingRepository
     public void Update(Booking booking)
     {
         using var context = _contextFactory.CreateDbContext();
-        context.Bookings.Update(booking);
+        var existingBooking = context.Bookings.Include(b => b.Payment).First(b => b.Id == booking.Id);
+        context.Entry(existingBooking).CurrentValues.SetValues(booking);
+        if (booking.Payment == null)
+        {
+            if (existingBooking.Payment != null)
+            {
+                context.Remove(existingBooking.Payment);
+            }
+        }
+        else
+        {
+            if (existingBooking.Payment == null)
+            {
+                context.Add(booking.Payment);
+            }
+            else
+            {
+                context.Entry(existingBooking.Payment).CurrentValues.SetValues(booking.Payment);
+            }
+        }
+        context.Bookings.Update(existingBooking);
         context.SaveChanges();
     }
 }
