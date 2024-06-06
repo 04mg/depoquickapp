@@ -144,4 +144,9 @@ public class DepositService
     {
         return new DateRange.DateRange(dateRangeDto.StartDate, dateRangeDto.EndDate);
     }
+
+    public IEnumerable<DepositDto> GetDepositsByAvailabilityPeriod(DateRangeDto dateRangeDto)
+    {
+        throw new NotImplementedException();
+    }
 }

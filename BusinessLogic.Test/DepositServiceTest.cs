@@ -273,4 +273,31 @@ public class DepositServiceTest
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCanGetDepositsByAvailabilityPeriod()
+    {
+        // Arrange
+        var depositDto = new DepositDto
+        {
+            Name = Name,
+            Area = Area,
+            Size = Size,
+            ClimateControl = ClimateControl,
+            Promotions = new List<PromotionDto>() { _promotionDto }
+        };
+        var dateRangeDto = new DateRangeDto
+        {
+            StartDate = DateOnly.FromDateTime(DateTime.Now),
+            EndDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1))
+        };
+        _depositService.AddDeposit(depositDto, _adminCredentials);
+        _depositService.AddAvailabilityPeriod(Name, dateRangeDto, _adminCredentials);
+
+        // Act
+        var deposits = _depositService.GetDepositsByAvailabilityPeriod(dateRangeDto);
+
+        // Assert
+        Assert.AreEqual(1, deposits.Count());
+    }
 }
