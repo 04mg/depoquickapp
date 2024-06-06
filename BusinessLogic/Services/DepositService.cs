@@ -147,6 +147,7 @@ public class DepositService
 
     public IEnumerable<DepositDto> GetDepositsByAvailabilityPeriod(DateRangeDto dateRangeDto)
     {
-        throw new NotImplementedException();
+        var dateRange = DateRangeFromDto(dateRangeDto);
+        return AllDeposits.Where(d => d.IsAvailable(dateRange)).Select(DepositToDto);
     }
 }
