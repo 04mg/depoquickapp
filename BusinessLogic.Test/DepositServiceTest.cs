@@ -300,4 +300,24 @@ public class DepositServiceTest
         // Assert
         Assert.AreEqual(1, deposits.Count());
     }
+    
+    [TestMethod]
+    public void TestCantGetDepositsByAvailabilityPeriodIfDateRangeIsInThePast()
+    {
+        // Arrange
+        var dateRangeDto = new DateRangeDto
+        {
+            StartDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)),
+            EndDate = DateOnly.FromDateTime(DateTime.Now)
+        };
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            _depositService.GetDepositsByAvailabilityPeriod(dateRangeDto);
+        });
+
+        // Assert
+        Assert.AreEqual("Dates should be older than today.", exception.Message);
+    }
 }
