@@ -12,7 +12,7 @@
     private List<BookingDto> BookingsDto { get; set; } = new();
     private string _fileFormat = "Txt";
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnInitialized()
     {
         BookingsDto = User.IsAdmin
             ? BookingService.GetAllBookings(User.CurrentCredentials).ToList()

@@ -18,7 +18,7 @@
 
     private List<PromotionDto> PromotionsDto { get; set; } = new();
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnInitialized()
     {
         if (!User.IsAdmin) return;
         PromotionsDto = PromotionService.GetAllPromotions(User.CurrentCredentials).ToList();
@@ -30,6 +30,7 @@
         try
         {
             PromotionService.AddPromotion(_addPromotionDto, User.CurrentCredentials);
+            PromotionsDto = PromotionService.GetAllPromotions(User.CurrentCredentials).ToList();
             NotificationService.ShowMessage("Promotion added successfully.");
             StateHasChanged();
         }

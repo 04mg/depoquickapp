@@ -23,9 +23,10 @@
 
     private List<DepositDto> DepositsDto { get; set; } = new();
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnInitialized()
     {
         if (User.IsAdmin) DepositsDto = DepositService.GetAllDeposits().ToList();
+
         StateHasChanged();
     }
 
@@ -40,6 +41,7 @@
         try
         {
             DepositService.AddDeposit(_depositDto, User.CurrentCredentials);
+            DepositsDto = DepositService.GetAllDeposits().ToList();
             NotificationService.ShowMessage("Deposit added successfully.");
             StateHasChanged();
         }
