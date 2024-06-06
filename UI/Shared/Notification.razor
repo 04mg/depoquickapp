@@ -22,8 +22,8 @@
 @if (_message != string.Empty)
 {
     <div
-        class="medium-padding @_type absolute bottom"
-        style="z-index: 1000; width: 100%; cursor: pointer;"
+        class="medium-padding @_type"
+        style="z-index: 1000; width: 100%; cursor: pointer; position: sticky; bottom: 0;"
         @onclick="NotificationService.Clear">
         @_message
     </div>

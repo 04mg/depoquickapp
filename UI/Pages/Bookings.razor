@@ -1,27 +1,68 @@
 @page "/Bookings"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Services
 @using UI.Data
 @inherits AuthEnforce
-@inject AuthController Auth
-@inject BookingController BookingController
+@inject UserController User
+@inject BookingService BookingService
+@inject NotificationService NotificationService
+@inject IJSRuntime Js
 
 @code {
     private List<BookingDto> BookingsDto { get; set; } = new();
+    private string _fileFormat = "Txt";
 
     protected override void OnAfterRender(bool firstRender)
     {
-        BookingsDto = Auth.IsAdmin
-            ? BookingController.ListAllBookings(Auth.CurrentCredentials)
-            : BookingController.ListAllBookingsByEmail(Auth.CurrentCredentials);
+        BookingsDto = User.IsAdmin
+            ? BookingService.GetAllBookings(User.CurrentCredentials).ToList()
+            : BookingService.GetBookingsByEmail(User.CurrentCredentials.Email, User.CurrentCredentials).ToList();
         StateHasChanged();
+    }
+
+    private async Task GenerateReport()
+    {
+        try
+        {
+            BookingService.GenerateReport(_fileFormat.ToLower(), User.CurrentCredentials);
+            await DownloadFileFromStream(_fileFormat);
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+    }
+
+    private Stream GetFileStream(string fileFormat)
+    {
+        var path = Path.Combine(Environment.CurrentDirectory, "BookingsReport." + fileFormat);
+        return File.OpenRead(path);
+    }
+
+    private async Task DownloadFileFromStream(string fileFormat)
+    {
+        var fileStream = GetFileStream(fileFormat);
+        var fileName = "BookingsReport." + fileFormat.ToLower();
+
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+        await Js.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
     }
 
 }
 
 <main class="responsive">
-    <h6 class="vertical-margin">
+    <h6 class="vertical-margin" id="list-bookings">
         Bookings
         <div class="medium-space"></div>
+        @if (User.IsAdmin)
+        {
+            <button class="extend square round no-margin absolute right" data-ui="#generate-report">
+                <i>summarize</i>
+                <span>Generate report</span>
+            </button>
+            <div class="medium-space"></div>
+        }
     </h6>
     <article>
         @if (BookingsDto.Count == 0)
@@ -39,7 +80,7 @@
                     <div>
                         <h6 class="button small primary-container">From: @booking.DateFrom</h6>
                         <h6 class="button small primary-container">To: @booking.DateTo</h6>
-                        <h6 class="button small primary-container">Deposit: @booking.DepositId</h6>
+                        <h6 class="button small primary-container">Deposit: @booking.DepositName</h6>
                         <h6 class="button small">@booking.Stage</h6>
                     </div>
                 </a>
@@ -47,4 +88,23 @@
             }
         }
     </article>
+
+    <dialog class="medium-width no-elevate" id="generate-report">
+        <div class="padding center-align">
+            <i>summarize</i>
+            <h6 class="center-align">Generate report</h6>
+        </div>
+        <div class="field label suffix border upper">
+            <select class="upper" @bind="_fileFormat">
+                <option>Txt</option>
+                <option>Csv</option>
+            </select>
+            <label class="capitalize">Format</label>
+            <i>arrow_drop_down</i>
+        </div>
+        <nav class="right-align no-space no-margin">
+            <button class="transparent link" data-ui="#generate-report">Cancel</button>
+            <button class="transparent link" @onclick="GenerateReport">Confirm</button>
+        </nav>
+    </dialog>
 </main>

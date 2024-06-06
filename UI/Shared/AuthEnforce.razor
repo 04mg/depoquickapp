@@ -1,6 +1,6 @@
 @using UI.Data
 @inject NavigationManager NavigationManager;
-@inject AuthController Auth;
+@inject UserController User;
 
 @code {
 
@@ -12,7 +12,7 @@
     private void EnsureUserIsAuthenticated()
     {
         var uri = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        if (!Auth.IsLoggedIn && uri != "/login" && uri != "/register")
+        if (!User.IsLoggedIn && uri != "/login" && uri != "/register")
         {
             NavigationManager.NavigateTo("/Login");
         }
