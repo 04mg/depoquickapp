@@ -4,5 +4,6 @@ namespace DataAccess.Repositories;
 
 public interface IUserRepository : IRepository<string, User>
 {
-    public bool Exists(string email);
+    bool Exists(string email);
+    IEnumerable<User> GetAll();
 }
