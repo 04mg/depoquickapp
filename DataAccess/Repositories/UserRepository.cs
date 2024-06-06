@@ -57,4 +57,17 @@ public class UserRepository : IUserRepository
             throw new DataAccessException("SQL Server error");
         }
     }
+
+    public IEnumerable<User> GetAll()
+    {
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return context.Users.ToList();
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
+    }
 }
