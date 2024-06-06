@@ -1,6 +1,6 @@
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
+using DataAccess.Repositories;
+using Domain;
 
 namespace BusinessLogic.Services;
 
@@ -9,7 +9,7 @@ public class DepositService
     private readonly IDepositRepository _depositRepository;
     private readonly IBookingRepository _bookingRepository;
     private readonly IPromotionRepository _promotionRepository;
-    private List<Deposit> AllDeposits => _depositRepository.GetAll().ToList();
+    private IEnumerable<Deposit> AllDeposits => _depositRepository.GetAll();
 
     public DepositService(IDepositRepository depositRepository, IBookingRepository bookingRepository,
         IPromotionRepository promotionRepository)
@@ -30,18 +30,71 @@ public class DepositService
             throw new UnauthorizedAccessException("Only administrators can manage deposits.");
     }
 
-    public Deposit GetDeposit(string name)
+    public DepositDto GetDeposit(string depositName)
     {
-        EnsureDepositExists(name);
-        return _depositRepository.Get(name);
+        EnsureDepositExists(depositName);
+        return DepositToDto(_depositRepository.Get(depositName));
     }
 
-    public void AddDeposit(Deposit deposit, Credentials credentials)
+    private static DepositDto DepositToDto(Deposit deposit)
     {
+        return new DepositDto
+        {
+            Name = deposit.Name,
+            Area = deposit.Area,
+            Size = deposit.Size,
+            ClimateControl = deposit.ClimateControl,
+            Promotions = PromotionsToDto(deposit.Promotions),
+            AvailabilityPeriods = DateRangeToDto(deposit.GetAvailablePeriods())
+        };
+    }
+
+    private static List<DateRangeDto> DateRangeToDto(IEnumerable<DateRange.DateRange> dateRanges)
+    {
+        return dateRanges.Select(dr => new DateRangeDto() { StartDate = dr.StartDate, EndDate = dr.EndDate }).ToList();
+    }
+
+    private static PromotionDto PromotionToDto(Promotion promotion)
+    {
+        return new PromotionDto
+        {
+            Id = promotion.Id,
+            Label = promotion.Label,
+            Discount = promotion.Discount,
+            DateFrom = promotion.Validity.StartDate,
+            DateTo = promotion.Validity.EndDate
+        };
+    }
+
+    private static List<PromotionDto> PromotionsToDto(IEnumerable<Promotion> promotions)
+    {
+        return promotions.Select(PromotionToDto).ToList();
+    }
+
+    public void AddDeposit(DepositDto depositDto, Credentials credentials)
+    {
+        var deposit = DepositFromDto(depositDto);
         EnsureAllPromotionsExist(deposit.Promotions);
         EnsureUserIsAdmin(credentials);
         EnsureDepositNameIsNotTaken(deposit.Name);
         _depositRepository.Add(deposit);
+    }
+
+    private static Deposit DepositFromDto(DepositDto depositDto)
+    {
+        return new Deposit(depositDto.Name, depositDto.Area, depositDto.Size, depositDto.ClimateControl,
+            PromotionsFromDto(depositDto.Promotions));
+    }
+
+    private static Promotion PromotionFromDto(PromotionDto promotionDto)
+    {
+        return new Promotion(promotionDto.Id, promotionDto.Label, promotionDto.Discount, promotionDto.DateFrom,
+            promotionDto.DateTo);
+    }
+
+    private static List<Promotion> PromotionsFromDto(IEnumerable<PromotionDto> promotionsDto)
+    {
+        return promotionsDto.Select(PromotionFromDto).ToList();
     }
 
     private void EnsureAllPromotionsExist(IEnumerable<Promotion> promotions)
@@ -67,9 +120,9 @@ public class DepositService
         _depositRepository.Delete(name);
     }
 
-    public IEnumerable<Deposit> GetAllDeposits()
+    public IEnumerable<DepositDto> GetAllDeposits()
     {
-        return AllDeposits;
+        return AllDeposits.Select(DepositToDto);
     }
 
     private void EnsureThereAreNoBookingsForThisDeposit(string depositName)
@@ -77,11 +130,18 @@ public class DepositService
         if (_bookingRepository.GetAll().Any(b => b.Deposit.Name == depositName))
             throw new ArgumentException("There are existing bookings for this deposit.");
     }
-    
-    public void AddAvailabilityPeriod(string deposit, DateRange availabilityPeriod, Credentials credentials)
+
+    public void AddAvailabilityPeriod(string depositName, DateRangeDto dateRange, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
-        EnsureDepositExists(deposit);
-        GetDeposit(deposit).AddAvailabilityPeriod(availabilityPeriod);
+        EnsureDepositExists(depositName);
+        var deposit = _depositRepository.Get(depositName);
+        deposit.AddAvailabilityPeriod(DateRangeFromDto(dateRange));
+        _depositRepository.Update(deposit);
+    }
+
+    private static DateRange.DateRange DateRangeFromDto(DateRangeDto dateRangeDto)
+    {
+        return new DateRange.DateRange(dateRangeDto.StartDate, dateRangeDto.EndDate);
     }
 }

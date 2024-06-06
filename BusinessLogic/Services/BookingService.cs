@@ -1,6 +1,8 @@
-using BusinessLogic.Domain;
+using BusinessLogic.Calculators;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
+using BusinessLogic.Reports;
+using DataAccess.Repositories;
+using Domain;
 
 namespace BusinessLogic.Services;
 
@@ -19,11 +21,21 @@ public class BookingService
         _userRepository = userRepository;
     }
 
-    public void AddBooking(Booking booking)
+    public void AddBooking(BookingDto bookingDto, Credentials credentials)
     {
-        EnsureUserExists(booking.Client.Email);
-        EnsureDepositExists(booking.Deposit.Name);
+        EnsureUserExists(bookingDto.Email);
+        EnsureEmailMatches(bookingDto.Email, credentials);
+        EnsureDepositExists(bookingDto.DepositName);
+        var booking = BookingFromDto(bookingDto);
         _bookingRepository.Add(booking);
+        _depositRepository.Update(booking.Deposit);
+    }
+
+    private Booking BookingFromDto(BookingDto bookingDto)
+    {
+        return new Booking(bookingDto.Id, _depositRepository.Get(bookingDto.DepositName),
+            _userRepository.Get(bookingDto.Email),
+            bookingDto.DateFrom, bookingDto.DateTo, new Payment(CalculateBookingPrice(bookingDto)));
     }
 
     private void EnsureDepositExists(string name)
@@ -36,10 +48,35 @@ public class BookingService
         if (!_userRepository.Exists(email)) throw new ArgumentException("User not found.");
     }
 
-    public List<Booking> GetBookingsByEmail(string email, Credentials credentials)
+    public IEnumerable<BookingDto> GetBookingsByEmail(string email, Credentials credentials)
     {
         EnsureUserIsAdministratorOrEmailMatches(email, credentials);
-        return AllBookings.Where(b => b.Client.Email == email).ToList();
+        return AllBookings.Where(b => b.Client.Email == email).Select(BookingDtoFromBooking);
+    }
+
+    private static BookingDto BookingDtoFromBooking(Booking booking)
+    {
+        return new BookingDto
+        {
+            Id = booking.Id,
+            DateFrom = booking.Duration.StartDate,
+            DateTo = booking.Duration.EndDate,
+            DepositName = booking.Deposit.Name,
+            Email = booking.Client.Email,
+            Stage = booking.Stage.ToString(),
+            Message = booking.Message,
+            Payment = PaymentDtoFromPayment(booking.Payment)
+        };
+    }
+
+    private static PaymentDto? PaymentDtoFromPayment(IPayment? payment)
+    {
+        if (payment == null) return null;
+        return new PaymentDto
+        {
+            Amount = payment.GetAmount(),
+            Captured = payment.IsCaptured()
+        };
     }
 
     private static void EnsureUserIsAdministrator(Credentials credentials)
@@ -54,25 +91,36 @@ public class BookingService
             throw new UnauthorizedAccessException("You are not authorized to perform this action.");
     }
 
-    public IEnumerable<Booking> GetAllBookings(Credentials credentials)
+    private static void EnsureEmailMatches(string email, Credentials credentials)
+    {
+        if (credentials.Email != email)
+            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+    }
+
+    public IEnumerable<BookingDto> GetAllBookings(Credentials credentials)
     {
         EnsureUserIsAdministrator(credentials);
-        return AllBookings;
+        return AllBookings.Select(BookingDtoFromBooking);
     }
 
     public void ApproveBooking(int id, Credentials credentials)
     {
         EnsureUserIsAdministrator(credentials);
-        var booking = GetBooking(id);
+        EnsureBookingExists(id);
+        var booking = _bookingRepository.Get(id);
         booking.Approve();
+        _bookingRepository.Update(booking);
     }
 
-    public void RejectBooking(int id, Credentials credentials, string message = "")
+    public void RejectBooking(BookingDto bookingDto, Credentials credentials)
     {
-        EnsureMessageIsNotEmpty(message);
+        EnsureMessageIsNotEmpty(bookingDto.Message);
         EnsureUserIsAdministrator(credentials);
-        var booking = GetBooking(id);
-        booking.Reject(message);
+        EnsureBookingExists(bookingDto.Id);
+        var booking = _bookingRepository.Get(bookingDto.Id);
+        booking.Reject(bookingDto.Message);
+        _bookingRepository.Update(booking);
+        _depositRepository.Update(booking.Deposit);
     }
 
     private static void EnsureMessageIsNotEmpty(string message)
@@ -80,14 +128,31 @@ public class BookingService
         if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be empty.");
     }
 
-    public Booking GetBooking(int id)
+    public BookingDto GetBooking(int id, Credentials credentials)
     {
         EnsureBookingExists(id);
-        return _bookingRepository.Get(id);
+        var booking = _bookingRepository.Get(id);
+        EnsureUserIsAdministratorOrEmailMatches(booking.Client.Email, credentials);
+        return BookingDtoFromBooking(booking);
     }
 
     private void EnsureBookingExists(int id)
     {
         if (!_bookingRepository.Exists(id)) throw new ArgumentException("Booking not found.");
+    }
+
+    public void GenerateReport(string type, Credentials credentials)
+    {
+        EnsureUserIsAdministrator(credentials);
+        var reportGenerator = BookingReportGenerator.CreateReportGenerator(type);
+        reportGenerator.GenerateReport(_bookingRepository.GetAll());
+    }
+
+    public double CalculateBookingPrice(BookingDto bookingDto)
+    {
+        EnsureDepositExists(bookingDto.DepositName);
+        var priceCalculator = new PriceCalculator();
+        var deposit = _depositRepository.Get(bookingDto.DepositName);
+        return priceCalculator.CalculatePrice(deposit, bookingDto.DateFrom, bookingDto.DateTo);
     }
 }

@@ -1,35 +1,38 @@
 @using BusinessLogic.DTOs
+@using BusinessLogic.Services
 @using UI.Data
-@inject AuthController Auth
-@inject BookingController BookingController
+@inject UserController User
+@inject BookingService BookingService
 @inject NotificationService NotificationService
+@inject DepositService DepositService
 
 @code {
 
-    private AddBookingDto _addBookingDto = new();
+    private BookingDto _bookingDto = new();
 
-    [Parameter] public string DepositName { get; set; }
+    [Parameter] public string DepositName { get; set; } = string.Empty;
     [Parameter] public EventCallback OnBookingCompleted { get; set; }
 
     private double BookingPrice { get; set; }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        _addBookingDto.DepositName = DepositName;
-        _addBookingDto.Email = Auth.CurrentCredentials.Email;
+        _bookingDto.DepositName = DepositName;
+        _bookingDto.DepositName = DepositName;
+        _bookingDto.Email = User.CurrentCredentials.Email;
     }
 
     private void CalculatePrice()
     {
-        BookingPrice = BookingController.CalculateBookingPrice(_addBookingDto, Auth.CurrentCredentials);
+        BookingPrice = BookingService.CalculateBookingPrice(_bookingDto);
     }
 
     private void AddBooking()
     {
         try
         {
-            BookingController.AddBooking(_addBookingDto, Auth.CurrentCredentials);
-            NotificationService.ShowMessage($"Booked deposit '{DepositName}' from {_addBookingDto.DateFrom} to {_addBookingDto.DateTo}");
+            BookingService.AddBooking(_bookingDto, User.CurrentCredentials);
+            NotificationService.ShowMessage($"Booked deposit '{DepositName}' from {_bookingDto.DateFrom} to {_bookingDto.DateTo}");
             OnBookingCompleted.InvokeAsync(null);
         }
         catch (ArgumentException e)
@@ -54,12 +57,12 @@
 
     private void ChangeDateFrom(ChangeEventArgs e)
     {
-        ChangeDate(e, date => _addBookingDto.DateFrom = date);
+        ChangeDate(e, date => _bookingDto.DateFrom = date);
     }
 
     private void ChangeDateTo(ChangeEventArgs e)
     {
-        ChangeDate(e, date => _addBookingDto.DateTo = date);
+        ChangeDate(e, date => _bookingDto.DateTo = date);
     }
 
 }

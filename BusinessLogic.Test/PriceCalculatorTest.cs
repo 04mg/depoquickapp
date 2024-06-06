@@ -1,5 +1,5 @@
 using BusinessLogic.Calculators;
-using BusinessLogic.Domain;
+using Domain;
 
 namespace BusinessLogic.Test;
 
@@ -21,7 +21,7 @@ public class PriceCalculatorTest
         var deposit = new Deposit("Deposit", "A", size, climateControl, new List<Promotion>());
         var priceCalculator = new PriceCalculator();
         var price = priceCalculator.CalculatePrice(deposit,
-            new Tuple<DateOnly, DateOnly>(_today, _today.AddDays(1)));
+            _today, _today.AddDays(1));
         Assert.AreEqual(expectedPrice, price);
     }
 
@@ -44,7 +44,7 @@ public class PriceCalculatorTest
         var deposit = new Deposit("Deposit", "A", size, climateControl, new List<Promotion>());
         var priceCalculator = new PriceCalculator();
         var price = priceCalculator.CalculatePrice(deposit,
-            new Tuple<DateOnly, DateOnly>(_today, _today.AddDays(duration)));
+            _today, _today.AddDays(duration));
         Assert.AreEqual(expectedPrice, price);
     }
 
@@ -76,7 +76,7 @@ public class PriceCalculatorTest
         var deposit = new Deposit("Deposit", "A", size, climateControl, promotions);
         var priceCalculator = new PriceCalculator();
         var price = priceCalculator.CalculatePrice(deposit,
-            new Tuple<DateOnly, DateOnly>(_today, _today.AddDays(durationInDays)));
+            _today, _today.AddDays(durationInDays));
         Assert.AreEqual(expectedPrice, price);
     }
 
@@ -108,7 +108,7 @@ public class PriceCalculatorTest
         var deposit = new Deposit("Deposit", "A", size, climateControl, promotions);
         var priceCalculator = new PriceCalculator();
         var price = priceCalculator.CalculatePrice(deposit,
-            new Tuple<DateOnly, DateOnly>(_today, _today.AddDays(durationInDays)));
+            _today, _today.AddDays(durationInDays));
         Assert.AreEqual(expectedPrice, price);
     }
 
@@ -125,7 +125,7 @@ public class PriceCalculatorTest
         var deposit = new Deposit("Deposit", "A", size, true, promotions);
         var priceCalculator = new PriceCalculator();
         var price = priceCalculator.CalculatePrice(deposit,
-            new Tuple<DateOnly, DateOnly>(_today, _today.AddDays(durationInDays)));
+            _today, _today.AddDays(durationInDays));
         Assert.AreEqual(0, price);
     }
 }

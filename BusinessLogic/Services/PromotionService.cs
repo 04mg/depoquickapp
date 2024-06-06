@@ -1,6 +1,6 @@
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
+using DataAccess.Repositories;
+using Domain;
 
 namespace BusinessLogic.Services;
 
@@ -26,16 +26,34 @@ public class PromotionService
         if (!_promotionRepository.Exists(id)) throw new ArgumentException("Promotion not found.");
     }
 
-    public Promotion GetPromotion(int id)
+    public PromotionDto GetPromotion(int id)
     {
         EnsurePromotionExists(id);
-        return _promotionRepository.Get(id);
+        return PromotionToDto(_promotionRepository.Get(id));
     }
 
-    public void AddPromotion(Promotion promotion, Credentials credentials)
+    private static PromotionDto PromotionToDto(Promotion promotion)
+    {
+        return new PromotionDto
+        {
+            Id = promotion.Id,
+            Label = promotion.Label,
+            Discount = promotion.Discount,
+            DateFrom = promotion.Validity.StartDate,
+            DateTo = promotion.Validity.EndDate
+        };
+    }
+
+    public void AddPromotion(PromotionDto promotionDto, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
-        _promotionRepository.Add(promotion);
+        _promotionRepository.Add(PromotionFromDto(promotionDto));
+    }
+
+    private static Promotion PromotionFromDto(PromotionDto promotionDto)
+    {
+        return new Promotion(promotionDto.Id, promotionDto.Label, promotionDto.Discount, promotionDto.DateFrom,
+            promotionDto.DateTo);
     }
 
     public void DeletePromotion(int id, Credentials credentials)
@@ -52,16 +70,21 @@ public class PromotionService
             throw new ArgumentException("There are existing deposits for this promotion.");
     }
 
-    public void ModifyPromotion(int id, Promotion newPromotion, Credentials credentials)
+    public void ModifyPromotion(PromotionDto newPromotion, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
-        EnsurePromotionExists(id);
-        _promotionRepository.Modify(id, newPromotion);
+        EnsurePromotionExists(newPromotion.Id);
+        _promotionRepository.Update(PromotionFromDto(newPromotion));
     }
 
-    public IEnumerable<Promotion> GetAllPromotions(Credentials credentials)
+    public IEnumerable<PromotionDto> GetAllPromotions(Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
-        return _promotionRepository.GetAll();
+        return PromotionsToDtoList(_promotionRepository.GetAll());
+    }
+
+    private static IEnumerable<PromotionDto> PromotionsToDtoList(IEnumerable<Promotion> promotions)
+    {
+        return promotions.Select(PromotionToDto);
     }
 }
