@@ -318,6 +318,6 @@ public class DepositServiceTest
         });
 
         // Assert
-        Assert.AreEqual("Dates should be older than today.", exception.Message);
+        Assert.AreEqual("Date range cannot be in the past.", exception.Message);
     }
 }

@@ -145,8 +145,16 @@ public class DepositService
         return new DateRange.DateRange(dateRangeDto.StartDate, dateRangeDto.EndDate);
     }
 
+    private static void EnsureDateRangeIsValid(DateRangeDto dateRangeDto)
+    {
+        if (dateRangeDto.StartDate < DateOnly.FromDateTime(DateTime.Now) ||
+            dateRangeDto.EndDate < DateOnly.FromDateTime(DateTime.Now))
+            throw new ArgumentException("Date range cannot be in the past.");
+    }
+
     public IEnumerable<DepositDto> GetDepositsByAvailabilityPeriod(DateRangeDto dateRangeDto)
     {
+        EnsureDateRangeIsValid(dateRangeDto);
         var dateRange = DateRangeFromDto(dateRangeDto);
         return AllDeposits.Where(d => d.IsAvailable(dateRange)).Select(DepositToDto);
     }
