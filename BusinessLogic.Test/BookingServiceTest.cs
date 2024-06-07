@@ -3,6 +3,7 @@ using BusinessLogic.Services;
 using DataAccess;
 using DataAccess.Repositories;
 using Domain;
+using Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogic.Test;
@@ -78,7 +79,7 @@ public class BookingServiceTest
         var promotionList = new List<Promotion> { promotion };
         _promotionRepository.Add(promotion);
 
-        _deposit = new Deposit("Deposit", "A", "Small", true, promotionList);
+        _deposit = new Deposit("Deposit", DepositArea.A, DepositSize.Small, true, promotionList);
         _deposit.AddAvailabilityPeriod(new DateRange.DateRange(DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(100))));
         _depositRepository.Add(_deposit);
@@ -423,7 +424,7 @@ public class BookingServiceTest
     public void TestCantCreateBookingIfDepositDoesNotExist()
     {
         // Arrange
-        var deposit = new Deposit("Deposit Two", "A", "Small", true, new List<Promotion>());
+        var deposit = new Deposit("Deposit Two", DepositArea.A, DepositSize.Small, true, new List<Promotion>());
         var dateRange = new DateRange.DateRange(DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         deposit.AddAvailabilityPeriod(dateRange);

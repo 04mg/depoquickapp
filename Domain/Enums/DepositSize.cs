@@ -1,6 +1,6 @@
 namespace Domain.Enums;
 
-public enum Size
+public enum DepositSize
 {
     Small,
     Medium,

@@ -1,4 +1,5 @@
 using Domain;
+using Domain.Enums;
 
 namespace BusinessLogic.Calculators;
 
@@ -16,7 +17,7 @@ public class PriceCalculator : IPriceCalculator
     public double CalculatePrice(Deposit deposit, DateOnly dateFrom, DateOnly dateTo)
     {
         var pricePerDay = GetPricePerDay(deposit);
-        var discount = GetTotalDiscount(deposit,dateFrom, dateTo);
+        var discount = GetTotalDiscount(deposit, dateFrom, dateTo);
         var days = GetTotalDays(dateFrom, dateTo);
         var basePrice = GetBasePrice(pricePerDay, days);
         var finalPrice = GetFinalPrice(basePrice, discount);
@@ -40,11 +41,11 @@ public class PriceCalculator : IPriceCalculator
 
     private static double GetPricePerDay(Deposit deposit)
     {
-        var pricePerDay = deposit.Size switch
+        double pricePerDay = deposit.Size switch
         {
-            "Small" => SmallPricePerDay,
-            "Medium" => MediumPricePerDay,
-            "Large" => LargePricePerDay,
+            DepositSize.Small => SmallPricePerDay,
+            DepositSize.Medium => MediumPricePerDay,
+            DepositSize.Large => LargePricePerDay,
             _ => throw new ArgumentOutOfRangeException()
         };
         pricePerDay += GetClimateControlExtraPerDay(deposit);

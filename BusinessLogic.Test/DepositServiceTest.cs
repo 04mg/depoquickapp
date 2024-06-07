@@ -323,4 +323,50 @@ public class DepositServiceTest
         // Assert
         Assert.AreEqual("Date range cannot be in the past.", exception.Message);
     }
+    
+    [TestMethod]
+    public void TestCantAddDepositWithInvalidSize()
+    {
+        // Arrange
+        var depositDto = new DepositDto
+        {
+            Name = Name,
+            Area = Area,
+            Size = "Invalid",
+            ClimateControl = ClimateControl,
+            Promotions = new List<PromotionDto>() { _promotionDto }
+        };
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            _depositService.AddDeposit(depositDto, _adminCredentials);
+        });
+
+        // Assert
+        Assert.AreEqual("Invalid size.", exception.Message);
+    }
+    
+    [TestMethod]
+    public void TestCantAddDepositWithInvalidArea()
+    {
+        // Arrange
+        var depositDto = new DepositDto
+        {
+            Name = Name,
+            Area = "Invalid",
+            Size = Size,
+            ClimateControl = ClimateControl,
+            Promotions = new List<PromotionDto>() { _promotionDto }
+        };
+
+        // Act
+        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        {
+            _depositService.AddDeposit(depositDto, _adminCredentials);
+        });
+
+        // Assert
+        Assert.AreEqual("Invalid area.", exception.Message);
+    }
 }
