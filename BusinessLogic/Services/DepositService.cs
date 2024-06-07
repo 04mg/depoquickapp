@@ -90,7 +90,8 @@ public class DepositService
 
     private static DepositArea DepositAreaFromDto(string areaString)
     {
-        Enum.TryParse(areaString, out DepositArea areaEnum);
+        if (!Enum.TryParse(areaString, out DepositArea areaEnum))
+            throw new ArgumentException("Invalid area.");
         return areaEnum;
     }
 
