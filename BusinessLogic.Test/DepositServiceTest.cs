@@ -83,7 +83,7 @@ public class DepositServiceTest
         _depositService.AddDeposit(depositDto, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(1, _depositService.GetAllDeposits().Count());
+        Assert.AreEqual(Name, _depositService.GetDeposit(Name).Name);
     }
 
     [TestMethod]
@@ -273,7 +273,7 @@ public class DepositServiceTest
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCanGetDepositsByAvailabilityPeriod()
     {
@@ -296,11 +296,14 @@ public class DepositServiceTest
 
         // Act
         var deposits = _depositService.GetDepositsByAvailabilityPeriod(dateRangeDto);
+        var availabilityPeriods = deposits.First().AvailabilityPeriods.First();
 
         // Assert
+        Assert.AreEqual(dateRangeDto.StartDate, availabilityPeriods.StartDate);
+        Assert.AreEqual(dateRangeDto.EndDate, availabilityPeriods.EndDate);
         Assert.AreEqual(1, deposits.Count());
     }
-    
+
     [TestMethod]
     public void TestCantGetDepositsByAvailabilityPeriodIfDateRangeIsInThePast()
     {
