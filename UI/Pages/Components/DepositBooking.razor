@@ -1,10 +1,16 @@
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
 @using BusinessLogic.Services
+@using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
 @inject UserController User
 @inject BookingService BookingService
 @inject NotificationService NotificationService
 @inject DepositService DepositService
+@inject NavigationManager NavigationManager
+
 
 @code {
 
@@ -35,9 +41,18 @@
             NotificationService.ShowMessage($"Booked deposit '{DepositName}' from {_bookingDto.DateFrom} to {_bookingDto.DateTo}");
             OnBookingCompleted.InvokeAsync(null);
         }
-        catch (ArgumentException e)
+        catch (Exception e) when (e is BusinessLogicException or DomainException or DateRangeException)
         {
             NotificationService.ShowError(e.Message);
+        }
+        catch (DataAccessException e)
+        {
+            NotificationService.ShowError(e.Message);
+            NavigationManager.NavigateTo("/Logout");
+        }
+        catch (Exception e)
+        {
+            NotificationService.ShowError("An unexpected error occurred. Please try again later.");
         }
     }
 
@@ -49,9 +64,13 @@
             setDate(date);
             CalculatePrice();
         }
-        catch (FormatException)
+        catch (Exception ex) when (ex is BusinessLogicException or DomainException or DateRangeException)
         {
-            NotificationService.ShowError("Invalid date format.");
+            NotificationService.ShowError(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            NotificationService.ShowError("An unexpected error occurred. Please try again later.");
         }
     }
 
