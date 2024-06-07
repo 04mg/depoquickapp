@@ -96,7 +96,8 @@ public class DepositService
 
     private static DepositSize DepositSizeFromDto(string sizeString)
     {
-        Enum.TryParse(sizeString, out DepositSize sizeEnum);
+        if (!Enum.TryParse(sizeString, out DepositSize sizeEnum))
+            throw new ArgumentException("Invalid deposit size.");
         return sizeEnum;
     }
 
