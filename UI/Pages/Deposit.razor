@@ -15,11 +15,11 @@
     private List<PromotionDto> Promotions { get; set; } = new();
     private List<DateRangeDto> AvailabilityPeriods { get; set; } = new();
 
-   private DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
-   private DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+    private DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+    private DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
 
     private string? _name;
-    
+
     [Parameter]
     public string Name
     {
@@ -42,6 +42,7 @@
             NotificationService.ShowError(e.Message);
             NavigationManager.NavigateTo("/Deposits");
         }
+
         StateHasChanged();
     }
 
@@ -81,33 +82,27 @@
             NotificationService.ShowError(e.Message);
         }
     }
-    
+
     private void OnBookingCompleted()
-        {
-            UpdateDepositAndPeriods();
-        }
+    {
+        UpdateDepositAndPeriods();
+    }
 
 }
 
 <main class="responsive">
-    <NavLink class="extra transparent vertical-margin left-align" href="/Deposits">
-        <i>arrow_back</i>
-    </NavLink>
-    <h6 class="vertical-margin" id="deposit">
-        @Name
+    <h6 class="row vertical-margin" id="deposit">
+        <span class="max">@Name</span>
         @if (User.IsAdmin)
         {
-            <div class="absolute right">
-                <button class="extend square round no-margin" data-ui="#add-availability">
-                    <i>add</i>
-                    <span>Add Availability</span>
-                </button>
-                <button class="extend square round error no-margin" @onclick="DeleteDeposit">
-                    <i>delete</i>
-                    <span>Delete</span>
-                </button>
-                <div class="medium-space"></div>
-            </div>
+            <button class="min extend square round no-margin" data-ui="#add-availability">
+                <i>add</i>
+                <span>Add Availability</span>
+            </button>
+            <button class="min extend square round error no-margin" @onclick="DeleteDeposit">
+                <i>delete</i>
+                <span>Delete</span>
+            </button>
         }
     </h6>
     <article>
@@ -134,19 +129,19 @@
         }
         <div class="divider"></div>
         @if (AvailabilityPeriods.Count == 0)
-                {
-                    <h6 class="small padding">There are no available periods for this deposit</h6>
-                }
-                else
-                {
-                    <h6 class="small padding">There are the following periods available for this deposit:</h6>
-                    @foreach (var period in AvailabilityPeriods)
-                    {
-                        <div class="button no-wave margin">
-                            @period.StartDate.ToString("dd/MM/yyyy") - @period.EndDate.ToString("dd/MM/yyyy")
-                        </div>
-                    }
-                }
+        {
+            <h6 class="small padding">There are no available periods for this deposit</h6>
+        }
+        else
+        {
+            <h6 class="small padding">There are the following periods available for this deposit:</h6>
+            @foreach (var period in AvailabilityPeriods)
+            {
+                <div class="button no-wave margin">
+                    @period.StartDate.ToString("dd/MM/yyyy") - @period.EndDate.ToString("dd/MM/yyyy")
+                </div>
+            }
+        }
     </article>
     <div class="small-space"></div>
     <h6 class="vertical-margin">Book now</h6>
@@ -175,6 +170,6 @@
         <nav class="right-align no-space no-margin">
             <button class="transparent link" data-ui="#add-availability">Cancel</button>
             <button class="transparent link" @onclick="AddAvailability">Confirm</button>
-        </nav>    
+        </nav>
     </dialog>
 }

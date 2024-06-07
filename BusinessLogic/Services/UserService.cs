@@ -1,13 +1,12 @@
-﻿using BusinessLogic.Domain;
-using BusinessLogic.DTOs;
-using BusinessLogic.Enums;
-using BusinessLogic.Repositories;
+﻿using BusinessLogic.DTOs;
+using DataAccess.Repositories;
+using Domain;
+using Domain.Enums;
 
 namespace BusinessLogic.Services;
 
 public class UserService
 {
-    private bool _isAdminRegistered;
     private readonly IUserRepository _userRepository;
 
     public UserService(IUserRepository userRepository)
@@ -22,11 +21,10 @@ public class UserService
             registerDto.Email,
             registerDto.Password,
             registerDto.Rank);
-        SetRankAsAdminIfFirstUser(user);
         EnsureUserIsNotRegistered(user.Email);
         EnsurePasswordConfirmationMatch(user.Password, registerDto.PasswordConfirmation);
         EnsureSingleAdmin(user.Rank);
-        SetAdminRegisteredIfAdmin(user.Rank);
+        SetRankAsAdminIfFirstUser(user);
         _userRepository.Add(user);
         return new Credentials { Email = user.Email, Rank = user.Rank.ToString() };
     }
@@ -54,18 +52,13 @@ public class UserService
 
     private void EnsureSingleAdmin(UserRank rank)
     {
-        if (rank == UserRank.Administrator && _isAdminRegistered)
+        if (rank == UserRank.Administrator && _userRepository.GetAll().Any())
             throw new ArgumentException("There can only be one administrator.");
-    }
-
-    private void SetAdminRegisteredIfAdmin(UserRank rank)
-    {
-        if (rank == UserRank.Administrator) _isAdminRegistered = true;
     }
 
     private void SetRankAsAdminIfFirstUser(User user)
     {
-        if (!_isAdminRegistered) user.Rank = UserRank.Administrator;
+        if (!_userRepository.GetAll().Any()) user.Rank = UserRank.Administrator;
     }
 
     public Credentials Login(LoginDto loginDto)

@@ -1,7 +1,8 @@
 using BusinessLogic.Calculators;
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
+using BusinessLogic.Reports;
+using DataAccess.Repositories;
+using Domain;
 
 namespace BusinessLogic.Services;
 
@@ -25,7 +26,9 @@ public class BookingService
         EnsureUserExists(bookingDto.Email);
         EnsureEmailMatches(bookingDto.Email, credentials);
         EnsureDepositExists(bookingDto.DepositName);
-        _bookingRepository.Add(BookingFromDto(bookingDto));
+        var booking = BookingFromDto(bookingDto);
+        _bookingRepository.Add(booking);
+        _depositRepository.Update(booking.Deposit);
     }
 
     private Booking BookingFromDto(BookingDto bookingDto)
@@ -56,8 +59,8 @@ public class BookingService
         return new BookingDto
         {
             Id = booking.Id,
-            DateFrom = booking.Duration.Item1,
-            DateTo = booking.Duration.Item2,
+            DateFrom = booking.Duration.StartDate,
+            DateTo = booking.Duration.EndDate,
             DepositName = booking.Deposit.Name,
             Email = booking.Client.Email,
             Stage = booking.Stage.ToString(),
@@ -106,6 +109,7 @@ public class BookingService
         EnsureBookingExists(id);
         var booking = _bookingRepository.Get(id);
         booking.Approve();
+        _bookingRepository.Update(booking);
     }
 
     public void RejectBooking(BookingDto bookingDto, Credentials credentials)
@@ -115,6 +119,8 @@ public class BookingService
         EnsureBookingExists(bookingDto.Id);
         var booking = _bookingRepository.Get(bookingDto.Id);
         booking.Reject(bookingDto.Message);
+        _bookingRepository.Update(booking);
+        _depositRepository.Update(booking.Deposit);
     }
 
     private static void EnsureMessageIsNotEmpty(string message)
@@ -138,17 +144,8 @@ public class BookingService
     public void GenerateReport(string type, Credentials credentials)
     {
         EnsureUserIsAdministrator(credentials);
-        switch (type)
-        {
-            case "txt":
-                new BookingReportGenerator(new TxtBookingReport()).GenerateReport(_bookingRepository.GetAll());
-                break;
-            case "csv":
-                new BookingReportGenerator(new CsvBookingReport()).GenerateReport(_bookingRepository.GetAll());
-                break;
-            default:
-                throw new ArgumentException("Invalid format. Supported formats: txt, csv.");
-        }
+        var reportGenerator = BookingReportGenerator.CreateReportGenerator(type);
+        reportGenerator.GenerateReport(_bookingRepository.GetAll());
     }
 
     public double CalculateBookingPrice(BookingDto bookingDto)

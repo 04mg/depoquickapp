@@ -1,4 +1,4 @@
-using BusinessLogic.Domain;
+using Domain;
 
 namespace BusinessLogic.Calculators;
 

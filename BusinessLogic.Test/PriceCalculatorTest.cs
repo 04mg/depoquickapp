@@ -1,5 +1,5 @@
 using BusinessLogic.Calculators;
-using BusinessLogic.Domain;
+using Domain;
 
 namespace BusinessLogic.Test;
 

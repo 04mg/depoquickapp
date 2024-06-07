@@ -1,6 +1,6 @@
-using BusinessLogic.Domain;
 using BusinessLogic.DTOs;
-using BusinessLogic.Repositories;
+using DataAccess.Repositories;
+using Domain;
 
 namespace BusinessLogic.Services;
 
@@ -39,8 +39,8 @@ public class PromotionService
             Id = promotion.Id,
             Label = promotion.Label,
             Discount = promotion.Discount,
-            DateFrom = promotion.Validity.Item1,
-            DateTo = promotion.Validity.Item2
+            DateFrom = promotion.Validity.StartDate,
+            DateTo = promotion.Validity.EndDate
         };
     }
 
@@ -52,7 +52,8 @@ public class PromotionService
 
     private static Promotion PromotionFromDto(PromotionDto promotionDto)
     {
-        return new Promotion(1, promotionDto.Label, promotionDto.Discount, promotionDto.DateFrom, promotionDto.DateTo);
+        return new Promotion(promotionDto.Id, promotionDto.Label, promotionDto.Discount, promotionDto.DateFrom,
+            promotionDto.DateTo);
     }
 
     public void DeletePromotion(int id, Credentials credentials)
@@ -69,11 +70,11 @@ public class PromotionService
             throw new ArgumentException("There are existing deposits for this promotion.");
     }
 
-    public void ModifyPromotion(int id, PromotionDto newPromotion, Credentials credentials)
+    public void ModifyPromotion(PromotionDto newPromotion, Credentials credentials)
     {
         EnsureUserIsAdmin(credentials);
-        EnsurePromotionExists(id);
-        _promotionRepository.Modify(id, PromotionFromDto(newPromotion));
+        EnsurePromotionExists(newPromotion.Id);
+        _promotionRepository.Update(PromotionFromDto(newPromotion));
     }
 
     public IEnumerable<PromotionDto> GetAllPromotions(Credentials credentials)
