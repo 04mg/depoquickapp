@@ -1,7 +1,10 @@
 @page "/Promotions"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
 @using BusinessLogic.Services
 @using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
 @inherits AuthEnforce
 @inject UserController User
@@ -26,10 +29,9 @@
         {
             PromotionsDto = PromotionService.GetAllPromotions(User.CurrentCredentials).ToList();
         }
-        catch (DataAccessException e)
+        catch (Exception e)
         {
-            NavigationManager.NavigateTo("/Logout");
-            NotificationService.ShowError(e.Message);
+            HandleException(e);
         }
         StateHasChanged();
     }
@@ -43,14 +45,26 @@
             NotificationService.ShowMessage("Promotion added successfully.");
             StateHasChanged();
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
-            NotificationService.ShowError(e.Message);
+            HandleException(e);
         }
-        catch (DataAccessException e)
+    }
+    
+    private void HandleException(Exception e)
+    {
+        if (e is DataAccessException)
         {
             NavigationManager.NavigateTo("/Logout");
             NotificationService.ShowError(e.Message);
+        }
+        else if (e is BusinessLogicException or DomainException or DateRangeException)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred.");
         }
     }
 

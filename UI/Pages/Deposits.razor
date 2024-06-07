@@ -1,7 +1,10 @@
 @page "/Deposits"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
 @using BusinessLogic.Services
 @using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
 @using UI.Pages.Components
 @inherits AuthEnforce
@@ -31,9 +34,10 @@
         try
         {
             DepositsDto = DepositService.GetAllDeposits().ToList();
-        } catch (DataAccessException e) {
-            NavigationManager.NavigateTo("/Logout");
-            NotificationService.ShowError(e.Message);
+        }
+        catch (Exception e)
+        {
+            HandleException(e);
         }
 
         StateHasChanged();
@@ -48,14 +52,9 @@
             NotificationService.ShowMessage("Deposit added successfully.");
             StateHasChanged();
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
-            NotificationService.ShowError(e.Message);
-        }
-        catch (DataAccessException e)
-        {
-            NotificationService.ShowError(e.Message);
-            NavigationManager.NavigateTo("/Logout");
+            HandleException(e);
         }
     }
 
@@ -66,9 +65,9 @@
             var date = DateOnly.Parse(e.Value?.ToString() ?? string.Empty);
             setDate(date);
         }
-        catch (FormatException)
+        catch (Exception ex)
         {
-            NotificationService.ShowError("Invalid date format.");
+            HandleException(ex);
         }
     }
 
@@ -90,20 +89,32 @@
             if (DepositsDto.Count == 0) NotificationService.ShowError("No deposits found.");
             StateHasChanged();
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
-            NotificationService.ShowError(e.Message);
-        }
-        catch (DataAccessException e)
-        {
-            NotificationService.ShowError(e.Message);
-            NavigationManager.NavigateTo("/Logout");
+            HandleException(e);
         }
     }
 
     private void ClearDeposits()
     {
         DepositsDto = new List<DepositDto>();
+    }
+
+    private void HandleException(Exception e)
+    {
+        if (e is DataAccessException)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
+        else if (e is BusinessLogicException or DomainException or DateRangeException)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred.");
+        }
     }
 
 }

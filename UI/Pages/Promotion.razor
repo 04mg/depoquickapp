@@ -1,7 +1,10 @@
 @page "/Promotion/{Id:int}"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
 @using BusinessLogic.Services
 @using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
 @inherits AuthEnforce
 @inject UserController User
@@ -30,14 +33,9 @@
             SetPromotionDto(promotion);
             SetPromotionLabel(promotion);
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
-            NotificationService.ShowError(e.Message);
-            NavigationManager.NavigateTo("/Promotions");
-        }
-        catch (DataAccessException e) {
-            NotificationService.ShowError(e.Message);
-            NavigationManager.NavigateTo("/Logout");
+            HandleException(e);
         }
 
         StateHasChanged();
@@ -67,14 +65,9 @@
             PromotionService.ModifyPromotion(_promotionDto, User.CurrentCredentials);
             NotificationService.ShowMessage($"Promotion \"{_promotionLabel}\" modified successfully.");
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
-            NotificationService.ShowError(e.Message);
-        }
-        catch (DataAccessException e)
-        {
-            NotificationService.ShowError(e.Message);
-            NavigationManager.NavigateTo("/Logout");
+            HandleException(e);
         }
     }
 
@@ -86,14 +79,28 @@
             NotificationService.ShowMessage($"Promotion \"{_promotionLabel}\" deleted successfully.");
             NavigationManager.NavigateTo("/Promotions");
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
+            HandleException(e);
+        }
+    }
+
+    private void HandleException(Exception e)
+    {
+        if (e is DataAccessException)
+        {
+            NavigationManager.NavigateTo("/Logout");
             NotificationService.ShowError(e.Message);
         }
-        catch (DataAccessException e)
+        else if (e is BusinessLogicException or DomainException or DateRangeException)
         {
             NotificationService.ShowError(e.Message);
-            NavigationManager.NavigateTo("/Logout");
+            NavigationManager.NavigateTo("/Promotions");
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred.");
+            NavigationManager.NavigateTo("/Promotions");
         }
     }
 
