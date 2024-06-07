@@ -34,13 +34,40 @@ public class UserRepository : IUserRepository
 
     public User Get(string email)
     {
-        using var context = _contextFactory.CreateDbContext();
-        return context.Users.Find(email) ?? throw new NullReferenceException();
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return context.Users.Find(email) ?? throw new NullReferenceException();
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
     }
 
     public bool Exists(string email)
     {
-        using var context = _contextFactory.CreateDbContext();
-        return context.Users.Any(u => u.Email == email);
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return context.Users.Any(u => u.Email == email);
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
+    }
+
+    public IEnumerable<User> GetAll()
+    {
+        try
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return context.Users.ToList();
+        }
+        catch (SqlException)
+        {
+            throw new DataAccessException("SQL Server error");
+        }
     }
 }
