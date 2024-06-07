@@ -1,12 +1,14 @@
 @page "/Deposits"
 @using BusinessLogic.DTOs
 @using BusinessLogic.Services
+@using DataAccess.Exceptions
 @using UI.Data
 @using UI.Pages.Components
 @inherits AuthEnforce
 @inject UserController User
 @inject DepositService DepositService
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
 
 @code {
 
@@ -23,29 +25,37 @@
 
     private List<DepositDto> DepositsDto { get; set; } = new();
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnParametersSet()
     {
-        if (User.IsAdmin) DepositsDto = DepositService.GetAllDeposits().ToList();
+        if (!User.IsAdmin) return;
+        try
+        {
+            DepositsDto = DepositService.GetAllDeposits().ToList();
+        } catch (DataAccessException e) {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
+
         StateHasChanged();
     }
 
     private void AddDeposit()
     {
-        if (string.IsNullOrEmpty(_depositDto.Name))
-        {
-            NotificationService.ShowError("Name of Deposit is required.");
-            return;
-        }
-
         try
         {
             DepositService.AddDeposit(_depositDto, User.CurrentCredentials);
+            DepositsDto = DepositService.GetAllDeposits().ToList();
             NotificationService.ShowMessage("Deposit added successfully.");
             StateHasChanged();
         }
         catch (ArgumentException e)
         {
             NotificationService.ShowError(e.Message);
+        }
+        catch (DataAccessException e)
+        {
+            NotificationService.ShowError(e.Message);
+            NavigationManager.NavigateTo("/Logout");
         }
     }
 
@@ -83,6 +93,11 @@
         catch (ArgumentException e)
         {
             NotificationService.ShowError(e.Message);
+        }
+        catch (DataAccessException e)
+        {
+            NotificationService.ShowError(e.Message);
+            NavigationManager.NavigateTo("/Logout");
         }
     }
 

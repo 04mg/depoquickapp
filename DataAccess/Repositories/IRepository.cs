@@ -2,6 +2,6 @@ namespace DataAccess.Repositories;
 
 public interface IRepository<in TKey, TValue>
 {
-    public void Add(TValue value);
-    public TValue Get(TKey key);
+    void Add(TValue value);
+    TValue Get(TKey key);
 }

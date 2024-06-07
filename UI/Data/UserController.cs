@@ -7,6 +7,7 @@ public class UserController
 {
     private readonly UserService _userService;
     private Credentials? _currentCredentials;
+    public event Action? OnLoginStatusChanged;
 
     public UserController(UserService userService)
     {
@@ -26,6 +27,7 @@ public class UserController
     public void LogIn(LoginDto loginDto)
     {
         CurrentCredentials = _userService.Login(loginDto);
+        OnLoginStatusChanged?.Invoke();
     }
 
     public void Register(RegisterDto registerDto)
@@ -36,5 +38,6 @@ public class UserController
     public void LogOut()
     {
         _currentCredentials = null;
+        OnLoginStatusChanged?.Invoke();
     }
 }

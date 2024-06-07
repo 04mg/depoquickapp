@@ -1,6 +1,7 @@
 @page "/Booking/{Id:int}"
 @using BusinessLogic.DTOs
 @using BusinessLogic.Services
+@using DataAccess.Exceptions
 @using UI.Data
 @inherits AuthEnforce
 @inject UserController User
@@ -19,9 +20,8 @@
         set => _id = value;
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnParametersSet()
     {
-        if (!firstRender) return;
         try
         {
             _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
@@ -31,24 +31,47 @@
             NotificationService.ShowError(e.Message);
             NavigationManager.NavigateTo("/Bookings");
         }
+        catch (DataAccessException e)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
 
         StateHasChanged();
     }
 
     private void ApproveBooking()
     {
-        BookingService.ApproveBooking(Id, User.CurrentCredentials);
-        _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
-        NotificationService.ShowMessage("Booking approved successfully.");
-        StateHasChanged();
+        try
+        {
+            BookingService.ApproveBooking(Id, User.CurrentCredentials);
+            _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
+            NotificationService.ShowMessage("Booking approved successfully.");
+            StateHasChanged();
+        }
+        catch (DataAccessException e)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+            StateHasChanged();
+        }
     }
 
     private void RejectBooking()
     {
-        BookingService.RejectBooking(_bookingDto, User.CurrentCredentials);
-        _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
-        NotificationService.ShowMessage("Booking rejected successfully.");
-        StateHasChanged();
+        try
+        {
+            BookingService.RejectBooking(_bookingDto, User.CurrentCredentials);
+            _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
+            NotificationService.ShowMessage("Booking rejected successfully.");
+            StateHasChanged();
+        }
+        catch (DataAccessException e)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+            StateHasChanged();
+        }
     }
 
 }
@@ -59,7 +82,6 @@
     </NavLink>
     <h6 class="vertical-margin">
         Booking
-        <span class="circle primary center-align middle-align left-margin">@Id</span>
         @if (User.IsAdmin && _bookingDto.Stage == "Pending")
         {
             <div class="absolute right">

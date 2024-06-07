@@ -1,5 +1,6 @@
 @page "/register"
 @using BusinessLogic.DTOs
+@using DataAccess.Exceptions
 @using UI.Data
 @inject UserController User
 @inject NavigationManager NavigationManager
@@ -24,6 +25,10 @@
         catch (NullReferenceException)
         {
             NotificationService.ShowError("Fields cannot be empty");
+        }
+        catch (DataAccessException e)
+        {
+            NotificationService.ShowError(e.Message);
         }
     }
 
