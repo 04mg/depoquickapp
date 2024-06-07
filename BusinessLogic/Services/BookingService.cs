@@ -144,8 +144,8 @@ public class BookingService
     public void GenerateReport(string type, Credentials credentials)
     {
         EnsureUserIsAdministrator(credentials);
-        var reportGenerator = BookingReportGenerator.CreateReportGenerator(type);
-        reportGenerator.GenerateReport(_bookingRepository.GetAll());
+        var reportGenerator = BookingReportFactory.Create(type);
+        reportGenerator.CreateReportFile(AllBookings);
     }
 
     public double CalculateBookingPrice(BookingDto bookingDto)
