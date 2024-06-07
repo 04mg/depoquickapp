@@ -1,35 +1,45 @@
 @page "/Deposits"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Services
 @using UI.Data
 @using UI.Pages.Components
 @inherits AuthEnforce
-@inject AuthController Auth
-@inject DepositController DepositController
+@inject UserController User
+@inject DepositService DepositService
 @inject NotificationService NotificationService
 
 @code {
 
-    private AddDepositDto _addDepositDto = new()
+    private DepositDto _depositDto = new()
     {
+        Name = "",
         Area = "A",
         Size = "Small",
         ClimateControl = false,
-        PromotionList = new List<int>()
+        Promotions = new List<PromotionDto>()
     };
+
+    private DateRangeDto _dateRangeDto;
 
     private List<DepositDto> DepositsDto { get; set; } = new();
 
     protected override void OnAfterRender(bool firstRender)
     {
-        DepositsDto = DepositController.ListAllDeposits(Auth.CurrentCredentials);
+        if (User.IsAdmin) DepositsDto = DepositService.GetAllDeposits().ToList();
         StateHasChanged();
     }
 
     private void AddDeposit()
     {
+        if (string.IsNullOrEmpty(_depositDto.Name))
+        {
+            NotificationService.ShowError("Name of Deposit is required.");
+            return;
+        }
+
         try
         {
-            DepositController.AddDeposit(_addDepositDto, Auth.CurrentCredentials);
+            DepositService.AddDeposit(_depositDto, User.CurrentCredentials);
             NotificationService.ShowMessage("Deposit added successfully.");
             StateHasChanged();
         }
@@ -39,47 +49,124 @@
         }
     }
 
+    private void ChangeDate(ChangeEventArgs e, Action<DateOnly> setDate)
+    {
+        try
+        {
+            var date = DateOnly.Parse(e.Value?.ToString() ?? string.Empty);
+            setDate(date);
+        }
+        catch (FormatException)
+        {
+            NotificationService.ShowError("Invalid date format.");
+        }
+    }
+
+    private void ChangeDateFrom(ChangeEventArgs e)
+    {
+        ChangeDate(e, date => _dateRangeDto.StartDate = date);
+    }
+
+    private void ChangeDateTo(ChangeEventArgs e)
+    {
+        ChangeDate(e, date => _dateRangeDto.EndDate = date);
+    }
+
+    private void SearchDeposits()
+    {
+        try
+        {
+            DepositsDto = DepositService.GetDepositsByAvailabilityPeriod(_dateRangeDto).ToList();
+            if (DepositsDto.Count == 0) NotificationService.ShowError("No deposits found.");
+            StateHasChanged();
+        }
+        catch (ArgumentException e)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+    }
+
+    private void ClearDeposits()
+    {
+        DepositsDto = new List<DepositDto>();
+    }
+
 }
 
-<main class="responsive">
-    <h6 class="vertical-margin">
-        Deposits
-        @if (Auth.IsAdmin)
-        {
-            <button class="extend square round no-margin absolute right" data-ui="#add-deposit">
-                <i>add</i>
-                <span>Add</span>
-            </button>
-            <div class="medium-space"></div>
-        }
-    </h6>
-    <article>
-        @foreach (var deposit in DepositsDto)
-        {
-            <a class="row padding surface-container wave scroll" href="/Deposit/@deposit.Id">
-                <div class="row max">
-                    <div class="button circle">@deposit.Id</div>
+<main class="responsive @(!User.IsAdmin && DepositsDto.Count == 0 ? "middle-align center-align" : "")">
+    @if (!User.IsAdmin && DepositsDto.Count == 0)
+    {
+        <div class="middle-align center-align">
+            <div>
+                <i class="extra">search</i>
+                <h6 class="center-align">Find available deposits</h6>
+                <p class="center-align">Enter your booking dates to see available options</p>
+                <div class="space"></div>
+                <div class="left-align">
+                    <div class="field label suffix border">
+                        <input type="date" @onchange="ChangeDateFrom">
+                        <label>From</label>
+                        <i>calendar_today</i>
+                    </div>
+                    <div class="field label suffix border">
+                        <input type="date" @onchange="ChangeDateTo">
+                        <label>To</label>
+                        <i>event_upcoming</i>
+                    </div>
                 </div>
-                <div>
-                    <h6 class="button small primary-container">Area: @deposit.Area</h6>
-                    <h6 class="button small primary-container">Size: @deposit.Size</h6>
-
-                    @if (deposit.ClimateControl)
-                    {
-                        <h6 class="button small primary-container">Climate Control</h6>
-                    }
-                </div>
+                <button class="responsive no-margin" @onclick="SearchDeposits">Search</button>
+            </div>
+        </div>
+        <div class="space"></div>
+    }
+    @if (User.IsAdmin || DepositsDto.Count > 0)
+    {
+        @if (!User.IsAdmin)
+        {
+            <a class="extra transparent vertical-margin left-align" @onclick="ClearDeposits">
+                <i>arrow_back</i>
             </a>
-            <div class="divider right-align"></div>
         }
-        @if (DepositsDto.Count == 0)
-        {
-            <p>No deposits found.</p>
-        }
-    </article>
+
+        <h6 class="vertical-margin">
+            Deposits
+            @if (User.IsAdmin)
+            {
+                <button class="extend square round no-margin absolute right" data-ui="#add-deposit">
+                    <i>add</i>
+                    <span>Add</span>
+                </button>
+                <div class="medium-space"></div>
+            }
+        </h6>
+        <article>
+            @foreach (var deposit in DepositsDto)
+            {
+                <a class="row padding surface-container wave scroll" href="/Deposit/@deposit.Name">
+                    <div class="row max">
+                        <div class="button inverse-primary">@deposit.Name</div>
+                    </div>
+                    <div>
+                        <h6 class="button small primary-container">Area: @deposit.Area</h6>
+                        <h6 class="button small primary-container">Size: @deposit.Size</h6>
+
+                        @if (deposit.ClimateControl)
+                        {
+                            <h6 class="button small primary-container">Climate Control</h6>
+                        }
+                    </div>
+                </a>
+                <div class="divider right-align"></div>
+            }
+            @if (DepositsDto.Count == 0)
+            {
+                <p>No deposits found.</p>
+            }
+        </article>
+    }
 </main>
 
-@if (Auth.IsAdmin)
+@if (User.IsAdmin)
 {
     <div class="medium-space"></div>
     <div class="overlay blur"></div>
@@ -88,37 +175,45 @@
             <i>garage_door</i>
             <h6 class="center-align">Add new deposit</h6>
         </div>
-        <div class="field label suffix border">
-            <select @bind="_addDepositDto.Area">
-                <option>A</option>
-                <option>B</option>
-                <option>C</option>
-                <option>D</option>
-                <option>E</option>
-            </select>
-            <label>Area</label>
-            <i>arrow_drop_down</i>
-        </div>
-        <div class="field label suffix border">
-            <select @bind="_addDepositDto.Size">
-                <option>Small</option>
-                <option>Medium</option>
-                <option>Large</option>
-            </select>
-            <label>Size</label>
-            <i>arrow_drop_down</i>
-        </div>
-        <PromotionSelect @bind-Promotions="_addDepositDto.PromotionList"/>
-        <div class="divider"></div>
-        <div class="field no-margin top-padding">
-            <label class="checkbox">
-                <input type="checkbox" @bind="_addDepositDto.ClimateControl">
-                <span>Climate Control</span>
-            </label>
-        </div>
-        <nav class="right-align no-space no-margin">
-            <button class="transparent link" data-ui="#add-deposit">Cancel</button>
-            <button class="transparent link" @onclick="AddDeposit">Confirm</button>
-        </nav>
+        <form @onsubmit="AddDeposit">
+            <div class="field label prefix border left-align">
+                <i>garage_door</i>
+                <input type="text" @bind="_depositDto.Name" required>
+                <label>Name of Deposit</label>
+            </div>
+            <div class="field label suffix border">
+                <select @bind="_depositDto.Area">
+                    <option>A</option>
+                    <option>B</option>
+                    <option>C</option>
+                    <option>D</option>
+                    <option>E</option>
+                </select>
+                <label>Area</label>
+                <i>arrow_drop_down</i>
+            </div>
+            <div class="field label suffix border">
+                <select @bind="_depositDto.Size">
+                    <option>Small</option>
+                    <option>Medium</option>
+                    <option>Large</option>
+                </select>
+                <label>Size</label>
+                <i>arrow_drop_down</i>
+            </div>
+            <PromotionSelect @bind-Promotions="_depositDto.Promotions"/>
+            <div class="divider"></div>
+            <div class="field no-margin top-padding">
+                <label class="checkbox">
+                    <input type="checkbox" @bind="_depositDto.ClimateControl">
+                    <span>Climate Control</span>
+                </label>
+            </div>
+
+            <nav class="right-align no-space no-margin">
+                <button class="transparent link" data-ui="#add-deposit">Cancel</button>
+                <button type="submit" class="transparent link">Confirm</button>
+            </nav>
+        </form>
     </dialog>
 }

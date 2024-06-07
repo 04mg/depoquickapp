@@ -1,7 +1,7 @@
 ﻿@page "/login"
 @using BusinessLogic.DTOs
 @using UI.Data
-@inject AuthController Auth
+@inject UserController User
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
 
@@ -13,7 +13,7 @@
     {
         try
         {
-            Auth.LogIn(_loginDto);
+            User.LogIn(_loginDto);
             NavigationManager.NavigateTo("/Deposits", true);
         }
         catch (ArgumentException e)
