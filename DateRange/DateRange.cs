@@ -20,7 +20,7 @@ public class DateRange
     private void EnsureStartDateIsLesserThanEndDate(DateOnly startDate, DateOnly endDate)
     {
         if (startDate > endDate)
-            throw new ArgumentException("Date range is invalid.");
+            throw new DateRangeException("Date range is invalid.");
     }
 
     public bool IsOverlapped(DateRange other)
@@ -39,7 +39,7 @@ public class DateRange
     private void EnsureOverlapOrAdjacent(DateRange other)
     {
         if (!IsOverlapped(other) && !IsAdjacent(other))
-            throw new ArgumentException("Ranges are not overlapping or adjacent.");
+            throw new DateRangeException("Ranges are not overlapping or adjacent.");
     }
 
     public DateRange? Subtract(DateRange other)
@@ -55,7 +55,8 @@ public class DateRange
             EndDate = range1.EndDate;
             return range2;
         }
-        else if (StartDate < other.StartDate && EndDate <= other.EndDate)
+
+        if (StartDate < other.StartDate && EndDate <= other.EndDate)
         {
             EndDate = other.StartDate.AddDays(-1);
         }

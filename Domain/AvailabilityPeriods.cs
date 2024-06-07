@@ -1,3 +1,5 @@
+using Domain.Exceptions;
+
 namespace Domain;
 
 public class AvailabilityPeriods
@@ -34,7 +36,7 @@ public class AvailabilityPeriods
     {
         if (!UnavailablePeriods.Any(newPeriod.IsOverlapped)) return;
         var overlappingPeriod = UnavailablePeriods.First(newPeriod.IsOverlapped);
-        throw new ArgumentException(
+        throw new DomainException(
             $"The availability period overlaps with an already booked period from {overlappingPeriod.StartDate} to {overlappingPeriod.EndDate}.");
     }
 

@@ -1,4 +1,5 @@
 using BusinessLogic.DTOs;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services;
 using DataAccess;
 using DataAccess.Repositories;
@@ -124,7 +125,7 @@ public class PromotionServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            Assert.ThrowsException<BusinessLogicException>(() =>
                 _promotionService.AddPromotion(promotionDto, _clientCredentials));
 
         // Assert
@@ -146,7 +147,7 @@ public class PromotionServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            Assert.ThrowsException<BusinessLogicException>(() =>
                 _promotionService.DeletePromotion(1, _clientCredentials));
 
         // Assert
@@ -176,7 +177,7 @@ public class PromotionServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            Assert.ThrowsException<BusinessLogicException>(() =>
                 _promotionService.ModifyPromotion(modifiedPromotionDto, _clientCredentials));
 
         // Assert
@@ -198,7 +199,7 @@ public class PromotionServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() =>
+            Assert.ThrowsException<BusinessLogicException>(() =>
                 _promotionService.ModifyPromotion(modifiedPromotionDto, _adminCredentials));
 
         // Assert
@@ -210,7 +211,7 @@ public class PromotionServiceTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() =>
+            Assert.ThrowsException<BusinessLogicException>(() =>
                 _promotionService.DeletePromotion(1, _adminCredentials));
 
         // Assert
@@ -232,7 +233,7 @@ public class PromotionServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            Assert.ThrowsException<BusinessLogicException>(() =>
                 _promotionService.GetAllPromotions(_clientCredentials));
 
         // Assert
@@ -257,7 +258,7 @@ public class PromotionServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _promotionService.DeletePromotion(1, _adminCredentials));
+            Assert.ThrowsException<BusinessLogicException>(() => _promotionService.DeletePromotion(1, _adminCredentials));
 
         // Assert
         Assert.AreEqual("There are existing deposits for this promotion.", exception.Message);

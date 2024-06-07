@@ -1,4 +1,6 @@
+using DateRange;
 using Domain.Enums;
+using Domain.Exceptions;
 
 namespace Domain.Test;
 
@@ -45,7 +47,7 @@ public class BookingTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() =>
+            Assert.ThrowsException<DateRangeException>(() =>
                 new Booking(1, _deposit, Client, Tomorrow, Today, _payment));
 
         // Assert
@@ -58,7 +60,7 @@ public class BookingTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() =>
+            Assert.ThrowsException<DomainException>(() =>
                 new Booking(1, _deposit, Client, Today.AddDays(-1), Tomorrow, _payment));
 
         // Assert
@@ -70,7 +72,7 @@ public class BookingTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() =>
+            Assert.ThrowsException<DomainException>(() =>
                 new Booking(1, _deposit, Client, Today, Today, _payment));
 
         // Assert
@@ -83,7 +85,7 @@ public class BookingTest
         var depositA = new Deposit("Deposit", DepositArea.A, DepositSize.Small, true, Promotions);
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() =>
+            Assert.ThrowsException<DomainException>(() =>
                 new Booking(1, depositA, Client, Tomorrow, Tomorrow.AddDays(2), _payment));
         // Assert
         Assert.AreEqual("The duration of the booking must be contained in the deposit availability periods.",
@@ -124,7 +126,7 @@ public class BookingTest
         var overlappingPeriod = new DateRange.DateRange(Today, Tomorrow.AddDays(1));
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<DomainException>(() =>
             booking.Deposit.AddAvailabilityPeriod(overlappingPeriod));
 
         // Assert

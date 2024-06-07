@@ -1,4 +1,5 @@
 using Domain.Enums;
+using Domain.Exceptions;
 
 namespace Domain.Test;
 
@@ -33,7 +34,7 @@ public class DepositTest
     public void TestCantCreateDepositIfNameDoesNotHaveOnlyLettersAndSpaces()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<DomainException>(() =>
             new Deposit("Name123", Area, Size, ClimateControl, _promotionList));
 
         // Assert
@@ -45,7 +46,7 @@ public class DepositTest
     {
         var invalidName = string.Concat(Enumerable.Repeat("a", 101));
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<DomainException>(() =>
             new Deposit(invalidName, Area, Size, ClimateControl, _promotionList));
 
         // Assert

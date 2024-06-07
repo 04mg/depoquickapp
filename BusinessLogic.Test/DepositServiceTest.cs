@@ -1,4 +1,5 @@
 using BusinessLogic.DTOs;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services;
 using DataAccess;
 using DataAccess.Repositories;
@@ -112,7 +113,7 @@ public class DepositServiceTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositService.DeleteDeposit(Name, _adminCredentials));
+            Assert.ThrowsException<BusinessLogicException>(() => _depositService.DeleteDeposit(Name, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Deposit not found.", exception.Message);
@@ -133,7 +134,7 @@ public class DepositServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            Assert.ThrowsException<BusinessLogicException>(() =>
                 _depositService.AddDeposit(depositDto, _clientCredentials));
 
         // Assert
@@ -156,7 +157,7 @@ public class DepositServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            Assert.ThrowsException<BusinessLogicException>(() =>
                 _depositService.DeleteDeposit(Name, _clientCredentials));
 
         // Assert
@@ -200,7 +201,7 @@ public class DepositServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositService.AddDeposit(depositDto, _adminCredentials));
+            Assert.ThrowsException<BusinessLogicException>(() => _depositService.AddDeposit(depositDto, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Deposit name is already taken.", exception.Message);
@@ -238,7 +239,7 @@ public class DepositServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositService.DeleteDeposit(Name, _adminCredentials));
+            Assert.ThrowsException<BusinessLogicException>(() => _depositService.DeleteDeposit(Name, _adminCredentials));
 
         // Assert
         Assert.AreEqual("There are existing bookings for this deposit.", exception.Message);
@@ -265,7 +266,7 @@ public class DepositServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _depositService.AddDeposit(depositDto, _adminCredentials);
         });
@@ -315,7 +316,7 @@ public class DepositServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _depositService.GetDepositsByAvailabilityPeriod(dateRangeDto);
         });
@@ -338,7 +339,7 @@ public class DepositServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _depositService.AddDeposit(depositDto, _adminCredentials);
         });
@@ -361,7 +362,7 @@ public class DepositServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _depositService.AddDeposit(depositDto, _adminCredentials);
         });

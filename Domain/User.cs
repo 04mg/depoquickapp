@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Domain.Enums;
+using Domain.Exceptions;
 
 namespace Domain;
 
@@ -73,26 +74,26 @@ public class User
     private static void EnsureNameSurnameHasOnlyLettersAndWhitespaces(string value)
     {
         if (!value.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-            throw new ArgumentException(
+            throw new DomainException(
                 "NameSurname format is invalid, it should only contain letters and whitespaces.");
     }
 
     private static void EnsureRankIsValid(string rank)
     {
-        if (!Enum.TryParse<UserRank>(rank, out _)) throw new ArgumentException("Rank is invalid.");
+        if (!Enum.TryParse<UserRank>(rank, out _)) throw new DomainException("Rank is invalid.");
     }
 
     private static void EnsureNameSurnameContainsSpace(string nameSurname)
     {
         if (!nameSurname.Contains(' '))
-            throw new ArgumentException(
+            throw new DomainException(
                 "NameSurname format is invalid, it has to contain a space between the name and surname.");
     }
 
     private static void EnsureNameSurnameHasValidLength(string nameSurname)
     {
         if (nameSurname.Length > MaxNameSurnameLength)
-            throw new ArgumentException("NameSurname format is invalid, length must be lesser or equal to 100.");
+            throw new DomainException("NameSurname format is invalid, length must be lesser or equal to 100.");
     }
 
     private static void EnsureNameSurnameHasNameAndSurname(string nameSurname)
@@ -100,48 +101,48 @@ public class User
         var nameSurnameParts = nameSurname.Split(' ');
         if (nameSurnameParts.Length < 2 || string.IsNullOrWhiteSpace(nameSurnameParts[0]) ||
             string.IsNullOrWhiteSpace(nameSurnameParts[1]))
-            throw new ArgumentException("NameSurname format is invalid, it has to contain a name and a surname.");
+            throw new DomainException("NameSurname format is invalid, it has to contain a name and a surname.");
     }
 
     private static void EnsurePasswordHasDigit(string password)
     {
         if (!password.Any(char.IsDigit))
-            throw new ArgumentException("Password format is invalid, it must contain at least one digit.");
+            throw new DomainException("Password format is invalid, it must contain at least one digit.");
     }
 
     private static void EnsurePasswordHasLowercaseLetter(string password)
     {
         if (!password.Any(char.IsLower))
-            throw new ArgumentException("Password format is invalid, it must contain at least one lowercase letter.");
+            throw new DomainException("Password format is invalid, it must contain at least one lowercase letter.");
     }
 
     private static void EnsurePasswordHasUppercaseLetter(string password)
     {
         if (!password.Any(char.IsUpper))
-            throw new ArgumentException("Password format is invalid, it must contain at least one uppercase letter.");
+            throw new DomainException("Password format is invalid, it must contain at least one uppercase letter.");
     }
 
     private static void EnsurePasswordHasValidLength(string password)
     {
         if (password.Length < MinPasswordLength)
-            throw new ArgumentException("Password format is invalid, length must be at least 8.");
+            throw new DomainException("Password format is invalid, length must be at least 8.");
     }
 
     private static void EnsurePasswordHasSymbol(string password)
     {
         if (!password.Any(ValidSymbols.Contains))
-            throw new ArgumentException(
+            throw new DomainException(
                 "Password format is invalid, it must contain at least one of the following symbols: #@$.,%");
     }
 
     private static void EnsureEmailIsValidFormat(string email)
     {
-        if (!EmailRegex.IsMatch(email)) throw new ArgumentException("Email format is invalid.");
+        if (!EmailRegex.IsMatch(email)) throw new DomainException("Email format is invalid.");
     }
 
     private static void EnsureEmailHasValidLength(string email)
     {
         if (email.Length > MaxEmailLength)
-            throw new ArgumentException("Email format is invalid, length must be lesser or equal to 254.");
+            throw new DomainException("Email format is invalid, length must be lesser or equal to 254.");
     }
 }

@@ -1,3 +1,5 @@
+using Domain.Exceptions;
+
 namespace Domain;
 
 public class Promotion
@@ -48,7 +50,7 @@ public class Promotion
     private void EnsureEndDateIsGreaterThanToday(DateOnly endDate)
     {
         if (endDate < DateOnly.FromDateTime(DateTime.Now))
-            throw new ArgumentException("The ending date of the promotion cannot be in the past.");
+            throw new DomainException("The ending date of the promotion cannot be in the past.");
     }
 
     public int Discount
@@ -64,22 +66,22 @@ public class Promotion
     private static void EnsureDiscountIsWithinRange(int value)
     {
         if (value < MinDiscount || value > MaxDiscount)
-            throw new ArgumentException("Discount must be between 5% and 70%.");
+            throw new DomainException("Discount must be between 5% and 70%.");
     }
 
     private static void EnsureLabelHasNoSymbols(string label)
     {
         if (!label.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
-            throw new ArgumentException("Label must not contain symbols.");
+            throw new DomainException("Label must not contain symbols.");
     }
 
     private static void EnsureLabelLengthIsLesserOrEqualThan20(string label)
     {
-        if (label.Length > MaxLabelLength) throw new ArgumentException("Label length must be lesser or equal than 20.");
+        if (label.Length > MaxLabelLength) throw new DomainException("Label length must be lesser or equal than 20.");
     }
 
     private static void EnsureLabelIsNotEmpty(string label)
     {
-        if (string.IsNullOrWhiteSpace(label)) throw new ArgumentException("Label must not be empty.");
+        if (string.IsNullOrWhiteSpace(label)) throw new DomainException("Label must not be empty.");
     }
 }
