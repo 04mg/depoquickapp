@@ -1,5 +1,6 @@
 using BusinessLogic.Calculators;
 using BusinessLogic.DTOs;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Reports;
 using DataAccess.Repositories;
 using Domain;
@@ -40,12 +41,12 @@ public class BookingService
 
     private void EnsureDepositExists(string name)
     {
-        if (!_depositRepository.Exists(name)) throw new ArgumentException("Deposit not found.");
+        if (!_depositRepository.Exists(name)) throw new BusinessLogicException("Deposit not found.");
     }
 
     private void EnsureUserExists(string email)
     {
-        if (!_userRepository.Exists(email)) throw new ArgumentException("User not found.");
+        if (!_userRepository.Exists(email)) throw new BusinessLogicException("User not found.");
     }
 
     public IEnumerable<BookingDto> GetBookingsByEmail(string email, Credentials credentials)
@@ -82,19 +83,19 @@ public class BookingService
     private static void EnsureUserIsAdministrator(Credentials credentials)
     {
         if (credentials.Rank != "Administrator")
-            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+            throw new BusinessLogicException("You are not authorized to perform this action.");
     }
 
     private static void EnsureUserIsAdministratorOrEmailMatches(string email, Credentials credentials)
     {
         if (credentials.Rank != "Administrator" && credentials.Email != email)
-            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+            throw new BusinessLogicException("You are not authorized to perform this action.");
     }
 
     private static void EnsureEmailMatches(string email, Credentials credentials)
     {
         if (credentials.Email != email)
-            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+            throw new BusinessLogicException("You are not authorized to perform this action.");
     }
 
     public IEnumerable<BookingDto> GetAllBookings(Credentials credentials)
@@ -125,7 +126,7 @@ public class BookingService
 
     private static void EnsureMessageIsNotEmpty(string message)
     {
-        if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be empty.");
+        if (string.IsNullOrWhiteSpace(message)) throw new BusinessLogicException("Message cannot be empty.");
     }
 
     public BookingDto GetBooking(int id, Credentials credentials)
@@ -138,7 +139,7 @@ public class BookingService
 
     private void EnsureBookingExists(int id)
     {
-        if (!_bookingRepository.Exists(id)) throw new ArgumentException("Booking not found.");
+        if (!_bookingRepository.Exists(id)) throw new BusinessLogicException("Booking not found.");
     }
 
     public void GenerateReport(string type, Credentials credentials)

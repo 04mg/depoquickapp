@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Enums;
+using Domain.Exceptions;
 
 namespace Domain;
 
@@ -43,13 +44,13 @@ public class Deposit
     private static void EnsureNameLengthIsValid(string name)
     {
         if (name.Length is 0 or > 100)
-            throw new ArgumentException("Name is invalid, it should be lesser or equal to 100 characters.");
+            throw new DomainException("Name is invalid, it should be lesser or equal to 100 characters.");
     }
 
     private static void EnsureNameIsLettersOrSpaces(string name)
     {
         if (!name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
-            throw new ArgumentException("Name is invalid, it should only contain letters and whitespaces.");
+            throw new DomainException("Name is invalid, it should only contain letters and whitespaces.");
     }
 
     public bool HasPromotion(int promotionId)

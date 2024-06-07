@@ -5,7 +5,7 @@ namespace BusinessLogic.Reports;
 
 public class CsvBookingReport : IBookingReport
 {
-    public string GenerateReportContent(Booking booking)
+    private static string GenerateReportContent(Booking booking)
     {
         return $"{booking.GetDepositName()}," +
                $"{booking.GetClientEmail()}," +

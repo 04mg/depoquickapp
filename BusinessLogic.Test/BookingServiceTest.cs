@@ -1,4 +1,5 @@
 using BusinessLogic.DTOs;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services;
 using DataAccess;
 using DataAccess.Repositories;
@@ -269,7 +270,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _otherClientCredentials);
 
         // Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.GetBookingsByEmail("other@test.com", _clientCredentials));
 
         // Assert
@@ -291,7 +292,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _otherClientCredentials);
 
         // Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.GetBookingsByEmail("other@test.com", _clientCredentials));
 
         // Assert
@@ -313,7 +314,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _clientCredentials);
 
         // Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.GetAllBookings(_clientCredentials));
 
         // Assert
@@ -335,7 +336,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _clientCredentials);
 
         //Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.ApproveBooking(1, _clientCredentials));
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
@@ -361,7 +362,7 @@ public class BookingServiceTest
         };
 
         //Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.RejectBooking(rejectBookingDto, _clientCredentials));
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
@@ -371,7 +372,7 @@ public class BookingServiceTest
     public void TestCantApproveNonExistentBooking()
     {
         //Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.ApproveBooking(1, _adminCredentials));
         //Assert
         Assert.AreEqual("Booking not found.", exception.Message);
@@ -388,7 +389,7 @@ public class BookingServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.RejectBooking(rejectBookingDto, _adminCredentials));
         // Assert
         Assert.AreEqual("Booking not found.", exception.Message);
@@ -414,7 +415,7 @@ public class BookingServiceTest
         };
 
         //Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.RejectBooking(rejectBookingDto, _adminCredentials));
         //Assert
         Assert.AreEqual("Message cannot be empty.", exception.Message);
@@ -438,7 +439,7 @@ public class BookingServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _bookingService.AddBooking(bookingDto, _clientCredentials);
         });
@@ -461,7 +462,7 @@ public class BookingServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _bookingService.AddBooking(bookingDto, _clientCredentials);
         });
@@ -484,7 +485,7 @@ public class BookingServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _bookingService.AddBooking(bookingDto, _otherClientCredentials);
         });
@@ -531,7 +532,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _clientCredentials);
 
         //Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _bookingService.GenerateReport("invalid", _adminCredentials);
         });
@@ -555,7 +556,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _clientCredentials);
 
         //Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _bookingService.GenerateReport("txt", _clientCredentials);
         });

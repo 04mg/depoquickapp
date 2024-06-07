@@ -1,4 +1,5 @@
 using Domain.Enums;
+using Domain.Exceptions;
 
 namespace Domain;
 
@@ -52,7 +53,7 @@ public class Booking
     {
         if (!deposit.IsAvailable(dateRange))
         {
-            throw new ArgumentException(
+            throw new DomainException(
                 "The duration of the booking must be contained in the deposit availability periods.");
         }
     }
@@ -60,13 +61,13 @@ public class Booking
     private static void EnsureDateFromIsNotEqualToDateTo(DateOnly startDate, DateOnly dateTo)
     {
         if (startDate == dateTo)
-            throw new ArgumentException("The starting date of the booking must not be the same as the ending date.");
+            throw new DomainException("The starting date of the booking must not be the same as the ending date.");
     }
 
     private static void EnsureDateFromIsGreaterThanToday(DateOnly startDate)
     {
         if (startDate < DateOnly.FromDateTime(DateTime.Now))
-            throw new ArgumentException("The starting date of the booking must not be earlier than today.");
+            throw new DomainException("The starting date of the booking must not be earlier than today.");
     }
 
     public void Approve()

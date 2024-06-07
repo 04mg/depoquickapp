@@ -1,4 +1,5 @@
 using Domain.Enums;
+using Domain.Exceptions;
 
 namespace Domain.Test;
 
@@ -23,7 +24,7 @@ public class UserTest
     public void TestCantCreateUserWithInvalidEmailFormat()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, "test", Password));
+        var exception = Assert.ThrowsException<DomainException>(() => new User(NameSurname, "test", Password));
 
         // Assert
         Assert.AreEqual("Email format is invalid.", exception.Message);
@@ -37,7 +38,7 @@ public class UserTest
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, emailLength255, Password));
+            Assert.ThrowsException<DomainException>(() => new User(NameSurname, emailLength255, Password));
 
         // Assert
         Assert.AreEqual("Email format is invalid, length must be lesser or equal to 254.", exception.Message);
@@ -47,7 +48,7 @@ public class UserTest
     public void TestCantCreateUserWithAPasswordWithoutSymbols()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, Email, "12345678mE"));
+        var exception = Assert.ThrowsException<DomainException>(() => new User(NameSurname, Email, "12345678mE"));
 
         // Assert
         Assert.AreEqual("Password format is invalid, it must contain at least one of the following symbols: #@$.,%",
@@ -58,7 +59,7 @@ public class UserTest
     public void TestCantCreateUserWithPasswordLengthLessThan8()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, Email, "1234@mE"));
+        var exception = Assert.ThrowsException<DomainException>(() => new User(NameSurname, Email, "1234@mE"));
 
         // Assert
         Assert.AreEqual("Password format is invalid, length must be at least 8.", exception.Message);
@@ -68,7 +69,7 @@ public class UserTest
     public void TestCantCreateUserWithAPasswordWithoutUppercaseLetter()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, Email, "12345678@m"));
+        var exception = Assert.ThrowsException<DomainException>(() => new User(NameSurname, Email, "12345678@m"));
 
         // Assert
         Assert.AreEqual("Password format is invalid, it must contain at least one uppercase letter.",
@@ -79,7 +80,7 @@ public class UserTest
     public void TestCantCreateUserWithAPasswordWithoutLowercaseLetter()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, Email, "12345678@E"));
+        var exception = Assert.ThrowsException<DomainException>(() => new User(NameSurname, Email, "12345678@E"));
 
         // Assert
         Assert.AreEqual("Password format is invalid, it must contain at least one lowercase letter.",
@@ -90,7 +91,7 @@ public class UserTest
     public void TestCantCreateUserWithAPasswordWithoutADigit()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, Email, "password@E"));
+        var exception = Assert.ThrowsException<DomainException>(() => new User(NameSurname, Email, "password@E"));
 
         // Assert
         Assert.AreEqual("Password format is invalid, it must contain at least one digit.", exception.Message);
@@ -100,7 +101,7 @@ public class UserTest
     public void TestCantCreateUserWithANameSurnameWithoutSpace()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User("NameSurname", Email, Password));
+        var exception = Assert.ThrowsException<DomainException>(() => new User("NameSurname", Email, Password));
 
         // Assert
         Assert.AreEqual("NameSurname format is invalid, it has to contain a space between the name and surname.",
@@ -111,7 +112,7 @@ public class UserTest
     public void TestCantCreateUserWithoutSurname()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User("Name ", Email, Password));
+        var exception = Assert.ThrowsException<DomainException>(() => new User("Name ", Email, Password));
 
         // Assert
         Assert.AreEqual("NameSurname format is invalid, it has to contain a name and a surname.", exception.Message);
@@ -121,7 +122,7 @@ public class UserTest
     public void TestCantCreateUserWithoutName()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User(" Surname", Email, Password));
+        var exception = Assert.ThrowsException<DomainException>(() => new User(" Surname", Email, Password));
 
         // Assert
         Assert.AreEqual("NameSurname format is invalid, it has to contain a name and a surname.", exception.Message);
@@ -135,7 +136,7 @@ public class UserTest
             "Name Surname Name Surname Name Surname Name Surname Name Surname Name Surname Name Surname Name Seven";
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User(nameLength101, Email, Password));
+        var exception = Assert.ThrowsException<DomainException>(() => new User(nameLength101, Email, Password));
 
         // Assert
         Assert.AreEqual("NameSurname format is invalid, length must be lesser or equal to 100.", exception.Message);
@@ -145,7 +146,7 @@ public class UserTest
     public void TestCantCreateUserWithNameSurnameWithNumbers()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User("Name 123", Email, Password));
+        var exception = Assert.ThrowsException<DomainException>(() => new User("Name 123", Email, Password));
 
         // Assert
         Assert.AreEqual("NameSurname format is invalid, it should only contain letters and whitespaces.",
@@ -156,7 +157,7 @@ public class UserTest
     public void TestCantCreateUserWithNameSurnameWithSymbols()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new User("Name $", Email, Password));
+        var exception = Assert.ThrowsException<DomainException>(() => new User("Name $", Email, Password));
 
         // Assert
         Assert.AreEqual("NameSurname format is invalid, it should only contain letters and whitespaces.",
@@ -178,7 +179,7 @@ public class UserTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new User(NameSurname, Email, Password, "InvalidRank"));
+            Assert.ThrowsException<DomainException>(() => new User(NameSurname, Email, Password, "InvalidRank"));
 
         // Assert
         Assert.AreEqual("Rank is invalid.", exception.Message);

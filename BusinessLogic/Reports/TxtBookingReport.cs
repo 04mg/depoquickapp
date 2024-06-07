@@ -5,7 +5,7 @@ namespace BusinessLogic.Reports;
 
 public class TxtBookingReport : IBookingReport
 {
-    public string GenerateReportContent(Booking booking)
+    private static string GenerateReportContent(Booking booking)
     {
         return $"{booking.GetDepositName()}\t" +
                $"{booking.Duration.StartDate}-{booking.Duration.EndDate}\t" +

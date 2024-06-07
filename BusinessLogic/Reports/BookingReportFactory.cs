@@ -1,3 +1,5 @@
+using BusinessLogic.Exceptions;
+
 namespace BusinessLogic.Reports;
 
 public abstract class BookingReportFactory
@@ -8,7 +10,7 @@ public abstract class BookingReportFactory
         {
             "txt" => new TxtBookingReport(),
             "csv" => new CsvBookingReport(),
-            _ => throw new ArgumentException("Invalid format. Supported formats: txt, csv.")
+            _ => throw new BusinessLogicException("Invalid format. Supported formats: txt, csv.")
         };
     }
 }

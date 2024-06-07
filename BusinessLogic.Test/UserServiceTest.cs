@@ -1,4 +1,5 @@
 using BusinessLogic.DTOs;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services;
 using DataAccess;
 using DataAccess.Repositories;
@@ -70,7 +71,7 @@ public class UserServiceTest
         _userService.Register(_registerDto);
 
         // Act & Assert
-        Assert.ThrowsException<ArgumentException>(() => { _userService.Register(_registerDto); });
+        Assert.ThrowsException<BusinessLogicException>(() => { _userService.Register(_registerDto); });
     }
 
     [TestMethod]
@@ -87,7 +88,7 @@ public class UserServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => { _userService.Register(wrongRegisterDto); });
+        var exception = Assert.ThrowsException<BusinessLogicException>(() => { _userService.Register(wrongRegisterDto); });
 
         // Assert
         Assert.AreEqual("Passwords do not match.", exception.Message);
@@ -106,7 +107,7 @@ public class UserServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => { _userService.Login(wrongLoginDto); });
+            Assert.ThrowsException<BusinessLogicException>(() => { _userService.Login(wrongLoginDto); });
 
         // Assert
         Assert.IsTrue(exception.Message.Contains("Wrong password."));
@@ -116,7 +117,7 @@ public class UserServiceTest
     public void TestCantLoginWithNonExistingUser()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => { _userService.Login(_loginDto); });
+        var exception = Assert.ThrowsException<BusinessLogicException>(() => { _userService.Login(_loginDto); });
 
         // Assert
         Assert.AreSame(exception.Message, "User does not exist.");
@@ -145,7 +146,7 @@ public class UserServiceTest
 
         // Act
         _userService.Register(adminRegisterDto);
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _userService.Register(otherAdminRegisterDto);
         });
