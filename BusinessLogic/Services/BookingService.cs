@@ -69,13 +69,13 @@ public class BookingService
         };
     }
 
-    private static PaymentDto? PaymentDtoFromPayment(IPayment? payment)
+    private static PaymentDto? PaymentDtoFromPayment(Payment? payment)
     {
         if (payment == null) return null;
         return new PaymentDto
         {
-            Amount = payment.GetAmount(),
-            Captured = payment.IsCaptured()
+            Amount = payment.Amount,
+            Status = payment.Status.ToString()
         };
     }
 
