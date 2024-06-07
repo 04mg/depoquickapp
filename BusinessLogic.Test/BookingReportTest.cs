@@ -70,10 +70,10 @@ public class BookingReportTest
                                         "Reserved\t" +
                                         "No\n";
         var reportContent = depositReport + depositNoPromotionsReport;
-        var reportGenerator = new BookingReportGenerator(new TxtBookingReport());
+        var reportGenerator = new TxtBookingReport();
 
         // Act
-        reportGenerator.GenerateReport(bookings);
+        reportGenerator.CreateReportFile(bookings);
 
         // Assert
         Assert.IsTrue(File.Exists(path));
@@ -104,10 +104,10 @@ public class BookingReportTest
                                         "Reserved," +
                                         "No\n";
         var reportContent = header + depositReport + depositNoPromotionsReport;
-        var reportGenerator = new BookingReportGenerator(new CsvBookingReport());
+        var reportGenerator = new CsvBookingReport();
 
         // Act
-        reportGenerator.GenerateReport(bookings);
+        reportGenerator.CreateReportFile(bookings);
 
         // Assert
         Assert.IsTrue(File.Exists(path));
@@ -139,10 +139,10 @@ public class BookingReportTest
                                         "Rejected\t" +
                                         "No\n";
         var reportContent = depositReport + depositNoPromotionsReport;
-        var reportGenerator = new BookingReportGenerator(new TxtBookingReport());
+        var reportGenerator = new TxtBookingReport();
 
         // Act
-        reportGenerator.GenerateReport(bookings);
+        reportGenerator.CreateReportFile(bookings);
 
         // Assert
         Assert.IsTrue(File.Exists(path));
@@ -174,10 +174,10 @@ public class BookingReportTest
                                         "Captured\t" +
                                         "No\n";
         var reportContent = depositReport + depositNoPromotionsReport;
-        var reportGenerator = new BookingReportGenerator(new TxtBookingReport());
+        var reportGenerator = new TxtBookingReport();
 
         // Act
-        reportGenerator.GenerateReport(bookings);
+        reportGenerator.CreateReportFile(bookings);
 
         // Assert
         Assert.IsTrue(File.Exists(path));
@@ -210,10 +210,10 @@ public class BookingReportTest
                                         "Rejected," +
                                         "No\n";
         var reportContent = header + depositReport + depositNoPromotionsReport;
-        var reportGenerator = new BookingReportGenerator(new CsvBookingReport());
+        var reportGenerator = new CsvBookingReport();
 
         // Act
-        reportGenerator.GenerateReport(bookings);
+        reportGenerator.CreateReportFile(bookings);
 
         // Assert
         Assert.IsTrue(File.Exists(path));
@@ -246,10 +246,10 @@ public class BookingReportTest
                                         "Captured," +
                                         "No\n";
         var reportContent = header + depositReport + depositNoPromotionsReport;
-        var reportGenerator = new BookingReportGenerator(new CsvBookingReport());
+        var reportGenerator = new CsvBookingReport();
 
         // Act
-        reportGenerator.GenerateReport(bookings);
+        reportGenerator.CreateReportFile(bookings);
 
         // Assert
         Assert.IsTrue(File.Exists(path));
