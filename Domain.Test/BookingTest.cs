@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Domain.Test;
 
 [TestClass]
@@ -18,13 +20,13 @@ public class BookingTest
         new Promotion(1, "label", 50, Today, Tomorrow)
     };
 
-    private Deposit _deposit = new("Deposit", "A", "Small", true, Promotions);
+    private Deposit _deposit = new("Deposit", DepositArea.A, DepositSize.Small, true, Promotions);
 
     [TestInitialize]
     public void Initialize()
     {
         _payment = new Payment(50);
-        _deposit = new Deposit("Deposit", "A", "Small", true, Promotions);
+        _deposit = new Deposit("Deposit", DepositArea.A, DepositSize.Small, true, Promotions);
         _deposit.AddAvailabilityPeriod(new DateRange.DateRange(Today, Today.AddDays(100)));
     }
 
@@ -78,7 +80,7 @@ public class BookingTest
     [TestMethod]
     public void TestCantCreateBookingIfTheDurationOfTheBookingIsNotIncludedInAnAvailabilityPeriod()
     {
-        var depositA = new Deposit("Deposit", "A", "Small", true, Promotions);
+        var depositA = new Deposit("Deposit", DepositArea.A, DepositSize.Small, true, Promotions);
         // Act
         var exception =
             Assert.ThrowsException<ArgumentException>(() =>

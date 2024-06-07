@@ -5,15 +5,13 @@ namespace Domain;
 
 public class Deposit
 {
-    private readonly string _area = "";
-    private readonly string _size = "";
     private readonly string _name = "";
 
     public Deposit()
     {
     }
 
-    public Deposit(string name, string area, string size, bool climateControl, List<Promotion> promotions)
+    public Deposit(string name, DepositArea area, DepositSize size, bool climateControl, List<Promotion> promotions)
     {
         Name = name;
         Area = area;
@@ -39,25 +37,8 @@ public class Deposit
         }
     }
 
-    public string Area
-    {
-        get => _area;
-        private init
-        {
-            EnsureAreaIsValid(value);
-            _area = value;
-        }
-    }
-
-    public string Size
-    {
-        get => _size;
-        private init
-        {
-            EnsureSizeIsValid(value);
-            _size = value;
-        }
-    }
+    public DepositArea Area { get; set; }
+    public DepositSize Size { get; set; }
 
     private static void EnsureNameLengthIsValid(string name)
     {
@@ -69,16 +50,6 @@ public class Deposit
     {
         if (!name.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
             throw new ArgumentException("Name is invalid, it should only contain letters and whitespaces.");
-    }
-
-    private static void EnsureAreaIsValid(string area)
-    {
-        if (!Enum.TryParse<Area>(area, out _)) throw new ArgumentException("Area is invalid.");
-    }
-
-    private static void EnsureSizeIsValid(string size)
-    {
-        if (!Enum.TryParse<Size>(size, out _)) throw new ArgumentException("Size is invalid.");
     }
 
     public bool HasPromotion(int promotionId)

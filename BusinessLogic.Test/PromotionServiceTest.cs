@@ -3,6 +3,7 @@ using BusinessLogic.Services;
 using DataAccess;
 using DataAccess.Repositories;
 using Domain;
+using Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogic.Test;
@@ -251,7 +252,7 @@ public class PromotionServiceTest
             DateTo = _tomorrow
         };
         _promotionService.AddPromotion(promotionDto, _adminCredentials);
-        var deposit = new Deposit("Deposit", "A", "Large", true, new List<Promotion>() { promotion });
+        var deposit = new Deposit("Deposit", DepositArea.A, DepositSize.Large, true, new List<Promotion>() { promotion });
         _depositRepository.Add(deposit);
 
         // Act

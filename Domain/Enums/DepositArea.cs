@@ -1,6 +1,6 @@
 namespace Domain.Enums;
 
-public enum Area
+public enum DepositArea
 {
     A,
     B,

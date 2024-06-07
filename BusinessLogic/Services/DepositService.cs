@@ -1,6 +1,7 @@
 using BusinessLogic.DTOs;
 using DataAccess.Repositories;
 using Domain;
+using Domain.Enums;
 
 namespace BusinessLogic.Services;
 
@@ -41,8 +42,8 @@ public class DepositService
         return new DepositDto
         {
             Name = deposit.Name,
-            Area = deposit.Area,
-            Size = deposit.Size,
+            Area = deposit.Area.ToString(),
+            Size = deposit.Size.ToString(),
             ClimateControl = deposit.ClimateControl,
             Promotions = PromotionsToDto(deposit.Promotions),
             AvailabilityPeriods = DateRangeToDto(deposit.GetAvailablePeriods())
@@ -82,8 +83,21 @@ public class DepositService
 
     private static Deposit DepositFromDto(DepositDto depositDto)
     {
-        return new Deposit(depositDto.Name, depositDto.Area, depositDto.Size, depositDto.ClimateControl,
+        return new Deposit(depositDto.Name, DepositAreaFromDto(depositDto.Area), DepositSizeFromDto(depositDto.Size),
+            depositDto.ClimateControl,
             PromotionsFromDto(depositDto.Promotions));
+    }
+
+    private static DepositArea DepositAreaFromDto(string areaString)
+    {
+        Enum.TryParse(areaString, out DepositArea areaEnum);
+        return areaEnum;
+    }
+
+    private static DepositSize DepositSizeFromDto(string sizeString)
+    {
+        Enum.TryParse(sizeString, out DepositSize sizeEnum);
+        return sizeEnum;
     }
 
     private static Promotion PromotionFromDto(PromotionDto promotionDto)

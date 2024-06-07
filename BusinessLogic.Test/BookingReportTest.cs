@@ -1,5 +1,6 @@
 using BusinessLogic.Reports;
 using Domain;
+using Domain.Enums;
 
 namespace BusinessLogic.Test;
 
@@ -26,10 +27,10 @@ public class BookingReportTest
     [TestInitialize]
     public void Initialize()
     {
-        _deposit = new Deposit("Deposit", "A", "Small", true, Promotions);
+        _deposit = new Deposit("Deposit", DepositArea.A, DepositSize.Small, true, Promotions);
         _deposit.AddAvailabilityPeriod(new DateRange.DateRange(Today, Today.AddDays(100)));
 
-        _depositNoPromotions = new Deposit("Deposit", "A", "Small", true, new List<Promotion>());
+        _depositNoPromotions = new Deposit("Deposit", DepositArea.A, DepositSize.Small, true, new List<Promotion>());
         _depositNoPromotions.AddAvailabilityPeriod(new DateRange.DateRange(Today, Today.AddDays(100)));
     }
 
