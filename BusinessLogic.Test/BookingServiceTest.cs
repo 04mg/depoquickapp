@@ -600,7 +600,7 @@ public class BookingServiceTest
         // Assert
         var booking = _bookingService.GetBooking(1, _clientCredentials);
         _bookingService.ApproveBooking(1, _adminCredentials);
-        Assert.IsFalse(booking.Payment!.Value.Captured);
+        Assert.AreEqual(booking.Payment!.Value.Status, "Reserved");
         Assert.AreEqual(35, booking.Payment!.Value.Amount);
     }
 }

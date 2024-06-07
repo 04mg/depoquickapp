@@ -41,7 +41,6 @@ public class Booking
         get => _duration;
         private init
         {
-            EnsureDateFromIsLesserThanDateTo(value.StartDate, value.EndDate);
             EnsureDateFromIsNotEqualToDateTo(value.StartDate, value.EndDate);
             EnsureDateFromIsGreaterThanToday(value.StartDate);
             _duration = value;
@@ -62,12 +61,6 @@ public class Booking
     {
         if (startDate == dateTo)
             throw new ArgumentException("The starting date of the booking must not be the same as the ending date.");
-    }
-
-    private static void EnsureDateFromIsLesserThanDateTo(DateOnly startDate, DateOnly dateTo)
-    {
-        if (startDate > dateTo)
-            throw new ArgumentException("The starting date of the booking must not be later than the ending date.");
     }
 
     private static void EnsureDateFromIsGreaterThanToday(DateOnly startDate)
@@ -98,24 +91,24 @@ public class Booking
 
     public bool IsPaymentCaptured()
     {
-        return Payment != null && Payment.IsCaptured();
+        return Payment is { Status: PaymentStatus.Captured };
     }
 
     public string GetPaymentStatus()
     {
         return Payment == null ? "Rejected" : Payment.Status.ToString();
     }
-    
+
     public string GetDepositName()
     {
         return Deposit.Name;
     }
-    
+
     public string GetClientEmail()
     {
         return Client.Email;
     }
-    
+
     public int GetPromotionsCount()
     {
         return Deposit.GetPromotionsCount();

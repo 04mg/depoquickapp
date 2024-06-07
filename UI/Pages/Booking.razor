@@ -102,23 +102,17 @@
     </article>
     <h6 class="vertical-margin large-margin">
         Payment
-        <span class="circle primary center-align middle-align left-margin"><i>payments</i></span>
-    </h6> 
+        <span class="circle primary center-align middle-align left-margin">
+            <i>payments</i>
+        </span>
+    </h6>
     <article>
         @if (_bookingDto.Payment.HasValue)
         {
             <h6 class="small padding">Amount:&nbsp; <b>@_bookingDto.Payment.Value.Amount$</b></h6>
             <div class="divider"></div>
             <h6 class="small padding">
-                Status:&nbsp;
-                @if (@_bookingDto.Payment.Value.Captured)
-                {
-                    <b>Captured</b>
-                }
-                else
-                {
-                    <b>Reserved</b>
-                }
+                Status:&nbsp;<b>@_bookingDto.Payment.Value.Status</b>
             </h6>
         }
         else
