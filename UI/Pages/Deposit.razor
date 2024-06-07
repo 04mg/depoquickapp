@@ -1,6 +1,7 @@
 @page "/Deposit/{Name}"
 @using BusinessLogic.DTOs
 @using BusinessLogic.Services
+@using DataAccess.Exceptions
 @using UI.Data
 @using UI.Pages.Components
 @inherits AuthEnforce
@@ -27,9 +28,8 @@
         set => _name = value;
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnParametersSet()
     {
-        if (!firstRender) return;
         try
         {
             DepositDto = DepositService.GetDeposit(Name);
@@ -42,15 +42,28 @@
             NotificationService.ShowError(e.Message);
             NavigationManager.NavigateTo("/Deposits");
         }
+        catch (DataAccessException e)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
 
         StateHasChanged();
     }
 
     private void UpdateDepositAndPeriods()
     {
-        DepositDto = DepositService.GetDeposit(Name);
-        AvailabilityPeriods = DepositDto.AvailabilityPeriods;
-        AvailabilityPeriods.Sort((a, b) => a.StartDate.CompareTo(b.StartDate));
+        try
+        {
+            DepositDto = DepositService.GetDeposit(Name);
+            AvailabilityPeriods = DepositDto.AvailabilityPeriods;
+            AvailabilityPeriods.Sort((a, b) => a.StartDate.CompareTo(b.StartDate));
+        }
+        catch (DataAccessException e)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
     }
 
     private void DeleteDeposit()
@@ -63,6 +76,11 @@
         }
         catch (ArgumentException e)
         {
+            NotificationService.ShowError(e.Message);
+        }
+        catch (DataAccessException e)
+        {
+            NavigationManager.NavigateTo("/Logout");
             NotificationService.ShowError(e.Message);
         }
     }
@@ -79,6 +97,11 @@
         }
         catch (ArgumentException e)
         {
+            NotificationService.ShowError(e.Message);
+        }
+        catch (DataAccessException e)
+        {
+            NavigationManager.NavigateTo("/Logout");
             NotificationService.ShowError(e.Message);
         }
     }

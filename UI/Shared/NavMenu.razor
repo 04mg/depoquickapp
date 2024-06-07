@@ -1,5 +1,25 @@
 ﻿@using UI.Data
 @inject UserController User;
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        User.OnLoginStatusChanged += UpdateNavbar;
+    }
+
+    public void Dispose()
+    {
+        User.OnLoginStatusChanged -= UpdateNavbar;
+    }
+    
+    private void UpdateNavbar()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+}
+
 @if (User.IsLoggedIn)
 {
     <NavLink href="Deposits">

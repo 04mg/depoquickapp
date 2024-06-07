@@ -1,5 +1,6 @@
 ﻿@page "/login"
 @using BusinessLogic.DTOs
+@using DataAccess.Exceptions
 @using UI.Data
 @inject UserController User
 @inject NavigationManager NavigationManager
@@ -14,10 +15,15 @@
         try
         {
             User.LogIn(_loginDto);
-            NavigationManager.NavigateTo("/Deposits", true);
+            NavigationManager.NavigateTo("/Deposits");
         }
         catch (ArgumentException e)
         {
+            NotificationService.ShowError(e.Message);
+        }
+        catch (DataAccessException e)
+        {
+            NavigationManager.NavigateTo("/Logout");
             NotificationService.ShowError(e.Message);
         }
     }
