@@ -1,12 +1,13 @@
 namespace BusinessLogic.DTOs;
 
-public class BookingDto
+public struct BookingDto
 {
-    public int Id { init; get; }
-    public DateOnly DateFrom { init; get; }
-    public DateOnly DateTo { init; get; }
-    public string DepositName { init; get; } = string.Empty;
-    public string Email { init; get; } = string.Empty;
-    public string Stage { init; get; } = string.Empty;
-    public string Message { init; get; } = string.Empty;
+    public int Id { set; get; }
+    public DateOnly DateFrom { set; get; }
+    public DateOnly DateTo { set; get; }
+    public string DepositName { set; get; }
+    public string Email { set; get; }
+    public string Stage { set; get; }
+    public string Message { set; get; }
+    public PaymentDto? Payment { set; get; }
 }

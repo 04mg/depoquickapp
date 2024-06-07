@@ -1,14 +1,15 @@
 @page "/Promotions"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Services
 @using UI.Data
 @inherits AuthEnforce
-@inject AuthController Auth
-@inject PromotionController PromotionController
+@inject UserController User
+@inject PromotionService PromotionService
 @inject NotificationService NotificationService
 
 @code {
 
-    private AddPromotionDto _addPromotionDto = new()
+    private PromotionDto _addPromotionDto = new()
     {
         DateFrom = DateOnly.FromDateTime(DateTime.Today),
         DateTo = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
@@ -19,8 +20,8 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (!Auth.IsAdmin) return;
-        PromotionsDto = PromotionController.ListAllPromotions(Auth.CurrentCredentials);
+        if (!User.IsAdmin) return;
+        PromotionsDto = PromotionService.GetAllPromotions(User.CurrentCredentials).ToList();
         StateHasChanged();
     }
 
@@ -28,7 +29,7 @@
     {
         try
         {
-            PromotionController.AddPromotion(_addPromotionDto, Auth.CurrentCredentials);
+            PromotionService.AddPromotion(_addPromotionDto, User.CurrentCredentials);
             NotificationService.ShowMessage("Promotion added successfully.");
             StateHasChanged();
         }
@@ -40,7 +41,7 @@
 
 }
 
-@if (!Auth.IsAdmin)
+@if (!User.IsAdmin)
 {
     <Forbidden/>
 }
