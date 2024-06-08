@@ -22,7 +22,7 @@ builder.Services.AddSingleton<IDepositRepository, DepositRepository>();
 builder.Services.AddSingleton<IPromotionRepository, PromotionRepository>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
-builder.Services.AddSingleton<PriceCalculator>();
+builder.Services.AddSingleton<IPriceCalculator, PriceCalculator>();
 
 builder.Services.AddSingleton<BookingService>();
 builder.Services.AddSingleton<DepositService>();

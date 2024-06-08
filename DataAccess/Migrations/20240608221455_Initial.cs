@@ -17,8 +17,8 @@ namespace DataAccess.Migrations
                 {
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ClimateControl = table.Column<bool>(type: "bit", nullable: false),
-                    Area = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Size = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Area = table.Column<int>(type: "int", nullable: false),
+                    Size = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
