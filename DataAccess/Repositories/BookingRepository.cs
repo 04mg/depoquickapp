@@ -27,7 +27,7 @@ public class BookingRepository : IBookingRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
         catch (DbUpdateException)
         {
@@ -44,7 +44,7 @@ public class BookingRepository : IBookingRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 
@@ -58,7 +58,7 @@ public class BookingRepository : IBookingRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 
@@ -72,7 +72,7 @@ public class BookingRepository : IBookingRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 
@@ -89,7 +89,7 @@ public class BookingRepository : IBookingRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
         catch (DbUpdateException)
         {

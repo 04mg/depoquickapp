@@ -25,7 +25,7 @@ public class UserRepository : IUserRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
         catch (DbUpdateException)
         {
@@ -42,7 +42,7 @@ public class UserRepository : IUserRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 
@@ -55,7 +55,7 @@ public class UserRepository : IUserRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 
@@ -68,7 +68,7 @@ public class UserRepository : IUserRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 }
