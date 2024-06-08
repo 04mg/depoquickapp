@@ -1,4 +1,4 @@
-using Calculators;
+using Calculators.Interfaces;
 using Domain;
 
 namespace BusinessLogic.Reports;

@@ -1,7 +1,7 @@
 using BusinessLogic.DTOs;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Reports;
-using Calculators;
+using Calculators.Interfaces;
 using DataAccess.Interfaces;
 using Domain;
 
