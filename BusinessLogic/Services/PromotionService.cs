@@ -1,6 +1,6 @@
 using BusinessLogic.DTOs;
 using BusinessLogic.Exceptions;
-using DataAccess.Repositories;
+using DataAccess.Interfaces;
 using Domain;
 
 namespace BusinessLogic.Services;

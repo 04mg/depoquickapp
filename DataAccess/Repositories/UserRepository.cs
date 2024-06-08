@@ -1,4 +1,5 @@
 using DataAccess.Exceptions;
+using DataAccess.Interfaces;
 using Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

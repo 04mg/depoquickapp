@@ -4,5 +4,5 @@ namespace BusinessLogic.Calculators;
 
 public interface IPriceCalculator
 {
-    double CalculatePrice(Deposit deposit, DateOnly from, DateOnly to);
+    double CalculatePrice(Deposit deposit, DateOnly startDate, DateOnly endDate);
 }
