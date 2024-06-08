@@ -1,4 +1,5 @@
 using DataAccess.Exceptions;
+using DataAccess.Interfaces;
 using Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ public class PromotionRepository : IPromotionRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
         catch (DbUpdateException)
         {
@@ -41,7 +42,7 @@ public class PromotionRepository : IPromotionRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 
@@ -56,7 +57,7 @@ public class PromotionRepository : IPromotionRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
         catch (DbUpdateException)
         {
@@ -73,7 +74,7 @@ public class PromotionRepository : IPromotionRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 
@@ -87,7 +88,7 @@ public class PromotionRepository : IPromotionRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
         catch (DbUpdateException)
         {
@@ -104,7 +105,7 @@ public class PromotionRepository : IPromotionRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 }

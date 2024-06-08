@@ -1,8 +1,8 @@
-using BusinessLogic.Calculators;
 using BusinessLogic.DTOs;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Reports;
-using DataAccess.Repositories;
+using Calculators;
+using DataAccess.Interfaces;
 using Domain;
 
 namespace BusinessLogic.Services;
@@ -11,16 +11,19 @@ public class BookingService
 {
     private readonly IBookingRepository _bookingRepository;
     private readonly IDepositRepository _depositRepository;
+    private readonly IPriceCalculator _priceCalculator;
     private readonly IUserRepository _userRepository;
-    private IEnumerable<Booking> AllBookings => _bookingRepository.GetAll();
 
     public BookingService(IBookingRepository bookingRepository,
-        IDepositRepository depositRepository, IUserRepository userRepository)
+        IDepositRepository depositRepository, IUserRepository userRepository, IPriceCalculator priceCalculator)
     {
         _bookingRepository = bookingRepository;
         _depositRepository = depositRepository;
         _userRepository = userRepository;
+        _priceCalculator = priceCalculator;
     }
+
+    private IEnumerable<Booking> AllBookings => _bookingRepository.GetAll();
 
     public void AddBooking(BookingDto bookingDto, Credentials credentials)
     {
@@ -146,14 +149,13 @@ public class BookingService
     {
         EnsureUserIsAdministrator(credentials);
         var reportGenerator = BookingReportFactory.Create(type);
-        reportGenerator.CreateReportFile(AllBookings);
+        reportGenerator.CreateReportFile(AllBookings, _priceCalculator);
     }
 
     public double CalculateBookingPrice(BookingDto bookingDto)
     {
         EnsureDepositExists(bookingDto.DepositName);
-        var priceCalculator = new PriceCalculator();
         var deposit = _depositRepository.Get(bookingDto.DepositName);
-        return priceCalculator.CalculatePrice(deposit, bookingDto.DateFrom, bookingDto.DateTo);
+        return _priceCalculator.CalculatePrice(deposit, bookingDto.DateFrom, bookingDto.DateTo);
     }
 }

@@ -2,10 +2,6 @@ namespace DateRange;
 
 public class DateRange
 {
-    public int Id { get; set; }
-    public DateOnly StartDate { get; set; }
-    public DateOnly EndDate { get; set; }
-
     public DateRange()
     {
     }
@@ -16,6 +12,10 @@ public class DateRange
         EndDate = endDate;
         EnsureStartDateIsLesserThanEndDate(startDate, endDate);
     }
+
+    public int Id { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
 
     private void EnsureStartDateIsLesserThanEndDate(DateOnly startDate, DateOnly endDate)
     {
@@ -57,13 +57,8 @@ public class DateRange
         }
 
         if (StartDate < other.StartDate && EndDate <= other.EndDate)
-        {
             EndDate = other.StartDate.AddDays(-1);
-        }
-        else if (StartDate >= other.StartDate && EndDate > other.EndDate)
-        {
-            StartDate = other.EndDate.AddDays(1);
-        }
+        else if (StartDate >= other.StartDate && EndDate > other.EndDate) StartDate = other.EndDate.AddDays(1);
 
         return null;
     }

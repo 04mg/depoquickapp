@@ -1,7 +1,7 @@
 using Domain;
 using Domain.Enums;
 
-namespace BusinessLogic.Calculators;
+namespace Calculators;
 
 public class PriceCalculator : IPriceCalculator
 {
@@ -14,11 +14,11 @@ public class PriceCalculator : IPriceCalculator
     private const int DurationThresholdForFirstDiscount = 7;
     private const int DurationThresholdForSecondDiscount = 14;
 
-    public double CalculatePrice(Deposit deposit, DateOnly dateFrom, DateOnly dateTo)
+    public double CalculatePrice(Deposit deposit, DateOnly startDate, DateOnly endDate)
     {
         var pricePerDay = GetPricePerDay(deposit);
-        var discount = GetTotalDiscount(deposit, dateFrom, dateTo);
-        var days = GetTotalDays(dateFrom, dateTo);
+        var discount = GetTotalDiscount(deposit, startDate, endDate);
+        var days = GetTotalDays(startDate, endDate);
         var basePrice = GetBasePrice(pricePerDay, days);
         var finalPrice = GetFinalPrice(basePrice, discount);
         return finalPrice;
@@ -41,7 +41,7 @@ public class PriceCalculator : IPriceCalculator
 
     private static double GetPricePerDay(Deposit deposit)
     {
-        double pricePerDay = deposit.Size switch
+        var pricePerDay = deposit.Size switch
         {
             DepositSize.Small => SmallPricePerDay,
             DepositSize.Medium => MediumPricePerDay,

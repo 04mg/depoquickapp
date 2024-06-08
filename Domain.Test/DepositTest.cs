@@ -12,11 +12,11 @@ public class DepositTest
     private const bool ClimateControl = true;
 
     private readonly List<Promotion> _promotionList =
-        new List<Promotion>
+        new()
         {
-            new Promotion(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
+            new(1, "label", 50, DateOnly.FromDateTime(DateTime.Now),
                 DateOnly.FromDateTime(DateTime.Now.AddDays(1))),
-            new Promotion(2, "label", 50, DateOnly.FromDateTime(DateTime.Now),
+            new(2, "label", 50, DateOnly.FromDateTime(DateTime.Now),
                 DateOnly.FromDateTime(DateTime.Now.AddDays(1)))
         };
 

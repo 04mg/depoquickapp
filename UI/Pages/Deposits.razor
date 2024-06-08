@@ -31,7 +31,9 @@
         try
         {
             DepositsDto = DepositService.GetAllDeposits().ToList();
-        } catch (DataAccessException e) {
+        }
+        catch (DataAccessException e)
+        {
             NavigationManager.NavigateTo("/Logout");
             NotificationService.ShowError(e.Message);
         }

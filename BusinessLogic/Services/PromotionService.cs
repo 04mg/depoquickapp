@@ -1,14 +1,14 @@
 using BusinessLogic.DTOs;
 using BusinessLogic.Exceptions;
-using DataAccess.Repositories;
+using DataAccess.Interfaces;
 using Domain;
 
 namespace BusinessLogic.Services;
 
 public class PromotionService
 {
-    private readonly IPromotionRepository _promotionRepository;
     private readonly IDepositRepository _depositRepository;
+    private readonly IPromotionRepository _promotionRepository;
 
     public PromotionService(IPromotionRepository promotionRepository, IDepositRepository depositRepository)
     {

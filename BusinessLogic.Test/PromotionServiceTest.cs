@@ -18,8 +18,8 @@ public class PromotionServiceTest
     private readonly DateOnly _tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
     private Credentials _adminCredentials;
     private Credentials _clientCredentials;
-    private PromotionRepository _promotionRepository = null!;
     private DepositRepository _depositRepository = null!;
+    private PromotionRepository _promotionRepository = null!;
     private PromotionService _promotionService = null!;
 
     [TestInitialize]
@@ -40,15 +40,15 @@ public class PromotionServiceTest
 
     private void SetCredentials()
     {
-        _adminCredentials = new Credentials() { Email = "admin@admin.com", Rank = "Administrator" };
-        _clientCredentials = new Credentials() { Email = "client@client.com", Rank = "Client" };
+        _adminCredentials = new Credentials { Email = "admin@admin.com", Rank = "Administrator" };
+        _clientCredentials = new Credentials { Email = "client@client.com", Rank = "Client" };
     }
 
     [TestMethod]
     public void TestCanAddPromotion()
     {
         // Arrange
-        var promotionDto = new PromotionDto()
+        var promotionDto = new PromotionDto
         {
             Label = Label,
             Discount = Discount,
@@ -87,7 +87,7 @@ public class PromotionServiceTest
     public void TestCanModifyPromotion()
     {
         // Arrange
-        var promotionDto = new PromotionDto()
+        var promotionDto = new PromotionDto
         {
             Label = Label,
             Discount = Discount,
@@ -95,7 +95,7 @@ public class PromotionServiceTest
             DateTo = _tomorrow
         };
         _promotionService.AddPromotion(promotionDto, _adminCredentials);
-        var modifiedPromotionDto = new PromotionDto()
+        var modifiedPromotionDto = new PromotionDto
         {
             Id = 1,
             Label = "new label",
@@ -115,7 +115,7 @@ public class PromotionServiceTest
     public void TestCantAddPromotionIfNotAdministrator()
     {
         // Arrange
-        var promotionDto = new PromotionDto()
+        var promotionDto = new PromotionDto
         {
             Label = Label,
             Discount = Discount,
@@ -136,7 +136,7 @@ public class PromotionServiceTest
     public void TestCantDeletePromotionIfNotAdministrator()
     {
         // Arrange
-        var promotionDto = new PromotionDto()
+        var promotionDto = new PromotionDto
         {
             Label = Label,
             Discount = Discount,
@@ -158,7 +158,7 @@ public class PromotionServiceTest
     public void TestCantModifyPromotionIfNotAdministrator()
     {
         // Arrange
-        var promotionDto = new PromotionDto()
+        var promotionDto = new PromotionDto
         {
             Label = Label,
             Discount = Discount,
@@ -166,7 +166,7 @@ public class PromotionServiceTest
             DateTo = _tomorrow
         };
         _promotionService.AddPromotion(promotionDto, _adminCredentials);
-        var modifiedPromotionDto = new PromotionDto()
+        var modifiedPromotionDto = new PromotionDto
         {
             Id = 1,
             Label = "new label",
@@ -188,7 +188,7 @@ public class PromotionServiceTest
     public void TestCantModifyNonExistentPromotion()
     {
         // Arrange
-        var modifiedPromotionDto = new PromotionDto()
+        var modifiedPromotionDto = new PromotionDto
         {
             Id = 1,
             Label = "new label",
@@ -222,7 +222,7 @@ public class PromotionServiceTest
     public void TestCantGetAllPromotionsIfNotAdministrator()
     {
         // Arrange
-        var promotionDto = new PromotionDto()
+        var promotionDto = new PromotionDto
         {
             Label = Label,
             Discount = Discount,
@@ -245,7 +245,7 @@ public class PromotionServiceTest
     {
         // Arrange
         var promotion = new Promotion(1, Label, Discount, _today, _tomorrow);
-        var promotionDto = new PromotionDto()
+        var promotionDto = new PromotionDto
         {
             Label = Label,
             Discount = Discount,
@@ -253,12 +253,13 @@ public class PromotionServiceTest
             DateTo = _tomorrow
         };
         _promotionService.AddPromotion(promotionDto, _adminCredentials);
-        var deposit = new Deposit("Deposit", DepositArea.A, DepositSize.Large, true, new List<Promotion>() { promotion });
+        var deposit = new Deposit("Deposit", DepositArea.A, DepositSize.Large, true, new List<Promotion> { promotion });
         _depositRepository.Add(deposit);
 
         // Act
         var exception =
-            Assert.ThrowsException<BusinessLogicException>(() => _promotionService.DeletePromotion(1, _adminCredentials));
+            Assert.ThrowsException<BusinessLogicException>(
+                () => _promotionService.DeletePromotion(1, _adminCredentials));
 
         // Assert
         Assert.AreEqual("There are existing deposits for this promotion.", exception.Message);

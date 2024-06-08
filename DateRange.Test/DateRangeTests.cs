@@ -3,7 +3,6 @@ namespace DateRange.Test;
 [TestClass]
 public class DateRangeTests
 {
-
     private static readonly DateOnly Today = DateOnly.FromDateTime(DateTime.Now);
 
     [TestMethod]
@@ -38,7 +37,7 @@ public class DateRangeTests
 
         Assert.IsNull(result);
     }
-    
+
     [TestMethod]
     public void TestSubtractStartDateIsLesserThanOtherStartDateAndEndDateIsLesserOrEqualToOtherEndDate()
     {
@@ -50,7 +49,7 @@ public class DateRangeTests
         Assert.AreEqual(Today, range1.StartDate);
         Assert.AreEqual(Today.AddDays(2), range1.EndDate);
     }
-    
+
     [TestMethod]
     public void TestSubtractStartDateIsGreaterOrEqualThanOtherStartDateAndEndDateIsGreaterThanOtherEndDate()
     {
@@ -62,7 +61,7 @@ public class DateRangeTests
         Assert.AreEqual(Today.AddDays(4), range1.StartDate);
         Assert.AreEqual(Today.AddDays(5), range1.EndDate);
     }
-    
+
     [TestMethod]
     public void TestSubtractOtherDateRangeIsIncludedInThisDateRange()
     {
@@ -76,17 +75,18 @@ public class DateRangeTests
         Assert.AreEqual(Today.AddDays(5), result!.StartDate);
         Assert.AreEqual(Today.AddDays(6), result.EndDate);
     }
-    
+
     [TestMethod]
     public void TestCantMergeRangesIfNotOverlappingOrAdjacent()
     {
         // Arrange
         var range1 = new DateRange(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
-        var range2 = new DateRange(DateOnly.FromDateTime(DateTime.Now.AddDays(3)), DateOnly.FromDateTime(DateTime.Now.AddDays(4)));
-        
+        var range2 = new DateRange(DateOnly.FromDateTime(DateTime.Now.AddDays(3)),
+            DateOnly.FromDateTime(DateTime.Now.AddDays(4)));
+
         // Act
         var exception = Assert.ThrowsException<DateRangeException>(() => range1.Merge(range2));
-        
+
         // Assert
         Assert.AreEqual("Ranges are not overlapping or adjacent.", exception.Message);
     }

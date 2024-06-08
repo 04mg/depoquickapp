@@ -6,10 +6,6 @@ namespace Domain;
 [Table("Payments")]
 public class Payment
 {
-    public int Id { get; set; }
-    public double Amount { get; set; }
-    public PaymentStatus Status { get; set; } = PaymentStatus.Reserved;
-
     public Payment()
     {
     }
@@ -18,6 +14,10 @@ public class Payment
     {
         Amount = amount;
     }
+
+    public int Id { get; set; }
+    public double Amount { get; set; }
+    public PaymentStatus Status { get; set; } = PaymentStatus.Reserved;
 
     public void Capture()
     {

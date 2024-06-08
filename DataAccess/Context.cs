@@ -1,21 +1,16 @@
 using Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DataAccess;
 
-using Microsoft.EntityFrameworkCore;
-
 public class Context : DbContext
 {
-    public DbSet<User> Users { get; set; }
-    public DbSet<Booking> Bookings { get; set; }
-    public DbSet<Deposit> Deposits { get; set; }
-    public DbSet<Promotion> Promotions { get; set; }
-
     public Context(DbContextOptions<Context> options) : base(options)
     {
         var relationalOptionsExtension = options.Extensions
-            .OfType<Microsoft.EntityFrameworkCore.Infrastructure.RelationalOptionsExtension>()
+            .OfType<RelationalOptionsExtension>()
             .FirstOrDefault();
 
         var databaseType = relationalOptionsExtension?.Connection?.GetType().Name;
@@ -24,6 +19,11 @@ public class Context : DbContext
         else
             Database.Migrate();
     }
+
+    public DbSet<User> Users { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
+    public DbSet<Deposit> Deposits { get; set; }
+    public DbSet<Promotion> Promotions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
