@@ -1,6 +1,8 @@
 ﻿@page "/login"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
 @using DataAccess.Exceptions
+@using DateRange
 @using UI.Data
 @inject UserController User
 @inject NavigationManager NavigationManager
@@ -17,14 +19,14 @@
             User.LogIn(_loginDto);
             NavigationManager.NavigateTo("/Deposits");
         }
-        catch (ArgumentException e)
+        catch (Exception e) when (e is BusinessLogicException or DataAccessException 
+                                      or DataAccessException or DateRangeException)
         {
             NotificationService.ShowError(e.Message);
         }
-        catch (DataAccessException e)
+        catch (Exception e)
         {
-            NavigationManager.NavigateTo("/Logout");
-            NotificationService.ShowError(e.Message);
+            NotificationService.ShowError("An unexpected error occurred. Please try again later.");
         }
     }
 
