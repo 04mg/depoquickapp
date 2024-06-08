@@ -1,4 +1,5 @@
 using Domain.Enums;
+using Domain.Exceptions;
 
 namespace Domain;
 
@@ -21,12 +22,6 @@ public class Booking
         MakeDurationUnavailable(_duration);
     }
 
-    private void MakeDurationUnavailable(DateRange.DateRange duration)
-    {
-        var dateRange = new DateRange.DateRange(duration.StartDate, duration.EndDate);
-        Deposit.MakeUnavailable(dateRange);
-    }
-
     public int Id { get; init; }
     public int DepositId { get; set; }
     public Deposit Deposit { get; set; }
@@ -41,39 +36,36 @@ public class Booking
         get => _duration;
         private init
         {
-            EnsureDateFromIsLesserThanDateTo(value.StartDate, value.EndDate);
             EnsureDateFromIsNotEqualToDateTo(value.StartDate, value.EndDate);
             EnsureDateFromIsGreaterThanToday(value.StartDate);
             _duration = value;
         }
     }
 
+    private void MakeDurationUnavailable(DateRange.DateRange duration)
+    {
+        var dateRange = new DateRange.DateRange(duration.StartDate, duration.EndDate);
+        Deposit.MakeUnavailable(dateRange);
+    }
+
     private static void EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit deposit,
         DateRange.DateRange dateRange)
     {
         if (!deposit.IsAvailable(dateRange))
-        {
-            throw new ArgumentException(
+            throw new DomainException(
                 "The duration of the booking must be contained in the deposit availability periods.");
-        }
     }
 
     private static void EnsureDateFromIsNotEqualToDateTo(DateOnly startDate, DateOnly dateTo)
     {
         if (startDate == dateTo)
-            throw new ArgumentException("The starting date of the booking must not be the same as the ending date.");
-    }
-
-    private static void EnsureDateFromIsLesserThanDateTo(DateOnly startDate, DateOnly dateTo)
-    {
-        if (startDate > dateTo)
-            throw new ArgumentException("The starting date of the booking must not be later than the ending date.");
+            throw new DomainException("The starting date of the booking must not be the same as the ending date.");
     }
 
     private static void EnsureDateFromIsGreaterThanToday(DateOnly startDate)
     {
         if (startDate < DateOnly.FromDateTime(DateTime.Now))
-            throw new ArgumentException("The starting date of the booking must not be earlier than today.");
+            throw new DomainException("The starting date of the booking must not be earlier than today.");
     }
 
     public void Approve()
@@ -98,24 +90,24 @@ public class Booking
 
     public bool IsPaymentCaptured()
     {
-        return Payment != null && Payment.IsCaptured();
+        return Payment is { Status: PaymentStatus.Captured };
     }
 
     public string GetPaymentStatus()
     {
         return Payment == null ? "Rejected" : Payment.Status.ToString();
     }
-    
+
     public string GetDepositName()
     {
         return Deposit.Name;
     }
-    
+
     public string GetClientEmail()
     {
         return Client.Email;
     }
-    
+
     public int GetPromotionsCount()
     {
         return Deposit.GetPromotionsCount();

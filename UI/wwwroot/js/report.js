@@ -1,6 +1,6 @@
 window.downloadFileFromStream = async (fileName, contentStreamReference) => {
     const arrayBuffer = await contentStreamReference.arrayBuffer();
-    const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
+    const blob = new Blob([arrayBuffer], {type: 'application/octet-stream'});
     const url = URL.createObjectURL(blob);
     const anchorElement = document.createElement('a');
     anchorElement.href = url;

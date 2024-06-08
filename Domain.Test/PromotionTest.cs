@@ -1,3 +1,6 @@
+using DateRange;
+using Domain.Exceptions;
+
 namespace Domain.Test;
 
 [TestClass]
@@ -25,7 +28,7 @@ public class PromotionTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Promotion(1, "l@bel", Discount, _today, _tomorrow));
+            Assert.ThrowsException<DomainException>(() => new Promotion(1, "l@bel", Discount, _today, _tomorrow));
 
         // Assert
         Assert.AreEqual("Label must not contain symbols.", exception.Message);
@@ -35,7 +38,7 @@ public class PromotionTest
     public void TestCantCreatePromotionWithLabelLengthGreaterThan20()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<DomainException>(() =>
             new Promotion(1, "label with more than 20 characters", Discount, _today, _tomorrow));
 
         // Assert
@@ -47,7 +50,7 @@ public class PromotionTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, Discount, _tomorrow, _today));
+            Assert.ThrowsException<DateRangeException>(() => new Promotion(1, Label, Discount, _tomorrow, _today));
 
         // Assert
         Assert.AreEqual("Date range is invalid.",
@@ -58,7 +61,7 @@ public class PromotionTest
     public void TestCantCreatePromotionWithDateToLesserThanToday()
     {
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() => new Promotion(1, Label, Discount,
+        var exception = Assert.ThrowsException<DomainException>(() => new Promotion(1, Label, Discount,
             DateOnly.FromDateTime(DateTime.Now.AddDays(-2)), DateOnly.FromDateTime(DateTime.Now.AddDays(-1))));
 
         // Assert
@@ -70,7 +73,7 @@ public class PromotionTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() =>
+            Assert.ThrowsException<DomainException>(() =>
                 new Promotion(1, Label, MinDiscount - 1, _today, _tomorrow));
 
         // Assert
@@ -83,7 +86,7 @@ public class PromotionTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() =>
+            Assert.ThrowsException<DomainException>(() =>
                 new Promotion(1, Label, MaxDiscount + 1, _today, _tomorrow));
 
         // Assert
@@ -95,7 +98,7 @@ public class PromotionTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => new Promotion(1, "", Discount, _today, _tomorrow));
+            Assert.ThrowsException<DomainException>(() => new Promotion(1, "", Discount, _today, _tomorrow));
 
         // Assert
         Assert.AreEqual("Label must not be empty.", exception.Message);

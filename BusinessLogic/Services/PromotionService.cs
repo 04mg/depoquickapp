@@ -1,13 +1,14 @@
 using BusinessLogic.DTOs;
-using DataAccess.Repositories;
+using BusinessLogic.Exceptions;
+using DataAccess.Interfaces;
 using Domain;
 
 namespace BusinessLogic.Services;
 
 public class PromotionService
 {
-    private readonly IPromotionRepository _promotionRepository;
     private readonly IDepositRepository _depositRepository;
+    private readonly IPromotionRepository _promotionRepository;
 
     public PromotionService(IPromotionRepository promotionRepository, IDepositRepository depositRepository)
     {
@@ -18,12 +19,12 @@ public class PromotionService
     private static void EnsureUserIsAdmin(Credentials credentials)
     {
         if (credentials.Rank != "Administrator")
-            throw new UnauthorizedAccessException("Only administrators can manage promotions.");
+            throw new BusinessLogicException("Only administrators can manage promotions.");
     }
 
     private void EnsurePromotionExists(int id)
     {
-        if (!_promotionRepository.Exists(id)) throw new ArgumentException("Promotion not found.");
+        if (!_promotionRepository.Exists(id)) throw new BusinessLogicException("Promotion not found.");
     }
 
     public PromotionDto GetPromotion(int id)
@@ -67,7 +68,7 @@ public class PromotionService
     private void EnsureThereAreNoDepositsForThisPromotion(int id)
     {
         if (_depositRepository.GetAll().Any(d => d.HasPromotion(id)))
-            throw new ArgumentException("There are existing deposits for this promotion.");
+            throw new BusinessLogicException("There are existing deposits for this promotion.");
     }
 
     public void ModifyPromotion(PromotionDto newPromotion, Credentials credentials)

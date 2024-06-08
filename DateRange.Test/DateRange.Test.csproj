@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DateRange\DateRange.csproj" />
+        <ProjectReference Include="..\DateRange\DateRange.csproj"/>
     </ItemGroup>
 
 </Project>

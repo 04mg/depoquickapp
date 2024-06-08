@@ -4,12 +4,8 @@ using Domain.Enums;
 namespace Domain;
 
 [Table("Payments")]
-public class Payment : IPayment
+public class Payment
 {
-    public int Id { get; set; }
-    public double Amount { get; set; }
-    public PaymentStatus Status { get; set; } = PaymentStatus.Reserved;
-
     public Payment()
     {
     }
@@ -19,18 +15,12 @@ public class Payment : IPayment
         Amount = amount;
     }
 
+    public int Id { get; set; }
+    public double Amount { get; set; }
+    public PaymentStatus Status { get; set; } = PaymentStatus.Reserved;
+
     public void Capture()
     {
         Status = PaymentStatus.Captured;
-    }
-
-    public bool IsCaptured()
-    {
-        return Status == PaymentStatus.Captured;
-    }
-
-    public double GetAmount()
-    {
-        return Amount;
     }
 }

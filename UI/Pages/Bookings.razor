@@ -65,7 +65,7 @@
         var fileStream = GetFileStream(fileFormat);
         var fileName = "BookingsReport." + fileFormat.ToLower();
 
-        using var streamRef = new DotNetStreamReference(stream: fileStream);
+        using var streamRef = new DotNetStreamReference(fileStream);
 
         await Js.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
     }

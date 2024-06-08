@@ -1,26 +1,27 @@
-using BusinessLogic.Calculators;
+using Calculators;
 using Domain;
 
 namespace BusinessLogic.Reports;
 
 public class CsvBookingReport : IBookingReport
 {
-    public string GenerateReportContent(Booking booking)
+    public void CreateReportFile(IEnumerable<Booking> bookings, IPriceCalculator priceCalculator)
+    {
+        const string path = "BookingsReport.csv";
+        const string header = "Deposit,Client,StartDate,EndDate,Price,PaymentState,Promotions\n";
+        var fileContent = bookings.Aggregate(header,
+            (current, booking) => current + GenerateReportContent(booking, priceCalculator));
+        File.WriteAllText(path, fileContent);
+    }
+
+    private static string GenerateReportContent(Booking booking, IPriceCalculator priceCalculator)
     {
         return $"{booking.GetDepositName()}," +
                $"{booking.GetClientEmail()}," +
                $"{booking.Duration.StartDate:yyyy-MM-dd}," +
                $"{booking.Duration.EndDate:yyyy-MM-dd}," +
-               $"{new PriceCalculator().CalculatePrice(booking.Deposit, booking.Duration.StartDate, booking.Duration.EndDate)}$," +
+               $"{priceCalculator.CalculatePrice(booking.Deposit, booking.Duration.StartDate, booking.Duration.EndDate)}$," +
                $"{booking.GetPaymentStatus()}," +
                $"{(booking.GetPromotionsCount() > 0 ? "Yes" : "No")}\n";
-    }
-
-    public void CreateReportFile(IEnumerable<Booking> bookings)
-    {
-        const string path = $"BookingsReport.csv";
-        const string header = "Deposit,Client,StartDate,EndDate,Price,PaymentState,Promotions\n";
-        var fileContent = bookings.Aggregate(header, (current, booking) => current + GenerateReportContent(booking));
-        File.WriteAllText(path, fileContent);
     }
 }

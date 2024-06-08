@@ -1,5 +1,7 @@
 using BusinessLogic.Services;
+using Calculators;
 using DataAccess;
+using DataAccess.Interfaces;
 using DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using UI.Data;
@@ -19,6 +21,8 @@ builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
 builder.Services.AddSingleton<IDepositRepository, DepositRepository>();
 builder.Services.AddSingleton<IPromotionRepository, PromotionRepository>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
+builder.Services.AddSingleton<PriceCalculator>();
 
 builder.Services.AddSingleton<BookingService>();
 builder.Services.AddSingleton<DepositService>();

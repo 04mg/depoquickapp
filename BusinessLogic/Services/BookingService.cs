@@ -1,7 +1,8 @@
-using BusinessLogic.Calculators;
 using BusinessLogic.DTOs;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Reports;
-using DataAccess.Repositories;
+using Calculators;
+using DataAccess.Interfaces;
 using Domain;
 
 namespace BusinessLogic.Services;
@@ -10,16 +11,19 @@ public class BookingService
 {
     private readonly IBookingRepository _bookingRepository;
     private readonly IDepositRepository _depositRepository;
+    private readonly IPriceCalculator _priceCalculator;
     private readonly IUserRepository _userRepository;
-    private IEnumerable<Booking> AllBookings => _bookingRepository.GetAll();
 
     public BookingService(IBookingRepository bookingRepository,
-        IDepositRepository depositRepository, IUserRepository userRepository)
+        IDepositRepository depositRepository, IUserRepository userRepository, IPriceCalculator priceCalculator)
     {
         _bookingRepository = bookingRepository;
         _depositRepository = depositRepository;
         _userRepository = userRepository;
+        _priceCalculator = priceCalculator;
     }
+
+    private IEnumerable<Booking> AllBookings => _bookingRepository.GetAll();
 
     public void AddBooking(BookingDto bookingDto, Credentials credentials)
     {
@@ -40,12 +44,12 @@ public class BookingService
 
     private void EnsureDepositExists(string name)
     {
-        if (!_depositRepository.Exists(name)) throw new ArgumentException("Deposit not found.");
+        if (!_depositRepository.Exists(name)) throw new BusinessLogicException("Deposit not found.");
     }
 
     private void EnsureUserExists(string email)
     {
-        if (!_userRepository.Exists(email)) throw new ArgumentException("User not found.");
+        if (!_userRepository.Exists(email)) throw new BusinessLogicException("User not found.");
     }
 
     public IEnumerable<BookingDto> GetBookingsByEmail(string email, Credentials credentials)
@@ -69,32 +73,32 @@ public class BookingService
         };
     }
 
-    private static PaymentDto? PaymentDtoFromPayment(IPayment? payment)
+    private static PaymentDto? PaymentDtoFromPayment(Payment? payment)
     {
         if (payment == null) return null;
         return new PaymentDto
         {
-            Amount = payment.GetAmount(),
-            Captured = payment.IsCaptured()
+            Amount = payment.Amount,
+            Status = payment.Status.ToString()
         };
     }
 
     private static void EnsureUserIsAdministrator(Credentials credentials)
     {
         if (credentials.Rank != "Administrator")
-            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+            throw new BusinessLogicException("You are not authorized to perform this action.");
     }
 
     private static void EnsureUserIsAdministratorOrEmailMatches(string email, Credentials credentials)
     {
         if (credentials.Rank != "Administrator" && credentials.Email != email)
-            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+            throw new BusinessLogicException("You are not authorized to perform this action.");
     }
 
     private static void EnsureEmailMatches(string email, Credentials credentials)
     {
         if (credentials.Email != email)
-            throw new UnauthorizedAccessException("You are not authorized to perform this action.");
+            throw new BusinessLogicException("You are not authorized to perform this action.");
     }
 
     public IEnumerable<BookingDto> GetAllBookings(Credentials credentials)
@@ -125,7 +129,7 @@ public class BookingService
 
     private static void EnsureMessageIsNotEmpty(string message)
     {
-        if (string.IsNullOrWhiteSpace(message)) throw new ArgumentException("Message cannot be empty.");
+        if (string.IsNullOrWhiteSpace(message)) throw new BusinessLogicException("Message cannot be empty.");
     }
 
     public BookingDto GetBooking(int id, Credentials credentials)
@@ -138,21 +142,20 @@ public class BookingService
 
     private void EnsureBookingExists(int id)
     {
-        if (!_bookingRepository.Exists(id)) throw new ArgumentException("Booking not found.");
+        if (!_bookingRepository.Exists(id)) throw new BusinessLogicException("Booking not found.");
     }
 
     public void GenerateReport(string type, Credentials credentials)
     {
         EnsureUserIsAdministrator(credentials);
-        var reportGenerator = BookingReportGenerator.CreateReportGenerator(type);
-        reportGenerator.GenerateReport(_bookingRepository.GetAll());
+        var reportGenerator = BookingReportFactory.Create(type);
+        reportGenerator.CreateReportFile(AllBookings, _priceCalculator);
     }
 
     public double CalculateBookingPrice(BookingDto bookingDto)
     {
         EnsureDepositExists(bookingDto.DepositName);
-        var priceCalculator = new PriceCalculator();
         var deposit = _depositRepository.Get(bookingDto.DepositName);
-        return priceCalculator.CalculatePrice(deposit, bookingDto.DateFrom, bookingDto.DateTo);
+        return _priceCalculator.CalculatePrice(deposit, bookingDto.DateFrom, bookingDto.DateTo);
     }
 }

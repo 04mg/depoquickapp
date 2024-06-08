@@ -2,10 +2,6 @@ namespace DateRange;
 
 public class DateRange
 {
-    public int Id { get; set; }
-    public DateOnly StartDate { get; set; }
-    public DateOnly EndDate { get; set; }
-
     public DateRange()
     {
     }
@@ -17,10 +13,14 @@ public class DateRange
         EnsureStartDateIsLesserThanEndDate(startDate, endDate);
     }
 
+    public int Id { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+
     private void EnsureStartDateIsLesserThanEndDate(DateOnly startDate, DateOnly endDate)
     {
         if (startDate > endDate)
-            throw new ArgumentException("Date range is invalid.");
+            throw new DateRangeException("Date range is invalid.");
     }
 
     public bool IsOverlapped(DateRange other)
@@ -39,7 +39,7 @@ public class DateRange
     private void EnsureOverlapOrAdjacent(DateRange other)
     {
         if (!IsOverlapped(other) && !IsAdjacent(other))
-            throw new ArgumentException("Ranges are not overlapping or adjacent.");
+            throw new DateRangeException("Ranges are not overlapping or adjacent.");
     }
 
     public DateRange? Subtract(DateRange other)
@@ -55,14 +55,10 @@ public class DateRange
             EndDate = range1.EndDate;
             return range2;
         }
-        else if (StartDate < other.StartDate && EndDate <= other.EndDate)
-        {
+
+        if (StartDate < other.StartDate && EndDate <= other.EndDate)
             EndDate = other.StartDate.AddDays(-1);
-        }
-        else if (StartDate >= other.StartDate && EndDate > other.EndDate)
-        {
-            StartDate = other.EndDate.AddDays(1);
-        }
+        else if (StartDate >= other.StartDate && EndDate > other.EndDate) StartDate = other.EndDate.AddDays(1);
 
         return null;
     }
@@ -77,21 +73,8 @@ public class DateRange
         return StartDate == dateRange.EndDate.AddDays(1) || EndDate == dateRange.StartDate.AddDays(-1);
     }
 
-    protected bool Equals(DateRange other)
+    public bool Equals(DateRange other)
     {
         return StartDate.Equals(other.StartDate) && EndDate.Equals(other.EndDate);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((DateRange)obj);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(StartDate, EndDate);
     }
 }

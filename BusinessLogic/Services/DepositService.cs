@@ -1,15 +1,16 @@
 using BusinessLogic.DTOs;
-using DataAccess.Repositories;
+using BusinessLogic.Exceptions;
+using DataAccess.Interfaces;
 using Domain;
+using Domain.Enums;
 
 namespace BusinessLogic.Services;
 
 public class DepositService
 {
-    private readonly IDepositRepository _depositRepository;
     private readonly IBookingRepository _bookingRepository;
+    private readonly IDepositRepository _depositRepository;
     private readonly IPromotionRepository _promotionRepository;
-    private IEnumerable<Deposit> AllDeposits => _depositRepository.GetAll();
 
     public DepositService(IDepositRepository depositRepository, IBookingRepository bookingRepository,
         IPromotionRepository promotionRepository)
@@ -19,15 +20,17 @@ public class DepositService
         _promotionRepository = promotionRepository;
     }
 
+    private IEnumerable<Deposit> AllDeposits => _depositRepository.GetAll();
+
     private void EnsureDepositExists(string name)
     {
-        if (!_depositRepository.Exists(name)) throw new ArgumentException("Deposit not found.");
+        if (!_depositRepository.Exists(name)) throw new BusinessLogicException("Deposit not found.");
     }
 
     private static void EnsureUserIsAdmin(Credentials credentials)
     {
         if (credentials.Rank != "Administrator")
-            throw new UnauthorizedAccessException("Only administrators can manage deposits.");
+            throw new BusinessLogicException("Only administrators can manage deposits.");
     }
 
     public DepositDto GetDeposit(string depositName)
@@ -41,8 +44,8 @@ public class DepositService
         return new DepositDto
         {
             Name = deposit.Name,
-            Area = deposit.Area,
-            Size = deposit.Size,
+            Area = deposit.Area.ToString(),
+            Size = deposit.Size.ToString(),
             ClimateControl = deposit.ClimateControl,
             Promotions = PromotionsToDto(deposit.Promotions),
             AvailabilityPeriods = DateRangeToDto(deposit.GetAvailablePeriods())
@@ -51,7 +54,7 @@ public class DepositService
 
     private static List<DateRangeDto> DateRangeToDto(IEnumerable<DateRange.DateRange> dateRanges)
     {
-        return dateRanges.Select(dr => new DateRangeDto() { StartDate = dr.StartDate, EndDate = dr.EndDate }).ToList();
+        return dateRanges.Select(dr => new DateRangeDto { StartDate = dr.StartDate, EndDate = dr.EndDate }).ToList();
     }
 
     private static PromotionDto PromotionToDto(Promotion promotion)
@@ -82,8 +85,23 @@ public class DepositService
 
     private static Deposit DepositFromDto(DepositDto depositDto)
     {
-        return new Deposit(depositDto.Name, depositDto.Area, depositDto.Size, depositDto.ClimateControl,
+        return new Deposit(depositDto.Name, DepositAreaFromDto(depositDto.Area), DepositSizeFromDto(depositDto.Size),
+            depositDto.ClimateControl,
             PromotionsFromDto(depositDto.Promotions));
+    }
+
+    private static DepositArea DepositAreaFromDto(string areaString)
+    {
+        if (!Enum.TryParse(areaString, out DepositArea areaEnum))
+            throw new BusinessLogicException("Invalid area.");
+        return areaEnum;
+    }
+
+    private static DepositSize DepositSizeFromDto(string sizeString)
+    {
+        if (!Enum.TryParse(sizeString, out DepositSize sizeEnum))
+            throw new BusinessLogicException("Invalid size.");
+        return sizeEnum;
     }
 
     private static Promotion PromotionFromDto(PromotionDto promotionDto)
@@ -100,16 +118,14 @@ public class DepositService
     private void EnsureAllPromotionsExist(IEnumerable<Promotion> promotions)
     {
         if (promotions.Any(p => !_promotionRepository.Exists(p.Id)))
-        {
-            throw new ArgumentException("Promotion not found.");
-        }
+            throw new BusinessLogicException("Promotion not found.");
     }
 
     private void EnsureDepositNameIsNotTaken(string depositName)
     {
         depositName = depositName.ToLower();
         if (AllDeposits.Any(d => d.Name.ToLower() == depositName))
-            throw new ArgumentException("Deposit name is already taken.");
+            throw new BusinessLogicException("Deposit name is already taken.");
     }
 
     public void DeleteDeposit(string name, Credentials credentials)
@@ -128,7 +144,7 @@ public class DepositService
     private void EnsureThereAreNoBookingsForThisDeposit(string depositName)
     {
         if (_bookingRepository.GetAll().Any(b => b.Deposit.Name == depositName))
-            throw new ArgumentException("There are existing bookings for this deposit.");
+            throw new BusinessLogicException("There are existing bookings for this deposit.");
     }
 
     public void AddAvailabilityPeriod(string depositName, DateRangeDto dateRange, Credentials credentials)
@@ -149,7 +165,7 @@ public class DepositService
     {
         if (dateRangeDto.StartDate < DateOnly.FromDateTime(DateTime.Now) ||
             dateRangeDto.EndDate < DateOnly.FromDateTime(DateTime.Now))
-            throw new ArgumentException("Date range cannot be in the past.");
+            throw new BusinessLogicException("Date range cannot be in the past.");
     }
 
     public IEnumerable<DepositDto> GetDepositsByAvailabilityPeriod(DateRangeDto dateRangeDto)

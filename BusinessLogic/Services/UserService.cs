@@ -1,5 +1,6 @@
 ﻿using BusinessLogic.DTOs;
-using DataAccess.Repositories;
+using BusinessLogic.Exceptions;
+using DataAccess.Interfaces;
 using Domain;
 using Domain.Enums;
 
@@ -31,29 +32,29 @@ public class UserService
 
     private static void EnsurePasswordConfirmationMatch(string password, string passwordConfirmation)
     {
-        if (password != passwordConfirmation) throw new ArgumentException("Passwords do not match.");
+        if (password != passwordConfirmation) throw new BusinessLogicException("Passwords do not match.");
     }
 
     private void EnsurePasswordMatchWithEmail(string email, string password)
     {
         var user = _userRepository.Get(email);
-        if (user.Password != password) throw new ArgumentException("Wrong password.");
+        if (user.Password != password) throw new BusinessLogicException("Wrong password.");
     }
 
     private void EnsureUserIsRegistered(string email)
     {
-        if (!_userRepository.Exists(email)) throw new ArgumentException("User does not exist.");
+        if (!_userRepository.Exists(email)) throw new BusinessLogicException("User does not exist.");
     }
 
     private void EnsureUserIsNotRegistered(string email)
     {
-        if (_userRepository.Exists(email)) throw new ArgumentException("User already exists.");
+        if (_userRepository.Exists(email)) throw new BusinessLogicException("User already exists.");
     }
 
     private void EnsureSingleAdmin(UserRank rank)
     {
         if (rank == UserRank.Administrator && _userRepository.GetAll().Any())
-            throw new ArgumentException("There can only be one administrator.");
+            throw new BusinessLogicException("There can only be one administrator.");
     }
 
     private void SetRankAsAdminIfFirstUser(User user)

@@ -1,4 +1,5 @@
 using BusinessLogic.DTOs;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services;
 using DataAccess;
 using DataAccess.Repositories;
@@ -16,13 +17,13 @@ public class DepositServiceTest
     private const string Size = "Small";
     private const bool ClimateControl = true;
     private Credentials _adminCredentials;
-    private Credentials _clientCredentials;
-    private PromotionDto _promotionDto;
-    private DepositRepository _depositRepository = null!;
     private BookingRepository _bookingRepository = null!;
+    private Credentials _clientCredentials;
+    private DepositRepository _depositRepository = null!;
+    private DepositService _depositService = null!;
+    private PromotionDto _promotionDto;
     private PromotionRepository _promotionRepository = null!;
     private UserRepository _userRepository = null!;
-    private DepositService _depositService = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -46,8 +47,8 @@ public class DepositServiceTest
 
     private void SetCredentials()
     {
-        _adminCredentials = new Credentials() { Email = "admin@admin.com", Rank = "Administrator" };
-        _clientCredentials = new Credentials() { Email = "client@client.com", Rank = "Client" };
+        _adminCredentials = new Credentials { Email = "admin@admin.com", Rank = "Administrator" };
+        _clientCredentials = new Credentials { Email = "client@client.com", Rank = "Client" };
     }
 
     private void CreatePromotion()
@@ -76,14 +77,14 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
 
         // Act
         _depositService.AddDeposit(depositDto, _adminCredentials);
 
         // Assert
-        Assert.AreEqual(1, _depositService.GetAllDeposits().Count());
+        Assert.AreEqual(Name, _depositService.GetDeposit(Name).Name);
     }
 
     [TestMethod]
@@ -96,7 +97,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         _depositService.AddDeposit(depositDto, _adminCredentials);
 
@@ -112,7 +113,8 @@ public class DepositServiceTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositService.DeleteDeposit(Name, _adminCredentials));
+            Assert.ThrowsException<BusinessLogicException>(() =>
+                _depositService.DeleteDeposit(Name, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Deposit not found.", exception.Message);
@@ -128,12 +130,12 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
 
         // Act
         var exception =
-            Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            Assert.ThrowsException<BusinessLogicException>(() =>
                 _depositService.AddDeposit(depositDto, _clientCredentials));
 
         // Assert
@@ -150,13 +152,13 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         _depositService.AddDeposit(depositDto, _adminCredentials);
 
         // Act
         var exception =
-            Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            Assert.ThrowsException<BusinessLogicException>(() =>
                 _depositService.DeleteDeposit(Name, _clientCredentials));
 
         // Assert
@@ -173,7 +175,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         _depositService.AddDeposit(depositDto, _adminCredentials);
 
@@ -194,13 +196,14 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         _depositService.AddDeposit(depositDto, _adminCredentials);
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositService.AddDeposit(depositDto, _adminCredentials));
+            Assert.ThrowsException<BusinessLogicException>(() =>
+                _depositService.AddDeposit(depositDto, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Deposit name is already taken.", exception.Message);
@@ -216,7 +219,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         var dateRangeDto = new DateRangeDto
         {
@@ -238,7 +241,8 @@ public class DepositServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<ArgumentException>(() => _depositService.DeleteDeposit(Name, _adminCredentials));
+            Assert.ThrowsException<BusinessLogicException>(() =>
+                _depositService.DeleteDeposit(Name, _adminCredentials));
 
         // Assert
         Assert.AreEqual("There are existing bookings for this deposit.", exception.Message);
@@ -261,11 +265,11 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { promotionDto }
+            Promotions = new List<PromotionDto> { promotionDto }
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _depositService.AddDeposit(depositDto, _adminCredentials);
         });
@@ -273,7 +277,7 @@ public class DepositServiceTest
         // Assert
         Assert.AreEqual("Promotion not found.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCanGetDepositsByAvailabilityPeriod()
     {
@@ -284,7 +288,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         var dateRangeDto = new DateRangeDto
         {
@@ -296,11 +300,14 @@ public class DepositServiceTest
 
         // Act
         var deposits = _depositService.GetDepositsByAvailabilityPeriod(dateRangeDto);
+        var availabilityPeriods = deposits.First().AvailabilityPeriods.First();
 
         // Assert
+        Assert.AreEqual(dateRangeDto.StartDate, availabilityPeriods.StartDate);
+        Assert.AreEqual(dateRangeDto.EndDate, availabilityPeriods.EndDate);
         Assert.AreEqual(1, deposits.Count());
     }
-    
+
     [TestMethod]
     public void TestCantGetDepositsByAvailabilityPeriodIfDateRangeIsInThePast()
     {
@@ -312,12 +319,58 @@ public class DepositServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _depositService.GetDepositsByAvailabilityPeriod(dateRangeDto);
         });
 
         // Assert
         Assert.AreEqual("Date range cannot be in the past.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantAddDepositWithInvalidSize()
+    {
+        // Arrange
+        var depositDto = new DepositDto
+        {
+            Name = Name,
+            Area = Area,
+            Size = "Invalid",
+            ClimateControl = ClimateControl,
+            Promotions = new List<PromotionDto> { _promotionDto }
+        };
+
+        // Act
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
+        {
+            _depositService.AddDeposit(depositDto, _adminCredentials);
+        });
+
+        // Assert
+        Assert.AreEqual("Invalid size.", exception.Message);
+    }
+
+    [TestMethod]
+    public void TestCantAddDepositWithInvalidArea()
+    {
+        // Arrange
+        var depositDto = new DepositDto
+        {
+            Name = Name,
+            Area = "Invalid",
+            Size = Size,
+            ClimateControl = ClimateControl,
+            Promotions = new List<PromotionDto> { _promotionDto }
+        };
+
+        // Act
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
+        {
+            _depositService.AddDeposit(depositDto, _adminCredentials);
+        });
+
+        // Assert
+        Assert.AreEqual("Invalid area.", exception.Message);
     }
 }

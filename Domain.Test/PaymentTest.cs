@@ -1,3 +1,5 @@
+using Domain.Enums;
+
 namespace Domain.Test;
 
 [TestClass]
@@ -25,7 +27,7 @@ public class PaymentTest
         payment.Capture();
 
         // Assert
-        Assert.IsTrue(payment.IsCaptured());
+        Assert.IsTrue(payment.Status == PaymentStatus.Captured);
     }
 
     [TestMethod]
@@ -35,7 +37,7 @@ public class PaymentTest
         var payment = new Payment(Amount);
 
         // Act
-        var amount = payment.GetAmount();
+        var amount = payment.Amount;
 
         // Assert
         Assert.AreEqual(Amount, amount);

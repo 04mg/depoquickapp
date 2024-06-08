@@ -1,4 +1,5 @@
 using DataAccess.Exceptions;
+using DataAccess.Interfaces;
 using Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ namespace DataAccess.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private IDbContextFactory<Context> _contextFactory;
+    private readonly IDbContextFactory<Context> _contextFactory;
 
     public UserRepository(IDbContextFactory<Context> contextFactory)
     {
@@ -24,7 +25,7 @@ public class UserRepository : IUserRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
         catch (DbUpdateException)
         {
@@ -41,7 +42,7 @@ public class UserRepository : IUserRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 
@@ -54,7 +55,7 @@ public class UserRepository : IUserRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 
@@ -67,7 +68,7 @@ public class UserRepository : IUserRepository
         }
         catch (SqlException)
         {
-            throw new DataAccessException("SQL Server error");
+            throw new DataAccessException("Connection error, please try again later");
         }
     }
 }

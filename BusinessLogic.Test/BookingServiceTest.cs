@@ -1,8 +1,11 @@
 using BusinessLogic.DTOs;
+using BusinessLogic.Exceptions;
 using BusinessLogic.Services;
+using Calculators;
 using DataAccess;
 using DataAccess.Repositories;
 using Domain;
+using Domain.Enums;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BusinessLogic.Test;
@@ -11,17 +14,17 @@ namespace BusinessLogic.Test;
 public class BookingServiceTest
 {
     private User? _admin;
-    private User? _client;
-    private User? _otherClient;
     private Credentials _adminCredentials;
-    private Credentials _clientCredentials;
-    private Credentials _otherClientCredentials;
-    private Deposit? _deposit;
     private BookingRepository _bookingRepository = null!;
-    private DepositRepository _depositRepository = null!;
-    private UserRepository _userRepository = null!;
-    private PromotionRepository _promotionRepository = null!;
     private BookingService _bookingService = null!;
+    private User? _client;
+    private Credentials _clientCredentials;
+    private Deposit? _deposit;
+    private DepositRepository _depositRepository = null!;
+    private User? _otherClient;
+    private Credentials _otherClientCredentials;
+    private PromotionRepository _promotionRepository = null!;
+    private UserRepository _userRepository = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -39,7 +42,8 @@ public class BookingServiceTest
         _depositRepository = scope.ServiceProvider.GetRequiredService<DepositRepository>();
         _bookingRepository = scope.ServiceProvider.GetRequiredService<BookingRepository>();
         _promotionRepository = scope.ServiceProvider.GetRequiredService<PromotionRepository>();
-        _bookingService = new BookingService(_bookingRepository, _depositRepository, _userRepository);
+        var priceCalculator = new PriceCalculator();
+        _bookingService = new BookingService(_bookingRepository, _depositRepository, _userRepository, priceCalculator);
     }
 
     private void RegisterUsers()
@@ -50,21 +54,21 @@ public class BookingServiceTest
             "12345678@mE",
             "Administrator"
         );
-        _adminCredentials = new Credentials() { Email = "admin@test.com", Rank = "Administrator" };
+        _adminCredentials = new Credentials { Email = "admin@test.com", Rank = "Administrator" };
 
         _client = new User(
             "Name Surname",
             "test@test.com",
             "12345678@mE"
         );
-        _clientCredentials = new Credentials() { Email = "test@test.com", Rank = "Client" };
+        _clientCredentials = new Credentials { Email = "test@test.com", Rank = "Client" };
 
         _otherClient = new User(
             "Name Surname",
             "other@test.com",
             "12345678@mE"
         );
-        _otherClientCredentials = new Credentials() { Email = "other@test.com", Rank = "Client" };
+        _otherClientCredentials = new Credentials { Email = "other@test.com", Rank = "Client" };
 
         _userRepository.Add(_admin);
         _userRepository.Add(_client);
@@ -78,7 +82,7 @@ public class BookingServiceTest
         var promotionList = new List<Promotion> { promotion };
         _promotionRepository.Add(promotion);
 
-        _deposit = new Deposit("Deposit", "A", "Small", true, promotionList);
+        _deposit = new Deposit("Deposit", DepositArea.A, DepositSize.Small, true, promotionList);
         _deposit.AddAvailabilityPeriod(new DateRange.DateRange(DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(100))));
         _depositRepository.Add(_deposit);
@@ -88,7 +92,7 @@ public class BookingServiceTest
     public void TestCanAddBooking()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -108,13 +112,13 @@ public class BookingServiceTest
     public void TestCanGetBookingsByEmailIfAdministrator()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
             DepositName = _deposit!.Name,
-            Email = _client!.Email,
+            Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
 
@@ -129,7 +133,7 @@ public class BookingServiceTest
     public void TestCanGetBookingsByEmailIfSameEmail()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -150,7 +154,7 @@ public class BookingServiceTest
     public void TestCanGetAllBookings()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -158,7 +162,7 @@ public class BookingServiceTest
             DepositName = _deposit!.Name,
             Email = _client!.Email
         };
-        var otherBookingDto = new BookingDto()
+        var otherBookingDto = new BookingDto
         {
             Id = 2,
             DateFrom = DateOnly.FromDateTime(DateTime.Now.AddDays(2)),
@@ -180,7 +184,7 @@ public class BookingServiceTest
     public void TestCanApproveBooking()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -202,7 +206,7 @@ public class BookingServiceTest
     public void TestCanRejectBooking()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -211,7 +215,7 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
-        var rejectBookingDto = new BookingDto()
+        var rejectBookingDto = new BookingDto
         {
             Id = 1,
             Message = "message"
@@ -229,7 +233,7 @@ public class BookingServiceTest
     public void TestCanAddMessageToRejection()
     {
         //Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -239,7 +243,7 @@ public class BookingServiceTest
         };
         const string message = "example";
         _bookingService.AddBooking(bookingDto, _clientCredentials);
-        var rejectBookingDto = new BookingDto()
+        var rejectBookingDto = new BookingDto
         {
             Id = 1,
             Message = message
@@ -257,7 +261,7 @@ public class BookingServiceTest
     public void TestCantGetBookingsByEmailOfAnotherUserIfNotAdministrator()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -268,7 +272,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _otherClientCredentials);
 
         // Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.GetBookingsByEmail("other@test.com", _clientCredentials));
 
         // Assert
@@ -279,7 +283,7 @@ public class BookingServiceTest
     public void TestCantGetBookingsByEmailOfAnotherUserIfClient()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -290,7 +294,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _otherClientCredentials);
 
         // Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.GetBookingsByEmail("other@test.com", _clientCredentials));
 
         // Assert
@@ -301,7 +305,7 @@ public class BookingServiceTest
     public void TestCantGetAllBookingsIfNotAdministrator()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -312,7 +316,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _clientCredentials);
 
         // Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.GetAllBookings(_clientCredentials));
 
         // Assert
@@ -323,7 +327,7 @@ public class BookingServiceTest
     public void TestCantApproveBookingsIfNotAdministrator()
     {
         //Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -334,7 +338,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _clientCredentials);
 
         //Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.ApproveBooking(1, _clientCredentials));
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
@@ -344,7 +348,7 @@ public class BookingServiceTest
     public void TestCantRejectBookingsIfNotAdministrator()
     {
         //Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -353,14 +357,14 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
-        var rejectBookingDto = new BookingDto()
+        var rejectBookingDto = new BookingDto
         {
             Id = 1,
             Message = "message"
         };
 
         //Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.RejectBooking(rejectBookingDto, _clientCredentials));
         //Assert
         Assert.AreEqual("You are not authorized to perform this action.", exception.Message);
@@ -370,7 +374,7 @@ public class BookingServiceTest
     public void TestCantApproveNonExistentBooking()
     {
         //Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.ApproveBooking(1, _adminCredentials));
         //Assert
         Assert.AreEqual("Booking not found.", exception.Message);
@@ -380,14 +384,14 @@ public class BookingServiceTest
     public void TestCantRejectNonExistentBooking()
     {
         // Arrange
-        var rejectBookingDto = new BookingDto()
+        var rejectBookingDto = new BookingDto
         {
             Id = 1,
             Message = "message"
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.RejectBooking(rejectBookingDto, _adminCredentials));
         // Assert
         Assert.AreEqual("Booking not found.", exception.Message);
@@ -397,7 +401,7 @@ public class BookingServiceTest
     public void TestRejectMessageCannotBeEmpty()
     {
         //Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -406,14 +410,14 @@ public class BookingServiceTest
             Email = _client!.Email
         };
         _bookingService.AddBooking(bookingDto, _clientCredentials);
-        var rejectBookingDto = new BookingDto()
+        var rejectBookingDto = new BookingDto
         {
             Id = 1,
             Message = ""
         };
 
         //Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
             _bookingService.RejectBooking(rejectBookingDto, _adminCredentials));
         //Assert
         Assert.AreEqual("Message cannot be empty.", exception.Message);
@@ -423,11 +427,11 @@ public class BookingServiceTest
     public void TestCantCreateBookingIfDepositDoesNotExist()
     {
         // Arrange
-        var deposit = new Deposit("Deposit Two", "A", "Small", true, new List<Promotion>());
+        var deposit = new Deposit("Deposit Two", DepositArea.A, DepositSize.Small, true, new List<Promotion>());
         var dateRange = new DateRange.DateRange(DateOnly.FromDateTime(DateTime.Now),
             DateOnly.FromDateTime(DateTime.Now.AddDays(1)));
         deposit.AddAvailabilityPeriod(dateRange);
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -437,7 +441,7 @@ public class BookingServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _bookingService.AddBooking(bookingDto, _clientCredentials);
         });
@@ -450,17 +454,17 @@ public class BookingServiceTest
     public void TestCantCreateBookingIfUserDoesNotExist()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
             DepositName = _deposit!.Name,
-            Email = "nonexistent@test.com",
+            Email = "nonexistent@test.com"
         };
 
         // Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _bookingService.AddBooking(bookingDto, _clientCredentials);
         });
@@ -473,17 +477,17 @@ public class BookingServiceTest
     public void TestCantCreateBookingIfEmailDoesNotMatchCredentials()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
             DateTo = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
             DepositName = _deposit!.Name,
-            Email = _client!.Email,
+            Email = _client!.Email
         };
 
         // Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _bookingService.AddBooking(bookingDto, _otherClientCredentials);
         });
@@ -496,7 +500,7 @@ public class BookingServiceTest
     public void TestCanGenerateTxtBookingReportFile()
     {
         //Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -519,7 +523,7 @@ public class BookingServiceTest
     public void TestCantGenerateReportIfInvalidFormat()
     {
         //Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -530,7 +534,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _clientCredentials);
 
         //Act
-        var exception = Assert.ThrowsException<ArgumentException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _bookingService.GenerateReport("invalid", _adminCredentials);
         });
@@ -543,7 +547,7 @@ public class BookingServiceTest
     public void TestCantGenerateBookingsReportIfNotAdministrator()
     {
         //Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -554,7 +558,7 @@ public class BookingServiceTest
         _bookingService.AddBooking(bookingDto, _clientCredentials);
 
         //Act
-        var exception = Assert.ThrowsException<UnauthorizedAccessException>(() =>
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
         {
             _bookingService.GenerateReport("txt", _clientCredentials);
         });
@@ -585,7 +589,7 @@ public class BookingServiceTest
     public void TestPaymentIsAddedToBooking()
     {
         // Arrange
-        var bookingDto = new BookingDto()
+        var bookingDto = new BookingDto
         {
             Id = 1,
             DateFrom = DateOnly.FromDateTime(DateTime.Now),
@@ -600,7 +604,7 @@ public class BookingServiceTest
         // Assert
         var booking = _bookingService.GetBooking(1, _clientCredentials);
         _bookingService.ApproveBooking(1, _adminCredentials);
-        Assert.IsFalse(booking.Payment!.Value.Captured);
+        Assert.AreEqual(booking.Payment!.Value.Status, "Reserved");
         Assert.AreEqual(35, booking.Payment!.Value.Amount);
     }
 }
