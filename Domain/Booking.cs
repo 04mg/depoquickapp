@@ -22,12 +22,6 @@ public class Booking
         MakeDurationUnavailable(_duration);
     }
 
-    private void MakeDurationUnavailable(DateRange.DateRange duration)
-    {
-        var dateRange = new DateRange.DateRange(duration.StartDate, duration.EndDate);
-        Deposit.MakeUnavailable(dateRange);
-    }
-
     public int Id { get; init; }
     public int DepositId { get; set; }
     public Deposit Deposit { get; set; }
@@ -48,14 +42,18 @@ public class Booking
         }
     }
 
+    private void MakeDurationUnavailable(DateRange.DateRange duration)
+    {
+        var dateRange = new DateRange.DateRange(duration.StartDate, duration.EndDate);
+        Deposit.MakeUnavailable(dateRange);
+    }
+
     private static void EnsureDurationIsContainedInDepositAvailabilityPeriods(Deposit deposit,
         DateRange.DateRange dateRange)
     {
         if (!deposit.IsAvailable(dateRange))
-        {
             throw new DomainException(
                 "The duration of the booking must be contained in the deposit availability periods.");
-        }
     }
 
     private static void EnsureDateFromIsNotEqualToDateTo(DateOnly startDate, DateOnly dateTo)

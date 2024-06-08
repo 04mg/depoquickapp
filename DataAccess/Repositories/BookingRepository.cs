@@ -100,33 +100,22 @@ public class BookingRepository : IBookingRepository
     private static void HandlePaymentUpdate(Booking booking, Booking existingBooking, Context context)
     {
         if (booking.Payment == null)
-        {
             RemoveExistingPayment(existingBooking, context);
-        }
         else
-        {
             AddOrUpdatePayment(booking, existingBooking, context);
-        }
     }
 
     private static void AddOrUpdatePayment(Booking booking, Booking existingBooking, DbContext context)
     {
         if (booking.Payment == null) return;
         if (existingBooking.Payment == null)
-        {
             context.Add(booking.Payment);
-        }
         else
-        {
             context.Entry(existingBooking.Payment).CurrentValues.SetValues(booking.Payment);
-        }
     }
 
     private static void RemoveExistingPayment(Booking existingBooking, Context context)
     {
-        if (existingBooking.Payment != null)
-        {
-            context.Remove(existingBooking.Payment);
-        }
+        if (existingBooking.Payment != null) context.Remove(existingBooking.Payment);
     }
 }

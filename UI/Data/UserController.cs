@@ -7,7 +7,6 @@ public class UserController
 {
     private readonly UserService _userService;
     private Credentials? _currentCredentials;
-    public event Action? OnLoginStatusChanged;
 
     public UserController(UserService userService)
     {
@@ -23,6 +22,7 @@ public class UserController
     public bool IsLoggedIn => _currentCredentials != null;
 
     public bool IsAdmin => CurrentCredentials.Rank == "Administrator";
+    public event Action? OnLoginStatusChanged;
 
     public void LogIn(LoginDto loginDto)
     {

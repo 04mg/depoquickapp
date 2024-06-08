@@ -11,9 +11,8 @@ public class BookingService
 {
     private readonly IBookingRepository _bookingRepository;
     private readonly IDepositRepository _depositRepository;
-    private readonly IUserRepository _userRepository;
     private readonly IPriceCalculator _priceCalculator;
-    private IEnumerable<Booking> AllBookings => _bookingRepository.GetAll();
+    private readonly IUserRepository _userRepository;
 
     public BookingService(IBookingRepository bookingRepository,
         IDepositRepository depositRepository, IUserRepository userRepository, IPriceCalculator priceCalculator)
@@ -23,6 +22,8 @@ public class BookingService
         _userRepository = userRepository;
         _priceCalculator = priceCalculator;
     }
+
+    private IEnumerable<Booking> AllBookings => _bookingRepository.GetAll();
 
     public void AddBooking(BookingDto bookingDto, Credentials credentials)
     {

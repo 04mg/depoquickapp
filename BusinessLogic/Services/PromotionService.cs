@@ -7,8 +7,8 @@ namespace BusinessLogic.Services;
 
 public class PromotionService
 {
-    private readonly IPromotionRepository _promotionRepository;
     private readonly IDepositRepository _depositRepository;
+    private readonly IPromotionRepository _promotionRepository;
 
     public PromotionService(IPromotionRepository promotionRepository, IDepositRepository depositRepository)
     {

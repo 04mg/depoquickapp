@@ -24,7 +24,7 @@ public class Promotion
     }
 
     public int Id { get; set; }
-    
+
     public string Label
     {
         get => _label;
@@ -47,12 +47,6 @@ public class Promotion
         }
     }
 
-    private void EnsureEndDateIsGreaterThanToday(DateOnly endDate)
-    {
-        if (endDate < DateOnly.FromDateTime(DateTime.Now))
-            throw new DomainException("The ending date of the promotion cannot be in the past.");
-    }
-
     public int Discount
     {
         get => _discount;
@@ -61,6 +55,12 @@ public class Promotion
             EnsureDiscountIsWithinRange(value);
             _discount = value;
         }
+    }
+
+    private void EnsureEndDateIsGreaterThanToday(DateOnly endDate)
+    {
+        if (endDate < DateOnly.FromDateTime(DateTime.Now))
+            throw new DomainException("The ending date of the promotion cannot be in the past.");
     }
 
     private static void EnsureDiscountIsWithinRange(int value)

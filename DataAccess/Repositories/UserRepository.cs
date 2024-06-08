@@ -8,7 +8,7 @@ namespace DataAccess.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private IDbContextFactory<Context> _contextFactory;
+    private readonly IDbContextFactory<Context> _contextFactory;
 
     public UserRepository(IDbContextFactory<Context> contextFactory)
     {

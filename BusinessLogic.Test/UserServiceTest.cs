@@ -88,7 +88,10 @@ public class UserServiceTest
         };
 
         // Act
-        var exception = Assert.ThrowsException<BusinessLogicException>(() => { _userService.Register(wrongRegisterDto); });
+        var exception = Assert.ThrowsException<BusinessLogicException>(() =>
+        {
+            _userService.Register(wrongRegisterDto);
+        });
 
         // Assert
         Assert.AreEqual("Passwords do not match.", exception.Message);

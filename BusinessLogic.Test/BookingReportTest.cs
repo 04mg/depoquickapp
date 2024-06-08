@@ -19,7 +19,7 @@ public class BookingReportTest
 
     private static readonly List<Promotion> Promotions = new()
     {
-        new(1, "label", 50, Today, Tomorrow)
+        new Promotion(1, "label", 50, Today, Tomorrow)
     };
 
     private Deposit? _deposit;
@@ -38,15 +38,9 @@ public class BookingReportTest
     [TestCleanup]
     public void Cleanup()
     {
-        if (File.Exists("BookingsReport.txt"))
-        {
-            File.Delete("BookingsReport.txt");
-        }
+        if (File.Exists("BookingsReport.txt")) File.Delete("BookingsReport.txt");
 
-        if (File.Exists("BookingsReport.csv"))
-        {
-            File.Delete("BookingsReport.csv");
-        }
+        if (File.Exists("BookingsReport.csv")) File.Delete("BookingsReport.csv");
     }
 
     [TestMethod]
@@ -58,7 +52,7 @@ public class BookingReportTest
             new(1, _deposit!, Client, Today, Tomorrow, new Payment(50)),
             new(2, _depositNoPromotions!, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new Payment(70))
         };
-        const string path = $"BookingsReport.txt";
+        const string path = "BookingsReport.txt";
         var depositReport = "Deposit\t" +
                             $"{Today}-{Tomorrow}\t" +
                             "client@client.com\t" +
@@ -91,7 +85,7 @@ public class BookingReportTest
             new(1, _deposit!, Client, Today, Tomorrow, new Payment(35)),
             new(2, _depositNoPromotions!, Client, Tomorrow.AddDays(1), Tomorrow.AddDays(2), new Payment(70))
         };
-        const string path = $"BookingsReport.csv";
+        const string path = "BookingsReport.csv";
         var header = "Deposit,Client,StartDate,EndDate,Price,PaymentState,Promotions\n";
         var depositReport = "Deposit," +
                             "client@client.com," +
@@ -127,7 +121,7 @@ public class BookingReportTest
         };
         bookings[0].Reject("Message");
         bookings[1].Reject("Message");
-        const string path = $"BookingsReport.txt";
+        const string path = "BookingsReport.txt";
         var depositReport = "Deposit\t" +
                             $"{Today}-{Tomorrow}\t" +
                             "client@client.com\t" +
@@ -162,7 +156,7 @@ public class BookingReportTest
         };
         bookings[0].Approve();
         bookings[1].Approve();
-        const string path = $"BookingsReport.txt";
+        const string path = "BookingsReport.txt";
         var depositReport = "Deposit\t" +
                             $"{Today}-{Tomorrow}\t" +
                             "client@client.com\t" +
@@ -185,7 +179,7 @@ public class BookingReportTest
         Assert.IsTrue(File.Exists(path));
         Assert.AreEqual(reportContent, File.ReadAllText(path));
     }
-    
+
     [TestMethod]
     public void TestCanCreateCsvBookingsReportFileWithRejectedBookings()
     {
@@ -197,7 +191,7 @@ public class BookingReportTest
         };
         bookings[0].Reject("Message");
         bookings[1].Reject("Message");
-        const string path = $"BookingsReport.csv";
+        const string path = "BookingsReport.csv";
         var header = "Deposit,Client,StartDate,EndDate,Price,PaymentState,Promotions\n";
         var depositReport = "Deposit," +
                             "client@client.com," +
@@ -221,7 +215,7 @@ public class BookingReportTest
         Assert.IsTrue(File.Exists(path));
         Assert.AreEqual(reportContent, File.ReadAllText(path));
     }
-    
+
     [TestMethod]
     public void TestCanCreateCsvBookingsReportFileWithApprovedBookings()
     {
@@ -233,7 +227,7 @@ public class BookingReportTest
         };
         bookings[0].Approve();
         bookings[1].Approve();
-        const string path = $"BookingsReport.csv";
+        const string path = "BookingsReport.csv";
         var header = "Deposit,Client,StartDate,EndDate,Price,PaymentState,Promotions\n";
         var depositReport = "Deposit," +
                             "client@client.com," +
@@ -257,5 +251,4 @@ public class BookingReportTest
         Assert.IsTrue(File.Exists(path));
         Assert.AreEqual(reportContent, File.ReadAllText(path));
     }
-    
 }

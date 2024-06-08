@@ -41,7 +41,7 @@ public class PriceCalculator : IPriceCalculator
 
     private static double GetPricePerDay(Deposit deposit)
     {
-        double pricePerDay = deposit.Size switch
+        var pricePerDay = deposit.Size switch
         {
             DepositSize.Small => SmallPricePerDay,
             DepositSize.Medium => MediumPricePerDay,

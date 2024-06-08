@@ -8,10 +8,9 @@ namespace BusinessLogic.Services;
 
 public class DepositService
 {
-    private readonly IDepositRepository _depositRepository;
     private readonly IBookingRepository _bookingRepository;
+    private readonly IDepositRepository _depositRepository;
     private readonly IPromotionRepository _promotionRepository;
-    private IEnumerable<Deposit> AllDeposits => _depositRepository.GetAll();
 
     public DepositService(IDepositRepository depositRepository, IBookingRepository bookingRepository,
         IPromotionRepository promotionRepository)
@@ -20,6 +19,8 @@ public class DepositService
         _bookingRepository = bookingRepository;
         _promotionRepository = promotionRepository;
     }
+
+    private IEnumerable<Deposit> AllDeposits => _depositRepository.GetAll();
 
     private void EnsureDepositExists(string name)
     {
@@ -53,7 +54,7 @@ public class DepositService
 
     private static List<DateRangeDto> DateRangeToDto(IEnumerable<DateRange.DateRange> dateRanges)
     {
-        return dateRanges.Select(dr => new DateRangeDto() { StartDate = dr.StartDate, EndDate = dr.EndDate }).ToList();
+        return dateRanges.Select(dr => new DateRangeDto { StartDate = dr.StartDate, EndDate = dr.EndDate }).ToList();
     }
 
     private static PromotionDto PromotionToDto(Promotion promotion)
@@ -117,9 +118,7 @@ public class DepositService
     private void EnsureAllPromotionsExist(IEnumerable<Promotion> promotions)
     {
         if (promotions.Any(p => !_promotionRepository.Exists(p.Id)))
-        {
             throw new BusinessLogicException("Promotion not found.");
-        }
     }
 
     private void EnsureDepositNameIsNotTaken(string depositName)

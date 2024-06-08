@@ -17,13 +17,13 @@ public class DepositServiceTest
     private const string Size = "Small";
     private const bool ClimateControl = true;
     private Credentials _adminCredentials;
-    private Credentials _clientCredentials;
-    private PromotionDto _promotionDto;
-    private DepositRepository _depositRepository = null!;
     private BookingRepository _bookingRepository = null!;
+    private Credentials _clientCredentials;
+    private DepositRepository _depositRepository = null!;
+    private DepositService _depositService = null!;
+    private PromotionDto _promotionDto;
     private PromotionRepository _promotionRepository = null!;
     private UserRepository _userRepository = null!;
-    private DepositService _depositService = null!;
 
     [TestInitialize]
     public void Initialize()
@@ -47,8 +47,8 @@ public class DepositServiceTest
 
     private void SetCredentials()
     {
-        _adminCredentials = new Credentials() { Email = "admin@admin.com", Rank = "Administrator" };
-        _clientCredentials = new Credentials() { Email = "client@client.com", Rank = "Client" };
+        _adminCredentials = new Credentials { Email = "admin@admin.com", Rank = "Administrator" };
+        _clientCredentials = new Credentials { Email = "client@client.com", Rank = "Client" };
     }
 
     private void CreatePromotion()
@@ -77,7 +77,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
 
         // Act
@@ -97,7 +97,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         _depositService.AddDeposit(depositDto, _adminCredentials);
 
@@ -113,7 +113,8 @@ public class DepositServiceTest
     {
         // Act
         var exception =
-            Assert.ThrowsException<BusinessLogicException>(() => _depositService.DeleteDeposit(Name, _adminCredentials));
+            Assert.ThrowsException<BusinessLogicException>(() =>
+                _depositService.DeleteDeposit(Name, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Deposit not found.", exception.Message);
@@ -129,7 +130,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
 
         // Act
@@ -151,7 +152,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         _depositService.AddDeposit(depositDto, _adminCredentials);
 
@@ -174,7 +175,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         _depositService.AddDeposit(depositDto, _adminCredentials);
 
@@ -195,13 +196,14 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         _depositService.AddDeposit(depositDto, _adminCredentials);
 
         // Act
         var exception =
-            Assert.ThrowsException<BusinessLogicException>(() => _depositService.AddDeposit(depositDto, _adminCredentials));
+            Assert.ThrowsException<BusinessLogicException>(() =>
+                _depositService.AddDeposit(depositDto, _adminCredentials));
 
         // Assert
         Assert.AreEqual("Deposit name is already taken.", exception.Message);
@@ -217,7 +219,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         var dateRangeDto = new DateRangeDto
         {
@@ -239,7 +241,8 @@ public class DepositServiceTest
 
         // Act
         var exception =
-            Assert.ThrowsException<BusinessLogicException>(() => _depositService.DeleteDeposit(Name, _adminCredentials));
+            Assert.ThrowsException<BusinessLogicException>(() =>
+                _depositService.DeleteDeposit(Name, _adminCredentials));
 
         // Assert
         Assert.AreEqual("There are existing bookings for this deposit.", exception.Message);
@@ -262,7 +265,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { promotionDto }
+            Promotions = new List<PromotionDto> { promotionDto }
         };
 
         // Act
@@ -285,7 +288,7 @@ public class DepositServiceTest
             Area = Area,
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
         var dateRangeDto = new DateRangeDto
         {
@@ -324,7 +327,7 @@ public class DepositServiceTest
         // Assert
         Assert.AreEqual("Date range cannot be in the past.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantAddDepositWithInvalidSize()
     {
@@ -335,7 +338,7 @@ public class DepositServiceTest
             Area = Area,
             Size = "Invalid",
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
 
         // Act
@@ -347,7 +350,7 @@ public class DepositServiceTest
         // Assert
         Assert.AreEqual("Invalid size.", exception.Message);
     }
-    
+
     [TestMethod]
     public void TestCantAddDepositWithInvalidArea()
     {
@@ -358,7 +361,7 @@ public class DepositServiceTest
             Area = "Invalid",
             Size = Size,
             ClimateControl = ClimateControl,
-            Promotions = new List<PromotionDto>() { _promotionDto }
+            Promotions = new List<PromotionDto> { _promotionDto }
         };
 
         // Act

@@ -35,7 +35,8 @@
             NotificationService.ShowError(e.Message);
             NavigationManager.NavigateTo("/Promotions");
         }
-        catch (DataAccessException e) {
+        catch (DataAccessException e)
+        {
             NotificationService.ShowError(e.Message);
             NavigationManager.NavigateTo("/Logout");
         }

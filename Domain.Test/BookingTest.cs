@@ -9,7 +9,6 @@ public class BookingTest
 {
     private static readonly DateOnly Today = DateOnly.FromDateTime(DateTime.Now);
     private static readonly DateOnly Tomorrow = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
-    private Payment _payment = new(50);
 
     private static readonly User Client = new(
         "Name Surname",
@@ -23,6 +22,7 @@ public class BookingTest
     };
 
     private Deposit _deposit = new("Deposit", DepositArea.A, DepositSize.Small, true, Promotions);
+    private Payment _payment = new(50);
 
     [TestInitialize]
     public void Initialize()
