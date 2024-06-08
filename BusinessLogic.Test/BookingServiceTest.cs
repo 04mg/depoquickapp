@@ -1,6 +1,7 @@
 using BusinessLogic.DTOs;
 using BusinessLogic.Exceptions;
 using BusinessLogic.Services;
+using Calculators;
 using DataAccess;
 using DataAccess.Repositories;
 using Domain;
@@ -41,7 +42,8 @@ public class BookingServiceTest
         _depositRepository = scope.ServiceProvider.GetRequiredService<DepositRepository>();
         _bookingRepository = scope.ServiceProvider.GetRequiredService<BookingRepository>();
         _promotionRepository = scope.ServiceProvider.GetRequiredService<PromotionRepository>();
-        _bookingService = new BookingService(_bookingRepository, _depositRepository, _userRepository);
+        var priceCalculator = new PriceCalculator();
+        _bookingService = new BookingService(_bookingRepository, _depositRepository, _userRepository, priceCalculator);
     }
 
     private void RegisterUsers()

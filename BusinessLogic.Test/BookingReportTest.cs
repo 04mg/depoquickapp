@@ -1,4 +1,5 @@
 using BusinessLogic.Reports;
+using Calculators;
 using Domain;
 using Domain.Enums;
 
@@ -74,7 +75,7 @@ public class BookingReportTest
         var reportGenerator = new TxtBookingReport();
 
         // Act
-        reportGenerator.CreateReportFile(bookings);
+        reportGenerator.CreateReportFile(bookings, new PriceCalculator());
 
         // Assert
         Assert.IsTrue(File.Exists(path));
@@ -108,7 +109,7 @@ public class BookingReportTest
         var reportGenerator = new CsvBookingReport();
 
         // Act
-        reportGenerator.CreateReportFile(bookings);
+        reportGenerator.CreateReportFile(bookings, new PriceCalculator());
 
         // Assert
         Assert.IsTrue(File.Exists(path));
@@ -143,7 +144,7 @@ public class BookingReportTest
         var reportGenerator = new TxtBookingReport();
 
         // Act
-        reportGenerator.CreateReportFile(bookings);
+        reportGenerator.CreateReportFile(bookings, new PriceCalculator());
 
         // Assert
         Assert.IsTrue(File.Exists(path));
@@ -178,7 +179,7 @@ public class BookingReportTest
         var reportGenerator = new TxtBookingReport();
 
         // Act
-        reportGenerator.CreateReportFile(bookings);
+        reportGenerator.CreateReportFile(bookings, new PriceCalculator());
 
         // Assert
         Assert.IsTrue(File.Exists(path));
@@ -214,7 +215,7 @@ public class BookingReportTest
         var reportGenerator = new CsvBookingReport();
 
         // Act
-        reportGenerator.CreateReportFile(bookings);
+        reportGenerator.CreateReportFile(bookings, new PriceCalculator());
 
         // Assert
         Assert.IsTrue(File.Exists(path));
@@ -250,7 +251,7 @@ public class BookingReportTest
         var reportGenerator = new CsvBookingReport();
 
         // Act
-        reportGenerator.CreateReportFile(bookings);
+        reportGenerator.CreateReportFile(bookings, new PriceCalculator());
 
         // Assert
         Assert.IsTrue(File.Exists(path));

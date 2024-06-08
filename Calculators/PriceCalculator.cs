@@ -1,7 +1,7 @@
 using Domain;
 using Domain.Enums;
 
-namespace BusinessLogic.Calculators;
+namespace Calculators;
 
 public class PriceCalculator : IPriceCalculator
 {

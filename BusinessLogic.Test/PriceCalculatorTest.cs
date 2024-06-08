@@ -1,4 +1,4 @@
-using BusinessLogic.Calculators;
+using Calculators;
 using Domain;
 using Domain.Enums;
 
