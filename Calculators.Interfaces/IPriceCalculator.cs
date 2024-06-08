@@ -1,6 +1,6 @@
 using Domain;
 
-namespace Calculators;
+namespace Calculators.Interfaces;
 
 public interface IPriceCalculator
 {

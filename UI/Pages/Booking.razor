@@ -1,9 +1,12 @@
 @page "/Booking/{Id:int}"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
 @using BusinessLogic.Services
 @using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
-@inherits AuthEnforce
+@inherits UI.Shared.AuthEnforce
 @inject UserController User
 @inject BookingService BookingService
 @inject NotificationService NotificationService
@@ -26,17 +29,10 @@
         {
             _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
-            NotificationService.ShowError(e.Message);
-            NavigationManager.NavigateTo("/Bookings");
+            HandleException(e);
         }
-        catch (DataAccessException e)
-        {
-            NavigationManager.NavigateTo("/Logout");
-            NotificationService.ShowError(e.Message);
-        }
-
         StateHasChanged();
     }
 
@@ -47,14 +43,12 @@
             BookingService.ApproveBooking(Id, User.CurrentCredentials);
             _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
             NotificationService.ShowMessage("Booking approved successfully.");
-            StateHasChanged();
         }
-        catch (DataAccessException e)
+        catch (Exception e)
         {
-            NavigationManager.NavigateTo("/Logout");
-            NotificationService.ShowError(e.Message);
-            StateHasChanged();
+            HandleException(e);
         }
+        StateHasChanged();
     }
 
     private void RejectBooking()
@@ -64,13 +58,30 @@
             BookingService.RejectBooking(_bookingDto, User.CurrentCredentials);
             _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
             NotificationService.ShowMessage("Booking rejected successfully.");
-            StateHasChanged();
         }
-        catch (DataAccessException e)
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
+        StateHasChanged();
+    }
+
+    private void HandleException(Exception e)
+    {
+        if (e is DataAccessException)
         {
             NavigationManager.NavigateTo("/Logout");
             NotificationService.ShowError(e.Message);
-            StateHasChanged();
+        }
+        else if (e is BusinessLogicException or DomainException or DateRangeException)
+        {
+            NotificationService.ShowError(e.Message);
+            NavigationManager.NavigateTo("/Bookings");
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred.");
+            NavigationManager.NavigateTo("/Bookings");
         }
     }
 

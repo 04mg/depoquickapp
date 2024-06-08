@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories;
 
-public class BookingRepository : IBookingRepository
+public class 
+    BookingRepository : IBookingRepository
 {
     private readonly IDbContextFactory<Context> _contextFactory;
 
