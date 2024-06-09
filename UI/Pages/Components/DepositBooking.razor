@@ -5,7 +5,7 @@
 @using DateRange
 @using Domain.Exceptions
 @using UI.Data
-@inject UserController User
+@inject UserService User
 @inject BookingService BookingService
 @inject NotificationService NotificationService
 @inject DepositService DepositService
@@ -30,7 +30,31 @@
 
     private void CalculatePrice()
     {
-        BookingPrice = BookingService.CalculateBookingPrice(_bookingDto);
+        try 
+        {
+            BookingPrice = BookingService.CalculateBookingPrice(_bookingDto);
+        }
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
+    }
+    
+    private void HandleException(Exception e)
+    {
+        if (e is BusinessLogicException or DomainException or DateRangeException)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+        else if (e is DataAccessException)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred. Please try again later.");
+        }
     }
 
     private void AddBooking()

@@ -7,7 +7,7 @@
 @using Domain.Exceptions
 @using UI.Data
 @inherits UI.Shared.AuthEnforce
-@inject UserController User
+@inject UserService User
 @inject BookingService BookingService
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
@@ -93,7 +93,7 @@
     </NavLink>
     <h6 class="vertical-margin">
         Booking
-        @if (User.IsAdmin && _bookingDto.Stage == "Pending")
+        @if (User.IsAdmin() && _bookingDto.Stage == "Pending")
         {
             <div class="absolute right">
                 <button class="extend square round primary no-margin" @onclick="ApproveBooking">
@@ -117,7 +117,7 @@
             </a>
         </h6>
         <div class="divider"></div>
-        @if (User.IsAdmin)
+        @if (User.IsAdmin())
         {
             <h6 class="small padding">Email:&nbsp; <b>@_bookingDto.Email</b></h6>
             <div class="divider"></div>
@@ -155,7 +155,7 @@
     </article>
 </main>
 
-@if (User.IsAdmin && _bookingDto.Stage == "Pending")
+@if (User.IsAdmin() && _bookingDto.Stage == "Pending")
 {
     <div class="medium-space"></div>
     <div class="overlay blur"></div>

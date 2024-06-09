@@ -7,7 +7,7 @@
 @using Domain.Exceptions
 @using UI.Data
 @inherits AuthEnforce
-@inject UserController User
+@inject UserService User
 @inject NavigationManager NavigationManager
 @inject PromotionService PromotionService
 @inject NotificationService NotificationService
@@ -106,7 +106,7 @@
 
 }
 
-@if (!User.IsAdmin)
+@if (!User.IsAdmin())
 {
     <Forbidden/>
 }

@@ -8,7 +8,7 @@
 @using UI.Data
 @using UI.Pages.Components
 @inherits AuthEnforce
-@inject UserController User
+@inject UserService User
 @inject DepositService DepositService
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
@@ -30,7 +30,7 @@
 
     protected override void OnParametersSet()
     {
-        if (!User.IsAdmin) return;
+        if (!User.IsAdmin()) return;
         try
         {
             DepositsDto = DepositService.GetAllDeposits().ToList();
@@ -119,8 +119,8 @@
 
 }
 
-<main class="responsive @(!User.IsAdmin && DepositsDto.Count == 0 ? "middle-align center-align" : "")">
-    @if (!User.IsAdmin && DepositsDto.Count == 0)
+<main class="responsive @(!User.IsAdmin() && DepositsDto.Count == 0 ? "middle-align center-align" : "")">
+    @if (!User.IsAdmin() && DepositsDto.Count == 0)
     {
         <div class="middle-align center-align">
             <div>
@@ -145,9 +145,9 @@
         </div>
         <div class="space"></div>
     }
-    @if (User.IsAdmin || DepositsDto.Count > 0)
+    @if (User.IsAdmin() || DepositsDto.Count > 0)
     {
-        @if (!User.IsAdmin)
+        @if (!User.IsAdmin())
         {
             <a class="extra transparent vertical-margin left-align" @onclick="ClearDeposits">
                 <i>arrow_back</i>
@@ -156,7 +156,7 @@
 
         <h6 class="vertical-margin">
             Deposits
-            @if (User.IsAdmin)
+            @if (User.IsAdmin())
             {
                 <button class="extend square round no-margin absolute right" data-ui="#add-deposit">
                     <i>add</i>
@@ -192,7 +192,7 @@
     }
 </main>
 
-@if (User.IsAdmin)
+@if (User.IsAdmin())
 {
     <div class="medium-space"></div>
     <div class="overlay blur"></div>

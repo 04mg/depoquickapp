@@ -4,7 +4,7 @@
 @using DataAccess.Exceptions
 @using UI.Data
 @inherits AuthEnforce
-@inject UserController User
+@inject UserService User
 @inject BookingService BookingService
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
@@ -31,7 +31,7 @@
 
     private void LoadBookings()
     {
-        BookingsDto = User.IsAdmin
+        BookingsDto = User.IsAdmin()
             ? BookingService.GetAllBookings(User.CurrentCredentials).ToList()
             : BookingService.GetBookingsByEmail(User.CurrentCredentials.Email, User.CurrentCredentials).ToList();
     }
@@ -76,7 +76,7 @@
     <h6 class="vertical-margin" id="list-bookings">
         Bookings
         <div class="medium-space"></div>
-        @if (User.IsAdmin)
+        @if (User.IsAdmin())
         {
             <button class="extend square round no-margin absolute right" data-ui="#generate-report">
                 <i>summarize</i>
