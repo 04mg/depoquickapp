@@ -1,6 +1,8 @@
+@using BusinessLogic.Services
 @using UI.Data
 @inject NavigationManager NavigationManager;
-@inject UserController User;
+@inject UserService User;
+@inject NavigationService Navigation;
 
 @code {
 
@@ -12,9 +14,13 @@
     private void EnsureUserIsAuthenticated()
     {
         var uri = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        if (!User.IsLoggedIn && uri != "/login" && uri != "/register")
+        if (!User.IsLoggedIn() && uri != "/login" && uri != "/register")
         {
             NavigationManager.NavigateTo("/Login");
+        }
+        else
+        {
+            Navigation.SetLoggedInLinks();
         }
     }
 

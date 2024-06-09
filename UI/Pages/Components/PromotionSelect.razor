@@ -1,8 +1,14 @@
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
 @using BusinessLogic.Services
+@using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
-@inject UserController User
+@inject UserService User
 @inject PromotionService PromotionService
+@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
 
 @code {
     private List<int> _promotions = new();
@@ -16,9 +22,33 @@
 
     [Parameter] public EventCallback<List<PromotionDto>> PromotionsChanged { get; set; }
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        _allPromotions = PromotionService.GetAllPromotions(User.CurrentCredentials).ToList();
+        try
+        {
+            _allPromotions = PromotionService.GetAllPromotions(User.CurrentCredentials).ToList();
+        }
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
+    }
+
+    private void HandleException(Exception e)
+    {
+        if (e is DataAccessException)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
+        else if (e is BusinessLogicException or DomainException or DateRangeException)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred.");
+        }
     }
 
     private void SelectPromotion()

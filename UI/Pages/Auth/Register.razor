@@ -1,16 +1,25 @@
 @page "/register"
 @using BusinessLogic.DTOs
 @using BusinessLogic.Exceptions
+@using BusinessLogic.Services
 @using DataAccess.Exceptions
 @using DateRange
 @using UI.Data
-@inject UserController User
+@inject UserService User
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
 
 @code {
 
     private RegisterDto _registerDto = new() { Rank = "Client" };
+
+    protected override void OnInitialized()
+    {
+        if (User.IsLoggedIn())
+        {
+            NavigationManager.NavigateTo("/Deposits", true);
+        }
+    }
 
     private void ConfirmRegister()
     {
@@ -33,7 +42,7 @@
         {
             NotificationService.ShowError("Fields cannot be empty");
         }
-        catch (Exception e)
+        catch (Exception)
         {
             NotificationService.ShowError("An unexpected error occurred. Please try again later.");
         }

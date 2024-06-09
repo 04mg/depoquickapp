@@ -28,6 +28,11 @@ public class NotificationService
         OnNotify?.Invoke(message, MessageType);
         ClearAfterDelay();
     }
+    
+    public void ShowCriticalError(string message)
+    {
+        OnNotify?.Invoke(message, ErrorType);
+    }
 
     public void Clear()
     {
