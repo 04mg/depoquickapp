@@ -26,7 +26,8 @@
     {
         try
         {
-            _allPromotions = PromotionService.GetAllPromotions(User.CurrentCredentials).ToList();
+            if (_allPromotions.Count == 0)
+                _allPromotions = PromotionService.GetAllPromotions(User.CurrentCredentials).ToList();
         }
         catch (Exception e)
         {
