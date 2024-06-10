@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculators.Interfaces", "C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculators", "Calculators\Calculators.csproj", "{35B6B15A-0135-456D-A59C-55368E56810A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Exceptions", "Domain.Exceptions\Domain.Exceptions.csproj", "{03C2EE25-C767-4C2B-8466-A8A634E7B57D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,9 @@ Global
 		{35B6B15A-0135-456D-A59C-55368E56810A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35B6B15A-0135-456D-A59C-55368E56810A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35B6B15A-0135-456D-A59C-55368E56810A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03C2EE25-C767-4C2B-8466-A8A634E7B57D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03C2EE25-C767-4C2B-8466-A8A634E7B57D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03C2EE25-C767-4C2B-8466-A8A634E7B57D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03C2EE25-C767-4C2B-8466-A8A634E7B57D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

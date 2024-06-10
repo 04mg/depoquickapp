@@ -46,6 +46,7 @@ public class UserServiceTest
     {
         // Act
         _userService.Register(_registerDto);
+        _userService.Login(_loginDto);
 
         // Assert
         Assert.AreSame(_userService.CurrentCredentials.Email, Email);
@@ -163,6 +164,7 @@ public class UserServiceTest
     {
         // Act
         _userService.Register(_registerDto);
+        _userService.Login(_loginDto);
 
         // Assert
         Assert.IsTrue(_userService.CurrentCredentials.Rank == "Administrator");
