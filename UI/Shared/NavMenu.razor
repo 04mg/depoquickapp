@@ -1,57 +1,27 @@
-﻿@using UI.Data
-@inject UserController User;
+﻿@using BusinessLogic.Services
+@using UI.Data
+@inject NavigationService Navigation;
+@inject UserService User;
 
 @code {
+    private string _message = string.Empty;
+    private string _type = string.Empty;
 
     protected override void OnInitialized()
     {
-        User.OnLoginStatusChanged += UpdateNavbar;
+        Navigation.OnSetNavigation += UpdateNavigation;
     }
 
-    public void Dispose()
-    {
-        User.OnLoginStatusChanged -= UpdateNavbar;
-    }
-
-    private void UpdateNavbar()
+    public void UpdateNavigation()
     {
         InvokeAsync(StateHasChanged);
     }
-
 }
 
-@if (User.IsLoggedIn)
+@foreach (var item in Navigation.Links.Where(item => !item.IsAdmin || User.IsAdmin()))
 {
-    <NavLink href="Deposits">
-        <i>garage_door</i>
-        <span>Deposits</span>
-    </NavLink>
-    <NavLink href="Bookings">
-        <i>book</i>
-        <span>Bookings</span>
-    </NavLink>
-
-    @if (User.IsAdmin)
-    {
-        <NavLink href="Promotions">
-            <i>sell</i>
-            <span>Promotions</span>
-        </NavLink>
-    }
-
-    <NavLink href="Logout">
-        <i>logout</i>
-        <span>Log Out</span>
-    </NavLink>
-}
-else
-{
-    <NavLink href="Login">
-        <i>login</i>
-        <span>Log In</span>
-    </NavLink>
-    <NavLink href="Register">
-        <i>passkey</i>
-        <span>Register</span>
+    <NavLink href="@item.Name">
+        <i>@item.Icon</i>
+        <span>@item.Name</span>
     </NavLink>
 }

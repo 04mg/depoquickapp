@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20240608221455_Initial")]
+    [Migration("20240608233937_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -51,12 +51,6 @@ namespace DataAccess.Migrations
                     b.Property<string>("ClientEmail")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DepositId")
-                        .HasColumnType("int");
 
                     b.Property<string>("DepositName")
                         .IsRequired()

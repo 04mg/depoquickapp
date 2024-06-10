@@ -1,11 +1,14 @@
 @page "/Deposit/{Name}"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
 @using BusinessLogic.Services
 @using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
 @using UI.Pages.Components
 @inherits AuthEnforce
-@inject UserController User
+@inject UserService User
 @inject DepositService DepositService
 @inject PromotionService PromotionService
 @inject NavigationManager NavigationManager
@@ -37,15 +40,9 @@
             AvailabilityPeriods = DepositDto.AvailabilityPeriods;
             AvailabilityPeriods.Sort((a, b) => a.StartDate.CompareTo(b.StartDate));
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
-            NotificationService.ShowError(e.Message);
-            NavigationManager.NavigateTo("/Deposits");
-        }
-        catch (DataAccessException e)
-        {
-            NavigationManager.NavigateTo("/Logout");
-            NotificationService.ShowError(e.Message);
+            HandleException(e);
         }
 
         StateHasChanged();
@@ -59,10 +56,9 @@
             AvailabilityPeriods = DepositDto.AvailabilityPeriods;
             AvailabilityPeriods.Sort((a, b) => a.StartDate.CompareTo(b.StartDate));
         }
-        catch (DataAccessException e)
+        catch (Exception e)
         {
-            NavigationManager.NavigateTo("/Logout");
-            NotificationService.ShowError(e.Message);
+            HandleException(e);
         }
     }
 
@@ -74,14 +70,9 @@
             NotificationService.ShowMessage($"Deposit '{Name}' deleted successfully.");
             NavigationManager.NavigateTo("/Deposits");
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
-            NotificationService.ShowError(e.Message);
-        }
-        catch (DataAccessException e)
-        {
-            NavigationManager.NavigateTo("/Logout");
-            NotificationService.ShowError(e.Message);
+            HandleException(e);
         }
     }
 
@@ -95,14 +86,9 @@
             UpdateDepositAndPeriods();
             StateHasChanged();
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
-            NotificationService.ShowError(e.Message);
-        }
-        catch (DataAccessException e)
-        {
-            NavigationManager.NavigateTo("/Logout");
-            NotificationService.ShowError(e.Message);
+            HandleException(e);
         }
     }
 
@@ -111,12 +97,31 @@
         UpdateDepositAndPeriods();
     }
 
+    private void HandleException(Exception e)
+    {
+        if (e is DataAccessException)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
+        else if (e is BusinessLogicException or DomainException or DateRangeException)
+        {
+            NotificationService.ShowError(e.Message);
+            NavigationManager.NavigateTo("/Deposits");
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred. Please try again.");
+            NavigationManager.NavigateTo("/Deposits");
+        }
+    }
+
 }
 
 <main class="responsive">
     <h6 class="row vertical-margin" id="deposit">
         <span class="max">@Name</span>
-        @if (User.IsAdmin)
+        @if (User.IsAdmin())
         {
             <button class="min extend square round no-margin" data-ui="#add-availability">
                 <i>add</i>
@@ -171,7 +176,7 @@
     <DepositBooking DepositName="@Name" OnBookingCompleted="OnBookingCompleted"/>
 </main>
 
-@if (User.IsAdmin)
+@if (User.IsAdmin())
 {
     <div class="medium-space"></div>
     <div class="overlay blur"></div>

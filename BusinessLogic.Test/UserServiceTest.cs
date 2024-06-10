@@ -45,10 +45,10 @@ public class UserServiceTest
     public void TestCanRegisterWithValidCredentials()
     {
         // Act
-        var credentials = _userService.Register(_registerDto);
+        _userService.Register(_registerDto);
 
         // Assert
-        Assert.AreSame(credentials.Email, Email);
+        Assert.AreSame(_userService.CurrentCredentials.Email, Email);
     }
 
     [TestMethod]
@@ -58,10 +58,10 @@ public class UserServiceTest
         _userService.Register(_registerDto);
 
         // Act
-        var credentials = _userService.Login(_loginDto);
+        _userService.Login(_loginDto);
 
         // Assert
-        Assert.AreSame(credentials.Email, Email);
+        Assert.IsTrue(_userService.IsLoggedIn());
     }
 
     [TestMethod]
@@ -162,9 +162,24 @@ public class UserServiceTest
     public void TestFirstUserIsAdmin()
     {
         // Act
-        var credentials = _userService.Register(_registerDto);
+        _userService.Register(_registerDto);
 
         // Assert
-        Assert.AreEqual("Administrator", credentials.Rank);
+        Assert.IsTrue(_userService.CurrentCredentials.Rank == "Administrator");
+        Assert.IsTrue(_userService.IsAdmin());
+    }
+    
+    [TestMethod]
+    public void TestCanLogout()
+    {
+        // Arrange
+        _userService.Register(_registerDto);
+        _userService.Login(_loginDto);
+
+        // Act
+        _userService.Logout();
+
+        // Assert
+        Assert.IsFalse(_userService.IsLoggedIn());
     }
 }

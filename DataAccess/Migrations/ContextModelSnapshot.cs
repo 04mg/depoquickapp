@@ -49,12 +49,6 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DepositId")
-                        .HasColumnType("int");
-
                     b.Property<string>("DepositName")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");

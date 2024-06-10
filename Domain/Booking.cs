@@ -23,9 +23,7 @@ public class Booking
     }
 
     public int Id { get; init; }
-    public int DepositId { get; set; }
     public Deposit Deposit { get; set; }
-    public int ClientId { get; set; }
     public User Client { get; set; }
     public string Message { get; set; } = "";
     public BookingStage Stage { get; set; } = BookingStage.Pending;

@@ -9,13 +9,17 @@ namespace BusinessLogic.Services;
 public class UserService
 {
     private readonly IUserRepository _userRepository;
+    private Credentials? _currentCredentials;
 
     public UserService(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }
 
-    public Credentials Register(RegisterDto registerDto)
+    public Credentials CurrentCredentials =>
+        _currentCredentials ?? throw new BusinessLogicException("User is not logged in.");
+
+    public void Register(RegisterDto registerDto)
     {
         var user = new User(
             registerDto.NameSurname,
@@ -27,7 +31,8 @@ public class UserService
         EnsureSingleAdmin(user.Rank);
         SetRankAsAdminIfFirstUser(user);
         _userRepository.Add(user);
-        return new Credentials { Email = user.Email, Rank = user.Rank.ToString() };
+        var credentials = new Credentials() { Email = user.Email, Rank = user.Rank.ToString() };
+        _currentCredentials = credentials;
     }
 
     private static void EnsurePasswordConfirmationMatch(string password, string passwordConfirmation)
@@ -62,12 +67,18 @@ public class UserService
         if (!_userRepository.GetAll().Any()) user.Rank = UserRank.Administrator;
     }
 
-    public Credentials Login(LoginDto loginDto)
+    public void Login(LoginDto loginDto)
     {
         EnsureUserIsRegistered(loginDto.Email);
         EnsurePasswordMatchWithEmail(loginDto.Email, loginDto.Password);
         var user = _userRepository.Get(loginDto.Email);
         var credentials = new Credentials { Email = loginDto.Email, Rank = user.Rank.ToString() };
-        return credentials;
+        _currentCredentials = credentials;
     }
+
+    public void Logout() => _currentCredentials = null;
+
+    public bool IsLoggedIn() => _currentCredentials != null;
+
+    public bool IsAdmin() => _currentCredentials?.Rank == UserRank.Administrator.ToString();
 }
