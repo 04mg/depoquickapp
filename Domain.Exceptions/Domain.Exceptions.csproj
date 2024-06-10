@@ -6,9 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\DateRange\DateRange.csproj"/>
-        <ProjectReference Include="..\Domain.Exceptions\Domain.Exceptions.csproj" />
-    </ItemGroup>
-
 </Project>
