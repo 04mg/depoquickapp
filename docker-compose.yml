@@ -1,6 +1,7 @@
 services:
   sqlserver:
     image: mcr.microsoft.com/azure-sql-edge
+    user: root
     container_name: sqlserver
     environment:
       SA_PASSWORD: "Passw1rd"
