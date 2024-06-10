@@ -31,8 +31,6 @@ public class UserService
         EnsureSingleAdmin(user.Rank);
         SetRankAsAdminIfFirstUser(user);
         _userRepository.Add(user);
-        var credentials = new Credentials() { Email = user.Email, Rank = user.Rank.ToString() };
-        _currentCredentials = credentials;
     }
 
     private static void EnsurePasswordConfirmationMatch(string password, string passwordConfirmation)
