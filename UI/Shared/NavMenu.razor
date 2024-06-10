@@ -1,37 +1,27 @@
-﻿@using UI.Data
-@inject AuthController Auth;
-@if (Auth.IsLoggedIn)
-{
-    <NavLink href="Deposits">
-        <i>garage_door</i>
-        <span>Deposits</span>
-    </NavLink>
-    <NavLink href="Bookings">
-        <i>book</i>
-        <span>Bookings</span>
-    </NavLink>
+﻿@using BusinessLogic.Services
+@using UI.Data
+@inject NavigationService Navigation;
+@inject UserService User;
 
-    @if (Auth.IsAdmin)
+@code {
+    private string _message = string.Empty;
+    private string _type = string.Empty;
+
+    protected override void OnInitialized()
     {
-        <NavLink href="Promotions">
-            <i>sell</i>
-            <span>Promotions</span>
-        </NavLink>
+        Navigation.OnSetNavigation += UpdateNavigation;
     }
 
-    <NavLink href="Logout">
-        <i>logout</i>
-        <span>Log Out</span>
-    </NavLink>
+    public void UpdateNavigation()
+    {
+        InvokeAsync(StateHasChanged);
+    }
 }
-else
+
+@foreach (var item in Navigation.Links.Where(item => !item.IsAdmin || User.IsAdmin()))
 {
-    <NavLink href="Login">
-        <i>login</i>
-        <span>Log In</span>
-    </NavLink>
-    <NavLink href="Register">
-        <i>passkey</i>
-        <span>Register</span>
+    <NavLink href="@item.Name">
+        <i>@item.Icon</i>
+        <span>@item.Name</span>
     </NavLink>
 }

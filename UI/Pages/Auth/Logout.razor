@@ -1,15 +1,18 @@
 @page "/Logout"
+@using BusinessLogic.Services
 @using UI.Data
-@inject AuthController Auth
+@inject UserService User
 @inject NavigationManager NavigationManager
+@inject NavigationService Navigation
 
 @code {
 
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        Auth.LogOut();
-        NavigationManager.NavigateTo("/Login", true);
+        User.Logout();
+        NavigationManager.NavigateTo("/Login");
+        Navigation.SetLoggedOutLinks();
     }
 
 }

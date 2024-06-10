@@ -1,4 +1,10 @@
-using BusinessLogic;
+using BusinessLogic.Services;
+using Calculators;
+using Calculators.Interfaces;
+using DataAccess;
+using DataAccess.Interfaces;
+using DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore;
 using UI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,11 +13,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<NotificationService>();
-builder.Services.AddSingleton<DepoQuickApp>();
-builder.Services.AddSingleton<AuthController>();
-builder.Services.AddSingleton<DepositController>();
-builder.Services.AddSingleton<PromotionController>();
-builder.Services.AddSingleton<BookingController>();
+builder.Services.AddSingleton<NavigationService>();
+builder.Services.AddDbContextFactory<Context>(
+    options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        providerOptions => providerOptions.EnableRetryOnFailure())
+);
+builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
+builder.Services.AddSingleton<IDepositRepository, DepositRepository>();
+builder.Services.AddSingleton<IPromotionRepository, PromotionRepository>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
+builder.Services.AddSingleton<IPriceCalculator, PriceCalculator>();
+
+builder.Services.AddSingleton<BookingService>();
+builder.Services.AddSingleton<DepositService>();
+builder.Services.AddSingleton<PromotionService>();
+builder.Services.AddSingleton<UserService>();
 
 var app = builder.Build();
 

@@ -1,74 +1,136 @@
-@page "/Deposit/{Id:int}"
+@page "/Deposit/{Name}"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
+@using BusinessLogic.Services
+@using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
 @using UI.Pages.Components
 @inherits AuthEnforce
-@inject AuthController Auth
-@inject DepositController DepositController
-@inject PromotionController PromotionController
+@inject UserService User
+@inject DepositService DepositService
+@inject PromotionService PromotionService
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
 
 @code {
     private DepositDto DepositDto { get; set; }
-    private List<AddPromotionDto> Promotions { get; set; } = new();
+    private List<PromotionDto> Promotions { get; set; } = new();
+    private List<DateRangeDto> AvailabilityPeriods { get; set; } = new();
 
-    private int? _id;
+    private DateOnly StartDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+    private DateOnly EndDate { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+
+    private string? _name;
 
     [Parameter]
-    public int Id
+    public string Name
     {
-        get => _id ?? throw new NullReferenceException();
-        set => _id = value;
+        get => _name ?? throw new NullReferenceException();
+        set => _name = value;
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnParametersSet()
     {
-        if (!firstRender) return;
         try
         {
-            DepositDto = DepositController.GetDeposit(Id, Auth.CurrentCredentials);
-            Promotions = DepositDto.PromotionList.Select(p => PromotionController.GetPromotion(p)).ToList();
+            DepositDto = DepositService.GetDeposit(Name);
+            Promotions = DepositDto.Promotions.Select(p => PromotionService.GetPromotion(p.Id)).ToList();
+            AvailabilityPeriods = DepositDto.AvailabilityPeriods;
+            AvailabilityPeriods.Sort((a, b) => a.StartDate.CompareTo(b.StartDate));
         }
-        catch (InvalidOperationException)
+        catch (Exception e)
         {
-            NotificationService.ShowError("Deposit was not found.");
-            NavigationManager.NavigateTo("/Deposits");
+            HandleException(e);
         }
 
         StateHasChanged();
+    }
+
+    private void UpdateDepositAndPeriods()
+    {
+        try
+        {
+            DepositDto = DepositService.GetDeposit(Name);
+            AvailabilityPeriods = DepositDto.AvailabilityPeriods;
+            AvailabilityPeriods.Sort((a, b) => a.StartDate.CompareTo(b.StartDate));
+        }
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
     }
 
     private void DeleteDeposit()
     {
         try
         {
-            DepositController.DeleteDeposit(Id, Auth.CurrentCredentials);
-            NotificationService.ShowMessage($"Deposit with ID: {Id} deleted successfully.");
+            DepositService.DeleteDeposit(Name, User.CurrentCredentials);
+            NotificationService.ShowMessage($"Deposit '{Name}' deleted successfully.");
             NavigationManager.NavigateTo("/Deposits");
         }
-        catch (ArgumentException e)
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
+    }
+
+    private void AddAvailability()
+    {
+        try
+        {
+            var dateRange = new DateRangeDto { StartDate = StartDate, EndDate = EndDate };
+            DepositService.AddAvailabilityPeriod(Name, dateRange, User.CurrentCredentials);
+            NotificationService.ShowMessage("Deposit availability period added successfully.");
+            UpdateDepositAndPeriods();
+            StateHasChanged();
+        }
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
+    }
+
+    private void OnBookingCompleted()
+    {
+        UpdateDepositAndPeriods();
+    }
+
+    private void HandleException(Exception e)
+    {
+        if (e is DataAccessException)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
+        else if (e is BusinessLogicException or DomainException or DateRangeException)
         {
             NotificationService.ShowError(e.Message);
+            NavigationManager.NavigateTo("/Deposits");
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred. Please try again.");
+            NavigationManager.NavigateTo("/Deposits");
         }
     }
 
 }
 
 <main class="responsive">
-    <NavLink class="extra transparent vertical-margin left-align" href="/Deposits">
-        <i>arrow_back</i>
-    </NavLink>
-    <h6 class="vertical-margin">
-        Deposit
-        <span class="circle primary center-align middle-align left-margin">@Id</span>
-        @if (Auth.IsAdmin)
+    <h6 class="row vertical-margin" id="deposit">
+        <span class="max">@Name</span>
+        @if (User.IsAdmin())
         {
-            <button class="extend square round error no-margin absolute right" @onclick="DeleteDeposit">
+            <button class="min extend square round no-margin" data-ui="#add-availability">
+                <i>add</i>
+                <span>Add Availability</span>
+            </button>
+            <button class="min extend square round error no-margin" @onclick="DeleteDeposit">
                 <i>delete</i>
                 <span>Delete</span>
             </button>
-            <div class="medium-space"></div>
         }
     </h6>
     <article>
@@ -93,8 +155,49 @@
                 </div>
             }
         }
+        <div class="divider"></div>
+        @if (AvailabilityPeriods.Count == 0)
+        {
+            <h6 class="small padding">There are no available periods for this deposit</h6>
+        }
+        else
+        {
+            <h6 class="small padding">There are the following periods available for this deposit:</h6>
+            @foreach (var period in AvailabilityPeriods)
+            {
+                <div class="button no-wave margin">
+                    @period.StartDate.ToString("dd/MM/yyyy") - @period.EndDate.ToString("dd/MM/yyyy")
+                </div>
+            }
+        }
     </article>
     <div class="small-space"></div>
     <h6 class="vertical-margin">Book now</h6>
-    <DepositBooking DepositId="@Id"/>
+    <DepositBooking DepositName="@Name" OnBookingCompleted="OnBookingCompleted"/>
 </main>
+
+@if (User.IsAdmin())
+{
+    <div class="medium-space"></div>
+    <div class="overlay blur"></div>
+    <dialog class="medium-width no-elevate" id="add-availability">
+        <div class="s12 m6 padding">
+            <h6 class="small">Select the dates you want to add availability for:</h6>
+            <div class="small-space"></div>
+            <div class="field label suffix border">
+                <input type="date" @bind=StartDate>
+                <label>From</label>
+                <i>calendar_today</i>
+            </div>
+            <div class="field label suffix border">
+                <input type="date" @bind=EndDate>
+                <label>To</label>
+                <i>event_upcoming</i>
+            </div>
+        </div>
+        <nav class="right-align no-space no-margin">
+            <button class="transparent link" data-ui="#add-availability">Cancel</button>
+            <button class="transparent link" @onclick="AddAvailability">Confirm</button>
+        </nav>
+    </dialog>
+}

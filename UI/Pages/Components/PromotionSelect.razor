@@ -1,7 +1,14 @@
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
+@using BusinessLogic.Services
+@using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
-@inject AuthController Auth
-@inject PromotionController PromotionController
+@inject UserService User
+@inject PromotionService PromotionService
+@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
 
 @code {
     private List<int> _promotions = new();
@@ -11,13 +18,38 @@
     private int _selectedPromotionId = -1;
     private bool IsPromotionSelected => _selectedPromotionId != -1;
 
-    [Parameter] public List<int> Promotions { get; set; } = new();
+    [Parameter] public List<PromotionDto> Promotions { get; set; } = new();
 
-    [Parameter] public EventCallback<List<int>> PromotionsChanged { get; set; }
+    [Parameter] public EventCallback<List<PromotionDto>> PromotionsChanged { get; set; }
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        _allPromotions = PromotionController.ListAllPromotions(Auth.CurrentCredentials);
+        try
+        {
+            if (_allPromotions.Count == 0)
+                _allPromotions = PromotionService.GetAllPromotions(User.CurrentCredentials).ToList();
+        }
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
+    }
+
+    private void HandleException(Exception e)
+    {
+        if (e is DataAccessException)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
+        else if (e is BusinessLogicException or DomainException or DateRangeException)
+        {
+            NotificationService.ShowError(e.Message);
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred.");
+        }
     }
 
     private void SelectPromotion()
@@ -41,13 +73,13 @@
 
     private void AddPromotionId(PromotionDto promotion)
     {
-        Promotions.Add(promotion.Id);
+        Promotions.Add(promotion);
         PromotionsChanged.InvokeAsync(Promotions);
     }
 
     private void RemovePromotionId(PromotionDto promotion)
     {
-        Promotions.Remove(promotion.Id);
+        Promotions.Remove(promotion);
         PromotionsChanged.InvokeAsync(Promotions);
     }
 
@@ -68,9 +100,9 @@
             }
         </select>
     </div>
-    <button class="large right-round" @onclick="SelectPromotion">
+    <a class="button large right-round" @onclick="SelectPromotion">
         <i>add</i>
-    </button>
+    </a>
 </nav>
 
 <div class="center-align fill tiny-padding vertical-margin">

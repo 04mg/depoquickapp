@@ -1,14 +1,20 @@
 @page "/Promotions"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
+@using BusinessLogic.Services
+@using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
 @inherits AuthEnforce
-@inject AuthController Auth
-@inject PromotionController PromotionController
+@inject UserService User
+@inject PromotionService PromotionService
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
 
 @code {
 
-    private AddPromotionDto _addPromotionDto = new()
+    private PromotionDto _addPromotionDto = new()
     {
         DateFrom = DateOnly.FromDateTime(DateTime.Today),
         DateTo = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
@@ -17,10 +23,17 @@
 
     private List<PromotionDto> PromotionsDto { get; set; } = new();
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnParametersSet()
     {
-        if (!Auth.IsAdmin) return;
-        PromotionsDto = PromotionController.ListAllPromotions(Auth.CurrentCredentials);
+        try
+        {
+            PromotionsDto = PromotionService.GetAllPromotions(User.CurrentCredentials).ToList();
+        }
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
+
         StateHasChanged();
     }
 
@@ -28,19 +41,37 @@
     {
         try
         {
-            PromotionController.AddPromotion(_addPromotionDto, Auth.CurrentCredentials);
+            PromotionService.AddPromotion(_addPromotionDto, User.CurrentCredentials);
+            PromotionsDto = PromotionService.GetAllPromotions(User.CurrentCredentials).ToList();
             NotificationService.ShowMessage("Promotion added successfully.");
             StateHasChanged();
         }
-        catch (ArgumentException e)
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
+    }
+    
+    private void HandleException(Exception e)
+    {
+        if (e is DataAccessException)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
+        else if (e is BusinessLogicException or DomainException or DateRangeException)
         {
             NotificationService.ShowError(e.Message);
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred.");
         }
     }
 
 }
 
-@if (!Auth.IsAdmin)
+@if (!User.IsAdmin())
 {
     <Forbidden/>
 }
@@ -103,7 +134,7 @@ else
                 <i>event_upcoming</i>
             </div>
             <nav class="right-align no-space no-margin">
-                <button class="transparent link" data-ui="#add-promotion">Cancel</button>
+                <a class="button transparent link" data-ui="#add-promotion">Cancel</a>
                 <button type="submit" class="transparent link">Confirm</button>
             </nav>
         </form>

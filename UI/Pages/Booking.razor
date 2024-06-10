@@ -1,16 +1,19 @@
 @page "/Booking/{Id:int}"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
+@using BusinessLogic.Services
+@using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
-@inherits AuthEnforce
-@inject AuthController Auth
-@inject BookingController BookingController
+@inherits UI.Shared.AuthEnforce
+@inject UserService User
+@inject BookingService BookingService
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
 
 @code {
-    private BookingDto BookingDto { get; set; } = new();
-    private string _message = string.Empty;
-
+    private BookingDto _bookingDto;
     private int? _id;
 
     [Parameter]
@@ -20,36 +23,66 @@
         set => _id = value;
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnParametersSet()
     {
-        if (!firstRender) return;
         try
         {
-            BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
+            _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
-            NotificationService.ShowError(e.Message);
-            NavigationManager.NavigateTo("/Bookings");
+            HandleException(e);
         }
-
         StateHasChanged();
     }
 
     private void ApproveBooking()
     {
-        BookingController.ApproveBooking(Id, Auth.CurrentCredentials);
-        BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
-        NotificationService.ShowMessage("Booking approved successfully.");
+        try
+        {
+            BookingService.ApproveBooking(Id, User.CurrentCredentials);
+            _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
+            NotificationService.ShowMessage("Booking approved successfully.");
+        }
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
         StateHasChanged();
     }
 
     private void RejectBooking()
     {
-        BookingController.RejectBooking(Id, _message, Auth.CurrentCredentials);
-        BookingDto = BookingController.GetBooking(Id, Auth.CurrentCredentials);
-        NotificationService.ShowMessage("Booking rejected successfully.");
+        try
+        {
+            BookingService.RejectBooking(_bookingDto, User.CurrentCredentials);
+            _bookingDto = BookingService.GetBooking(Id, User.CurrentCredentials);
+            NotificationService.ShowMessage("Booking rejected successfully.");
+        }
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
         StateHasChanged();
+    }
+
+    private void HandleException(Exception e)
+    {
+        if (e is DataAccessException)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
+        else if (e is BusinessLogicException or DomainException or DateRangeException)
+        {
+            NotificationService.ShowError(e.Message);
+            NavigationManager.NavigateTo("/Bookings");
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred.");
+            NavigationManager.NavigateTo("/Bookings");
+        }
     }
 
 }
@@ -60,8 +93,7 @@
     </NavLink>
     <h6 class="vertical-margin">
         Booking
-        <span class="circle primary center-align middle-align left-margin">@Id</span>
-        @if (Auth.IsAdmin && BookingDto.Stage == "Pending")
+        @if (User.IsAdmin() && _bookingDto.Stage == "Pending")
         {
             <div class="absolute right">
                 <button class="extend square round primary no-margin" @onclick="ApproveBooking">
@@ -78,32 +110,52 @@
     </h6>
     <article>
         <h6 class="small padding">
-            Deposit ID:&nbsp;
-            <a href="/Deposit/@BookingDto.DepositId">
+            Deposit:&nbsp;
+            <a href="/Deposit/@_bookingDto.DepositName">
                 <i>link</i>
-                <b>@BookingDto.DepositId</b>
+                <b>@_bookingDto.DepositName</b>
             </a>
         </h6>
         <div class="divider"></div>
-        @if (Auth.IsAdmin)
+        @if (User.IsAdmin())
         {
-            <h6 class="small padding">Email:&nbsp; <b>@BookingDto.Email</b></h6>
+            <h6 class="small padding">Email:&nbsp; <b>@_bookingDto.Email</b></h6>
             <div class="divider"></div>
         }
-        <h6 class="small padding">From:&nbsp; <b>@BookingDto.DateFrom</b></h6>
+        <h6 class="small padding">From:&nbsp; <b>@_bookingDto.DateFrom</b></h6>
         <div class="divider"></div>
-        <h6 class="small padding">To:&nbsp; <b>@BookingDto.DateTo</b></h6>
+        <h6 class="small padding">To:&nbsp; <b>@_bookingDto.DateTo</b></h6>
         <div class="divider"></div>
-        <h6 class="small padding">Stage:&nbsp; <b>@BookingDto.Stage</b></h6>
-        @if (BookingDto.Stage == "Rejected")
+        <h6 class="small padding">Stage:&nbsp; <b>@_bookingDto.Stage</b></h6>
+        <div class="divider"></div>
+        @if (_bookingDto.Stage == "Rejected")
         {
+            <h6 class="small padding">Message:&nbsp; <b>@_bookingDto.Message</b></h6>
+        }
+    </article>
+    <h6 class="vertical-margin large-margin">
+        Payment
+        <span class="circle primary center-align middle-align left-margin">
+            <i>payments</i>
+        </span>
+    </h6>
+    <article>
+        @if (_bookingDto.Payment.HasValue)
+        {
+            <h6 class="small padding">Amount:&nbsp; <b>@_bookingDto.Payment.Value.Amount$</b></h6>
             <div class="divider"></div>
-            <h6 class="small padding">Message:&nbsp; <b>@BookingDto.Message</b></h6>
+            <h6 class="small padding">
+                Status:&nbsp;<b>@_bookingDto.Payment.Value.Status</b>
+            </h6>
+        }
+        else
+        {
+            <h6 class="small padding">There is no payment for this booking.</h6>
         }
     </article>
 </main>
 
-@if (Auth.IsAdmin && BookingDto.Stage == "Pending")
+@if (User.IsAdmin() && _bookingDto.Stage == "Pending")
 {
     <div class="medium-space"></div>
     <div class="overlay blur"></div>
@@ -114,7 +166,7 @@
         </div>
         <form @onsubmit="RejectBooking">
             <div class="field label border textarea">
-                <textarea type="text" @bind="_message" required></textarea>
+                <textarea type="text" @bind="_bookingDto.Message" required></textarea>
                 <label>Message</label>
             </div>
             <nav class="right-align no-space no-margin">

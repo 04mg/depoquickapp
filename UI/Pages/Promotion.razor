@@ -1,10 +1,15 @@
 @page "/Promotion/{Id:int}"
 @using BusinessLogic.DTOs
+@using BusinessLogic.Exceptions
+@using BusinessLogic.Services
+@using DataAccess.Exceptions
+@using DateRange
+@using Domain.Exceptions
 @using UI.Data
 @inherits AuthEnforce
-@inject AuthController Auth
+@inject UserService User
 @inject NavigationManager NavigationManager
-@inject PromotionController PromotionController
+@inject PromotionService PromotionService
 @inject NotificationService NotificationService
 
 @code {
@@ -20,30 +25,28 @@
         set => _id = value;
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override void OnParametersSet()
     {
-        if (!firstRender) return;
         try
         {
-            var promotion = PromotionController.GetPromotion(Id);
+            var promotion = PromotionService.GetPromotion(Id);
             SetPromotionDto(promotion);
             SetPromotionLabel(promotion);
         }
-        catch (InvalidOperationException)
+        catch (Exception e)
         {
-            NotificationService.ShowError("Promotion was not found");
-            NavigationManager.NavigateTo("/Promotions");
+            HandleException(e);
         }
 
         StateHasChanged();
     }
 
-    private void SetPromotionLabel(AddPromotionDto promotion)
+    private void SetPromotionLabel(PromotionDto promotion)
     {
         _promotionLabel = promotion.Label;
     }
 
-    private void SetPromotionDto(AddPromotionDto promotion)
+    private void SetPromotionDto(PromotionDto promotion)
     {
         _promotionDto = new PromotionDto
         {
@@ -59,12 +62,12 @@
     {
         try
         {
-            PromotionController.ModifyPromotion(Id, _promotionDto, Auth.CurrentCredentials);
+            PromotionService.ModifyPromotion(_promotionDto, User.CurrentCredentials);
             NotificationService.ShowMessage($"Promotion \"{_promotionLabel}\" modified successfully.");
         }
-        catch (ArgumentException e)
+        catch (Exception e)
         {
-            NotificationService.ShowError(e.Message);
+            HandleException(e);
         }
     }
 
@@ -72,19 +75,38 @@
     {
         try
         {
-            PromotionController.DeletePromotion(Id, Auth.CurrentCredentials);
+            PromotionService.DeletePromotion(Id, User.CurrentCredentials);
             NotificationService.ShowMessage($"Promotion \"{_promotionLabel}\" deleted successfully.");
             NavigationManager.NavigateTo("/Promotions");
         }
-        catch (ArgumentException e)
+        catch (Exception e)
+        {
+            HandleException(e);
+        }
+    }
+
+    private void HandleException(Exception e)
+    {
+        if (e is DataAccessException)
+        {
+            NavigationManager.NavigateTo("/Logout");
+            NotificationService.ShowError(e.Message);
+        }
+        else if (e is BusinessLogicException or DomainException or DateRangeException)
         {
             NotificationService.ShowError(e.Message);
+            NavigationManager.NavigateTo("/Promotions");
+        }
+        else
+        {
+            NotificationService.ShowError("An unexpected error occurred.");
+            NavigationManager.NavigateTo("/Promotions");
         }
     }
 
 }
 
-@if (!Auth.IsAdmin)
+@if (!User.IsAdmin())
 {
     <Forbidden/>
 }
